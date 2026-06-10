@@ -20,27 +20,5 @@
   "links": [],
   "servicesConfigEnabled": false,
   "modules": [
-    {
-      "moduleName": "propertyFlowCrm",
-      "module": {
-        "moduleName": "propertyFlowCrm",
-        "purpose": "Organizar imóveis, leads e visitas para aumentar a conversão em corretagem imobiliária.",
-        "businessDomain": "CRM imobiliário para pequenas imobiliárias e corretores autônomos",
-        "languages": [
-          "pt-BR",
-          "en"
-        ],
-        "visualStyle": {
-          "tone": "moderno e clean",
-          "layout": "cards e painéis com foco em produtividade",
-          "palette": [
-            "#1F6FEB",
-            "#F7F9FB",
-            "#111827",
-            "#10B981"
-          ]
-        }
-      }
-    }
   ]
 }
