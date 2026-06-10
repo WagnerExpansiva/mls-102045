@@ -20,5 +20,35 @@
   "links": [],
   "servicesConfigEnabled": false,
   "modules": [
+    {
+      "moduleName": "propertyFlowCrm",
+      "module": {
+        "moduleName": "propertyFlowCrm",
+        "title": "PropertyFlowCRM",
+        "purpose": "Centralizar a gestão de imóveis, leads e visitas em uma única plataforma, aumentando a produtividade e taxa de conversão de negócios para imobiliárias e corretores autônomos.",
+        "businessDomain": "realEstateCrm",
+        "languages": [
+          "pt-BR",
+          "en"
+        ],
+        "visualStyle": {
+          "tone": "Moderno e profissional",
+          "layout": "Visual limpo com navegação intuitiva",
+          "palette": [
+            "#1E3A5F",
+            "#4A90A4",
+            "#F5F7FA",
+            "#2ECC71",
+            "#E74C3C"
+          ]
+        }
+      }
+    }
+  ],
+  "dependencies": [
+    {
+      "projectId": "102034",
+      "kind": "mdm-infrastructure"
+    }
   ]
 }
