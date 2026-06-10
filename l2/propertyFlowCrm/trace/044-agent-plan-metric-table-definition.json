@@ -1,0 +1,194 @@
+{
+  "savedAt": "2026-06-10T01:02:07.043Z",
+  "agentName": "agentPlanMetricTableDefinition",
+  "stepId": 44,
+  "planning": null,
+  "status": "waiting_after_prompt",
+  "payload": {
+    "type": "flexible",
+    "result": {
+      "toolName": "submitMetricTableDefinitionPlan",
+      "arguments": {
+        "status": "ok",
+        "result": {
+          "metricTableDefinition": {
+            "metricTableId": "leadMetrics",
+            "tableName": "lead_metrics",
+            "moduleId": "propertyFlowCrm",
+            "title": "Métricas de Leads",
+            "purpose": "Monitorar o fluxo de leads pelo pipeline e suas qualificações",
+            "tableKind": "metricTimeseries",
+            "storageEngine": "postgresTimescaleDB",
+            "layer": "layer_1_external",
+            "timeColumn": "event_time",
+            "columns": [
+              {
+                "name": "event_time",
+                "type": "timestamptz",
+                "nullable": false,
+                "default": "now()",
+                "description": "Momento do evento de métrica"
+              },
+              {
+                "name": "broker_id",
+                "type": "uuid",
+                "nullable": false,
+                "description": "Corretor responsável pelo lead"
+              },
+              {
+                "name": "lead_stage",
+                "type": "text",
+                "nullable": false,
+                "description": "Estágio atual do lead no pipeline"
+              },
+              {
+                "name": "lead_temperature",
+                "type": "text",
+                "nullable": false,
+                "description": "Temperatura/classificação do lead"
+              },
+              {
+                "name": "leads_created",
+                "type": "integer",
+                "nullable": false,
+                "default": 0,
+                "description": "Quantidade de leads cadastrados"
+              },
+              {
+                "name": "lead_stage_transitions",
+                "type": "integer",
+                "nullable": false,
+                "default": 0,
+                "description": "Movimentações de estágio no kanban"
+              }
+            ],
+            "dimensions": [
+              {
+                "dimensionId": "brokerId",
+                "column": "broker_id",
+                "type": "uuid",
+                "description": "Corretor responsável pelo lead"
+              },
+              {
+                "dimensionId": "leadStage",
+                "column": "lead_stage",
+                "type": "string",
+                "description": "Estágio atual do lead no pipeline"
+              },
+              {
+                "dimensionId": "leadTemperature",
+                "column": "lead_temperature",
+                "type": "string",
+                "description": "Temperatura/classificação do lead"
+              }
+            ],
+            "measures": [
+              {
+                "measureId": "leadsCreated",
+                "column": "leads_created",
+                "aggregation": "sum",
+                "unit": "count",
+                "description": "Quantidade de leads cadastrados"
+              },
+              {
+                "measureId": "leadStageTransitions",
+                "column": "lead_stage_transitions",
+                "aggregation": "sum",
+                "unit": "count",
+                "description": "Movimentações de estágio no kanban"
+              }
+            ],
+            "sourceWriteEvents": [
+              "createLead",
+              "updateLeadStage",
+              "updateLeadNotes"
+            ],
+            "hypertable": {
+              "timeColumn": "event_time",
+              "chunkTimeInterval": "7 days",
+              "retentionPolicy": "1 year",
+              "indexes": [
+                {
+                  "indexName": "lead_metrics_time_idx",
+                  "columns": [
+                    "event_time"
+                  ],
+                  "purpose": "Suporte a consultas por período",
+                  "unique": false
+                },
+                {
+                  "indexName": "lead_metrics_broker_time_idx",
+                  "columns": [
+                    "broker_id",
+                    "event_time"
+                  ],
+                  "purpose": "Filtrar por corretor ao longo do tempo",
+                  "unique": false
+                },
+                {
+                  "indexName": "lead_metrics_stage_time_idx",
+                  "columns": [
+                    "lead_stage",
+                    "event_time"
+                  ],
+                  "purpose": "Análise por estágio do pipeline",
+                  "unique": false
+                },
+                {
+                  "indexName": "lead_metrics_temperature_time_idx",
+                  "columns": [
+                    "lead_temperature",
+                    "event_time"
+                  ],
+                  "purpose": "Análise por temperatura de lead",
+                  "unique": false
+                }
+              ]
+            },
+            "updatePolicy": {
+              "updatedByLayer": "layer_3_usecases",
+              "pagesMayUpdate": false,
+              "controllersMayUpdate": false,
+              "usecaseRefs": [
+                "createLeadUsecase",
+                "updateLeadStageUsecase",
+                "updateLeadNotesUsecase"
+              ]
+            },
+            "accessPolicy": {
+              "directAccessAllowedFor": [
+                "layer_3_usecases"
+              ],
+              "forbiddenFor": [
+                "pages",
+                "layer_2_controllers",
+                "agents"
+              ]
+            },
+            "rulesApplied": [
+              "ruleLeadTemperature",
+              "ruleLeadStageTransition"
+            ]
+          },
+          "defsPlan": {
+            "fileName": "tables/leadMetrics.defs.ts",
+            "exportName": "leadMetricsTable",
+            "saveAsDefs": true
+          }
+        },
+        "questions": [],
+        "trace": [
+          "Planejei a tabela de métricas lead_metrics como hypertable TimescaleDB com timeColumn event_time.",
+          "Mapeei dimensões e medidas do seletor atual e adicionei defaults para contadores.",
+          "Defini índices com event_time e combinações com dimensões para consultas segmentadas.",
+          "Atribuí atualização à layer_3_usecases e bloqueei updates diretos por pages e controllers.",
+          "Mantive retenção de 1 ano e chunk de 7 dias conforme prática para métricas operacionais."
+        ]
+      }
+    },
+    "status": "completed",
+    "stepId": 47,
+    "interaction": null,
+    "nextSteps": null
+  }
+}

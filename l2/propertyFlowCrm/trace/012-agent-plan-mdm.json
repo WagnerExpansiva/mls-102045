@@ -1,0 +1,131 @@
+{
+  "savedAt": "2026-06-10T01:00:41.989Z",
+  "agentName": "agentPlanMDM",
+  "stepId": 12,
+  "planning": {
+    "planId": "plan-mdm",
+    "dependsOn": [
+      "plan-finalize-solution-plan"
+    ],
+    "executionMode": "parallel_static",
+    "executionHost": "client"
+  },
+  "status": "waiting_after_prompt",
+  "payload": {
+    "type": "flexible",
+    "result": {
+      "toolName": "submitMdmPlan",
+      "arguments": {
+        "status": "ok",
+        "result": {
+          "mdmDomains": [
+            {
+              "domainId": "property",
+              "title": "Imóvel",
+              "masterEntities": [
+                "Property"
+              ],
+              "sourceOfTruth": "propertyFormPage e casos de uso de imóvel (createPropertyUsecase, updatePropertyUsecase, archivePropertyUsecase)",
+              "consumers": [
+                "propertiesListPage",
+                "propertyFormPage",
+                "visitsSchedulerPage",
+                "dealsTrackerPage",
+                "dashboardPage",
+                "adminMetricsPage",
+                "aiPropertyDescriptionAgent",
+                "createPropertyUsecase",
+                "updatePropertyUsecase",
+                "archivePropertyUsecase",
+                "generatePropertyDescriptionUsecase",
+                "metricTableCrmBasico",
+                "metricDashboardCrmBasico",
+                "i18nModule",
+                "visitSchedulingWorkflow",
+                "dealStageWorkflow",
+                "createDealUsecase",
+                "updateDealStageUsecase",
+                "scheduleVisitUsecase",
+                "rescheduleVisitUsecase",
+                "cancelVisitUsecase"
+              ],
+              "governanceRules": [
+                "rulePropertyStatus",
+                "Dados de imóvel devem ser mantidos centralizados e referenciados por identificador único",
+                "Alterações de status devem ser auditadas e replicadas aos consumidores"
+              ]
+            },
+            {
+              "domainId": "lead",
+              "title": "Lead/Cliente",
+              "masterEntities": [
+                "Lead"
+              ],
+              "sourceOfTruth": "leadDetailPage e casos de uso de lead (createLeadUsecase, updateLeadStageUsecase, updateLeadNotesUsecase)",
+              "consumers": [
+                "leadsPipelinePage",
+                "leadDetailPage",
+                "visitsSchedulerPage",
+                "dealsTrackerPage",
+                "dashboardPage",
+                "adminMetricsPage",
+                "aiLeadQualificationAgent",
+                "createLeadUsecase",
+                "updateLeadNotesUsecase",
+                "updateLeadStageUsecase",
+                "qualifyLeadUsecase",
+                "metricTableCrmBasico",
+                "metricDashboardCrmBasico",
+                "i18nModule",
+                "leadStageWorkflow",
+                "visitSchedulingWorkflow",
+                "dealStageWorkflow",
+                "createDealUsecase",
+                "updateDealStageUsecase",
+                "scheduleVisitUsecase",
+                "rescheduleVisitUsecase",
+                "cancelVisitUsecase"
+              ],
+              "governanceRules": [
+                "ruleLeadTemperature",
+                "ruleLeadStageTransition",
+                "Dados de lead devem ser mantidos centralizados e referenciados por identificador único",
+                "Movimentações no pipeline devem registrar histórico de alterações"
+              ]
+            },
+            {
+              "domainId": "broker",
+              "title": "Corretor",
+              "masterEntities": [
+                "Broker"
+              ],
+              "sourceOfTruth": "authRolesModule",
+              "consumers": [
+                "authRolesModule"
+              ],
+              "governanceRules": [
+                "ruleBrokerPermissions",
+                "Perfis de corretor/gestor devem ser mantidos no módulo de autenticação e autorização",
+                "Vínculo de imóvel e lead ao corretor deve ser feito por referência ao identificador mestre"
+              ]
+            }
+          ]
+        },
+        "questions": [
+          "O cadastro de corretores será integrado a um provedor de identidade (SSO) ou mantido localmente no authRolesModule?",
+          "Haverá sincronização de imóveis ou leads com portais externos (ex: ZapImóveis, VivaReal) exigindo matching de dados mestre?"
+        ],
+        "trace": [
+          "Identifiquei entidades mestre a partir da ontologia: Property (ativo), Lead (parte externa) e Broker (colaborador).",
+          "Excluí Visit e Deal dos domínios MDM por serem entidades transacionais que consomem os dados mestre.",
+          "Mapeei consumidores diretos e indiretos em páginas, workflows, casos de uso, agentes, tabelas de métricas e dashboards.",
+          "Vinculei as regras de governança já aceitas (rulePropertyStatus, ruleLeadTemperature, ruleLeadStageTransition, ruleBrokerPermissions) aos respectivos domínios."
+        ]
+      }
+    },
+    "status": "completed",
+    "stepId": 36,
+    "interaction": null,
+    "nextSteps": null
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "savedAt": "2026-06-10T00:59:03.708Z",
+  "agentName": "agentBlueprintReview",
+  "stepId": 10,
+  "planning": {
+    "planId": "plan-blueprint-review",
+    "dependsOn": [
+      "plan-solution-blueprint"
+    ],
+    "executionMode": "sequential",
+    "executionHost": "client"
+  },
+  "status": "waiting_after_prompt",
+  "payload": {
+    "type": "flexible",
+    "result": {
+      "toolName": "submitBlueprintReview",
+      "arguments": {
+        "status": "ok",
+        "result": {
+          "issues": [
+            {
+              "severity": "error",
+              "code": "missing_layer3_usecase",
+              "message": "Há comandos/escritas com mudança de estado sem planejamento de usecaseEntity na camada 3.",
+              "path": "$.result.userActions",
+              "evidence": [
+                "updateProperty",
+                "archiveProperty",
+                "createLead",
+                "updateLeadNotes",
+                "createDeal",
+                "rescheduleVisit",
+                "cancelVisit"
+              ]
+            },
+            {
+              "severity": "warning",
+              "code": "capability_not_fully_covered",
+              "message": "Capacidades aprovadas como 'now' não têm cobertura de artefatos suficiente para todas as ações (ex.: criação/edição de lead e notas).",
+              "path": "$.result.coverage",
+              "evidence": [
+                "manageLeads cobre apenas leadsPipelinePage/leadStageWorkflow/updateLeadStageUsecase; leadDetailPage está 'soon' e não cobre createLead/updateLeadNotes"
+              ]
+            },
+            {
+              "severity": "warning",
+              "code": "capability_not_fully_covered",
+              "message": "A capacidade 'trackDeals' não cobre a criação de negócio com usecaseEntity.",
+              "path": "$.result.coverage",
+              "evidence": [
+                "trackDeals cobre dealsTrackerPage/dealStageWorkflow/updateDealStageUsecase; createDeal sem usecaseEntity"
+              ]
+            },
+            {
+              "severity": "warning",
+              "code": "capability_not_fully_covered",
+              "message": "A capacidade 'scheduleVisits' não cobre reagendamento/cancelamento com usecaseEntity.",
+              "path": "$.result.coverage",
+              "evidence": [
+                "scheduleVisits cobre scheduleVisitUsecase; rescheduleVisit/cancelVisit sem usecaseEntity"
+              ]
+            },
+            {
+              "severity": "warning",
+              "code": "capability_not_fully_covered",
+              "message": "A capacidade 'manageProperties' não cobre atualização/inativação com usecaseEntity.",
+              "path": "$.result.coverage",
+              "evidence": [
+                "manageProperties cobre createPropertyUsecase; updateProperty/archiveProperty sem usecaseEntity"
+              ]
+            }
+          ],
+          "recommendedFixes": [
+            "Adicionar usecaseEntities (camada 3) para updateProperty, archiveProperty, createLead, updateLeadNotes, createDeal, rescheduleVisit e cancelVisit.",
+            "Promover leadDetailPage para 'now' ou adicionar página/formulário de cadastro/edição de lead e notas para cobrir manageLeads agora.",
+            "Incluir usecaseEntity de criação de negócio (createDealUsecase) ou ajustar a capacidade/escopo.",
+            "Incluir usecaseEntities para reagendar e cancelar visita (rescheduleVisitUsecase, cancelVisitUsecase) ou ajustar o escopo.",
+            "Incluir usecaseEntities para atualização e inativação de imóveis (updatePropertyUsecase, archivePropertyUsecase) ou ajustar o escopo."
+          ]
+        },
+        "questions": [
+          "Confirmar se as ações listadas sem usecaseEntity devem ser implementadas agora ou podem ser movidas para 'soon' no escopo?",
+          "O cadastro/edição detalhada de lead (com notas) deve entrar no 'now' para cumprir manageLeads?"
+        ],
+        "trace": [
+          "Revisei entidades, regras, relações e cobertura de capacidades versus userActions.",
+          "Verifiquei presença de MDM e métricas/dashboards aceitos.",
+          "Detectei comandos de escrita e mudanças de estado sem usecaseEntity correspondente na camada 3.",
+          "Identifiquei capacidades 'now' sem artefatos suficientes para cobrir todas as ações declaradas."
+        ]
+      }
+    },
+    "status": "completed",
+    "stepId": 34,
+    "interaction": null,
+    "nextSteps": null
+  }
+}

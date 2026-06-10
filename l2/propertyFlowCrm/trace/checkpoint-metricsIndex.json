@@ -1,0 +1,390 @@
+{
+  "schemaVersion": "2026-06-06",
+  "artifactType": "indexCheckpoint",
+  "indexName": "metricsIndex",
+  "moduleName": "propertyFlowCrm",
+  "status": "frozen",
+  "approvedAt": "2026-06-10T01:01:54.012Z",
+  "source": {
+    "agentName": "agentPlanMetricsIndex",
+    "stepId": 41,
+    "planId": "plan-index-critic:metricsIndex:1"
+  },
+  "healthReport": {
+    "localErrors": [],
+    "localWarnings": [],
+    "criticErrors": [],
+    "criticWarnings": [],
+    "attempts": 1,
+    "notes": []
+  },
+  "index": {
+    "runId": "provider-tool-call",
+    "stepId": "14-plan-metrics-index",
+    "schemaVersion": "2026-06-02",
+    "status": "ok",
+    "result": {
+      "metricsPlan": {
+        "enabled": true,
+        "storageEngine": "postgresTimescaleDB",
+        "title": "Plano de Métricas do propertyFlowCrm",
+        "description": "Métricas operacionais para acompanhamento de imóveis, leads, visitas e negócios no CRM imobiliário.",
+        "updateResponsibility": "layer_3_usecases"
+      },
+      "metricTables": [
+        {
+          "metricTableId": "propertyMetrics",
+          "tableName": "property_metrics",
+          "title": "Métricas de Imóveis",
+          "purpose": "Acompanhar o volume e status dos imóveis cadastrados ao longo do tempo",
+          "storageEngine": "postgresTimescaleDB",
+          "sourceBaseTables": [
+            "properties"
+          ],
+          "sourceEntities": [
+            "Property"
+          ],
+          "sourceWriteEvents": [
+            "createProperty",
+            "updateProperty",
+            "archiveProperty"
+          ],
+          "timeColumn": "eventTime",
+          "dimensions": [
+            {
+              "dimensionId": "brokerId",
+              "column": "broker_id",
+              "type": "uuid",
+              "description": "Corretor responsável pelo imóvel"
+            },
+            {
+              "dimensionId": "propertyStatus",
+              "column": "property_status",
+              "type": "string",
+              "description": "Status atual do imóvel"
+            }
+          ],
+          "measures": [
+            {
+              "measureId": "propertiesCreated",
+              "column": "properties_created",
+              "type": "integer",
+              "aggregation": "sum",
+              "unit": "count",
+              "description": "Quantidade de imóveis cadastrados"
+            },
+            {
+              "measureId": "propertiesArchived",
+              "column": "properties_archived",
+              "type": "integer",
+              "aggregation": "sum",
+              "unit": "count",
+              "description": "Quantidade de imóveis inativados"
+            }
+          ],
+          "aggregationWindows": [
+            "1 hour",
+            "1 day",
+            "1 week",
+            "1 month"
+          ],
+          "retentionPolicy": "1 year",
+          "priority": "now",
+          "rulesApplied": [
+            "rulePropertyStatus"
+          ],
+          "reason": "Permite ao gestor analisar a evolução do portfólio e identificar gargalos de cadastro"
+        },
+        {
+          "metricTableId": "leadMetrics",
+          "tableName": "lead_metrics",
+          "title": "Métricas de Leads",
+          "purpose": "Monitorar o fluxo de leads pelo pipeline e suas qualificações",
+          "storageEngine": "postgresTimescaleDB",
+          "sourceBaseTables": [
+            "leads"
+          ],
+          "sourceEntities": [
+            "Lead"
+          ],
+          "sourceWriteEvents": [
+            "createLead",
+            "updateLeadStage",
+            "updateLeadNotes"
+          ],
+          "timeColumn": "eventTime",
+          "dimensions": [
+            {
+              "dimensionId": "brokerId",
+              "column": "broker_id",
+              "type": "uuid",
+              "description": "Corretor responsável pelo lead"
+            },
+            {
+              "dimensionId": "leadStage",
+              "column": "lead_stage",
+              "type": "string",
+              "description": "Estágio atual do lead no pipeline"
+            },
+            {
+              "dimensionId": "leadTemperature",
+              "column": "lead_temperature",
+              "type": "string",
+              "description": "Temperatura/classificação do lead"
+            }
+          ],
+          "measures": [
+            {
+              "measureId": "leadsCreated",
+              "column": "leads_created",
+              "type": "integer",
+              "aggregation": "sum",
+              "unit": "count",
+              "description": "Quantidade de leads cadastrados"
+            },
+            {
+              "measureId": "leadStageTransitions",
+              "column": "lead_stage_transitions",
+              "type": "integer",
+              "aggregation": "sum",
+              "unit": "count",
+              "description": "Movimentações de estágio no kanban"
+            }
+          ],
+          "aggregationWindows": [
+            "1 hour",
+            "1 day",
+            "1 week",
+            "1 month"
+          ],
+          "retentionPolicy": "1 year",
+          "priority": "now",
+          "rulesApplied": [
+            "ruleLeadTemperature",
+            "ruleLeadStageTransition"
+          ],
+          "reason": "Base para análise de conversão e eficiência do funil de vendas"
+        },
+        {
+          "metricTableId": "visitMetrics",
+          "tableName": "visit_metrics",
+          "title": "Métricas de Visitas",
+          "purpose": "Rastrear agendamentos, reagendamentos e cancelamentos de visitas",
+          "storageEngine": "postgresTimescaleDB",
+          "sourceBaseTables": [
+            "visits"
+          ],
+          "sourceEntities": [
+            "Visit"
+          ],
+          "sourceWriteEvents": [
+            "scheduleVisit",
+            "rescheduleVisit",
+            "cancelVisit"
+          ],
+          "timeColumn": "eventTime",
+          "dimensions": [
+            {
+              "dimensionId": "brokerId",
+              "column": "broker_id",
+              "type": "uuid",
+              "description": "Corretor responsável pela visita"
+            },
+            {
+              "dimensionId": "visitStatus",
+              "column": "visit_status",
+              "type": "string",
+              "description": "Status da visita"
+            },
+            {
+              "dimensionId": "propertyId",
+              "column": "property_id",
+              "type": "uuid",
+              "description": "Imóvel visitado"
+            }
+          ],
+          "measures": [
+            {
+              "measureId": "visitsScheduled",
+              "column": "visits_scheduled",
+              "type": "integer",
+              "aggregation": "sum",
+              "unit": "count",
+              "description": "Visitas agendadas"
+            },
+            {
+              "measureId": "visitsRescheduled",
+              "column": "visits_rescheduled",
+              "type": "integer",
+              "aggregation": "sum",
+              "unit": "count",
+              "description": "Visitas reagendadas"
+            },
+            {
+              "measureId": "visitsCancelled",
+              "column": "visits_cancelled",
+              "type": "integer",
+              "aggregation": "sum",
+              "unit": "count",
+              "description": "Visitas canceladas"
+            }
+          ],
+          "aggregationWindows": [
+            "1 hour",
+            "1 day",
+            "1 week",
+            "1 month"
+          ],
+          "retentionPolicy": "1 year",
+          "priority": "now",
+          "rulesApplied": [
+            "ruleVisitRequiresLinks"
+          ],
+          "reason": "Essencial para medir o engajamento de leads e a produtividade dos corretores"
+        },
+        {
+          "metricTableId": "dealMetrics",
+          "tableName": "deal_metrics",
+          "title": "Métricas de Negócios",
+          "purpose": "Acompanhar a criação e evolução de propostas e negócios",
+          "storageEngine": "postgresTimescaleDB",
+          "sourceBaseTables": [
+            "deals"
+          ],
+          "sourceEntities": [
+            "Deal"
+          ],
+          "sourceWriteEvents": [
+            "createDeal",
+            "updateDealStage"
+          ],
+          "timeColumn": "eventTime",
+          "dimensions": [
+            {
+              "dimensionId": "brokerId",
+              "column": "broker_id",
+              "type": "uuid",
+              "description": "Corretor responsável pelo negócio"
+            },
+            {
+              "dimensionId": "dealStage",
+              "column": "deal_stage",
+              "type": "string",
+              "description": "Etapa atual do negócio"
+            },
+            {
+              "dimensionId": "propertyId",
+              "column": "property_id",
+              "type": "uuid",
+              "description": "Imóvel vinculado ao negócio"
+            }
+          ],
+          "measures": [
+            {
+              "measureId": "dealsCreated",
+              "column": "deals_created",
+              "type": "integer",
+              "aggregation": "sum",
+              "unit": "count",
+              "description": "Negócios criados"
+            },
+            {
+              "measureId": "dealStageTransitions",
+              "column": "deal_stage_transitions",
+              "type": "integer",
+              "aggregation": "sum",
+              "unit": "count",
+              "description": "Transições de etapa do negócio"
+            }
+          ],
+          "aggregationWindows": [
+            "1 hour",
+            "1 day",
+            "1 week",
+            "1 month"
+          ],
+          "retentionPolicy": "1 year",
+          "priority": "now",
+          "rulesApplied": [
+            "ruleDealRequiresProperty",
+            "ruleDealStageTransition"
+          ],
+          "reason": "Permite calcular taxas de conversão e prever receita do pipeline"
+        }
+      ],
+      "dashboardPages": [
+        {
+          "metricDashboardId": "managerMetricsDashboard",
+          "title": "Dashboard de Métricas do Gestor",
+          "description": "Painel operacional com indicadores de imóveis, leads, visitas e negócios",
+          "actor": "gestor",
+          "accessPolicy": "actor",
+          "priority": "now",
+          "sources": [
+            "propertyMetrics",
+            "leadMetrics",
+            "visitMetrics",
+            "dealMetrics"
+          ],
+          "widgets": [
+            {
+              "widgetId": "propertiesCreatedWidget",
+              "title": "Imóveis Cadastrados",
+              "metricId": "propertiesCreated",
+              "type": "counter",
+              "sourceMetricTable": "propertyMetrics"
+            },
+            {
+              "widgetId": "leadsByStageWidget",
+              "title": "Leads por Estágio",
+              "metricId": "leadsCreated",
+              "type": "barChart",
+              "sourceMetricTable": "leadMetrics"
+            },
+            {
+              "widgetId": "visitsScheduledWidget",
+              "title": "Visitas Agendadas",
+              "metricId": "visitsScheduled",
+              "type": "counter",
+              "sourceMetricTable": "visitMetrics"
+            },
+            {
+              "widgetId": "dealsCreatedWidget",
+              "title": "Negócios Criados",
+              "metricId": "dealsCreated",
+              "type": "counter",
+              "sourceMetricTable": "dealMetrics"
+            },
+            {
+              "widgetId": "visitCancellationRateWidget",
+              "title": "Taxa de Cancelamento de Visitas",
+              "metricId": "visitsCancelled",
+              "type": "lineChart",
+              "sourceMetricTable": "visitMetrics"
+            },
+            {
+              "widgetId": "leadTransitionsWidget",
+              "title": "Movimentações no Pipeline",
+              "metricId": "leadStageTransitions",
+              "type": "lineChart",
+              "sourceMetricTable": "leadMetrics"
+            }
+          ]
+        }
+      ]
+    },
+    "questions": [
+      "É necessário incluir métricas financeiras (ex: valor médio de negócio, receita prevista) ou apenas volumétricas nesta primeira versão?",
+      "Há interesse em métricas de tempo (ex: tempo médio de permanência em cada estágio do lead/negócio) derivadas das transições?"
+    ],
+    "trace": [
+      "Identificadas 4 entidades principais (Imóvel, Lead, Visita, Negócio) como fontes para métricas operacionais",
+      "Criadas 4 tabelas de métricas separadas em postgresTimescaleDB, uma por domínio de negócio",
+      "Mapeados os eventos de escrita das tabelas base (create, update, archive) como sourceWriteEvents para alimentação das métricas",
+      "Definidas dimensões por corretor, status/estágio e entidade vinculada para permitir análise segmentada",
+      "Definidas janelas de agregação de 1h a 1mês e retenção de 1 ano para balancear granularidade e custo",
+      "Criado dashboard exclusivo para o ator gestor com widgets de contadores e gráficos de linha/barra",
+      "Responsabilidade de atualização atribuída a layer_3_usecases conforme regra de arquitetura"
+    ]
+  }
+}

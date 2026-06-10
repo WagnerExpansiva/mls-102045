@@ -1,0 +1,863 @@
+{
+  "savedAt": "2026-06-10T00:58:48.262Z",
+  "agentName": "agentSolutionBlueprint",
+  "stepId": 9,
+  "planning": {
+    "planId": "plan-solution-blueprint",
+    "dependsOn": [
+      "req-implementation-decisions"
+    ],
+    "executionMode": "sequential",
+    "executionHost": "client"
+  },
+  "status": "waiting_after_prompt",
+  "payload": {
+    "type": "flexible",
+    "result": {
+      "toolName": "submitSolutionBlueprint",
+      "arguments": {
+        "status": "ok",
+        "result": {
+          "module": {
+            "moduleName": "propertyFlowCrm",
+            "purpose": "Organizar imóveis, leads e visitas para aumentar a conversão em corretagem imobiliária.",
+            "businessDomain": "CRM imobiliário para pequenas imobiliárias e corretores autônomos",
+            "languages": [
+              "pt-BR",
+              "en"
+            ],
+            "visualStyle": {
+              "tone": "moderno e clean",
+              "layout": "cards e painéis com foco em produtividade",
+              "palette": [
+                "#1F6FEB",
+                "#F7F9FB",
+                "#111827",
+                "#10B981"
+              ]
+            }
+          },
+          "actors": [
+            {
+              "actorId": "corretor",
+              "title": "Corretor",
+              "description": "Cadastra imóveis, atende leads, agenda visitas e acompanha propostas."
+            },
+            {
+              "actorId": "gestor",
+              "title": "Gestor",
+              "description": "Acompanha métricas, pipeline e desempenho da equipe."
+            }
+          ],
+          "capabilities": [
+            {
+              "capabilityId": "manageProperties",
+              "title": "CRUD de imóveis com busca",
+              "description": "Cadastrar, editar, remover e buscar imóveis com endereço, tipo, preço, status, características e fotos mock.",
+              "actor": "corretor",
+              "priority": "now"
+            },
+            {
+              "capabilityId": "manageLeads",
+              "title": "Pipeline de leads (kanban)",
+              "description": "Gerenciar leads/clientes em colunas de estágio, atualizar dados e notas.",
+              "actor": "corretor",
+              "priority": "now"
+            },
+            {
+              "capabilityId": "scheduleVisits",
+              "title": "Agendador de visitas",
+              "description": "Criar, reagendar e cancelar visitas vinculadas a imóvel e lead.",
+              "actor": "corretor",
+              "priority": "now"
+            },
+            {
+              "capabilityId": "trackDeals",
+              "title": "Rastreador de negócios por etapas",
+              "description": "Acompanhar propostas/negócios por status e valor vinculados ao imóvel.",
+              "actor": "corretor",
+              "priority": "now"
+            },
+            {
+              "capabilityId": "viewDashboard",
+              "title": "Dashboard com métricas básicas",
+              "description": "Visualizar imóveis ativos, leads do mês e pipeline de fechamentos.",
+              "actor": "gestor",
+              "priority": "now"
+            },
+            {
+              "capabilityId": "aiPropertyDescription",
+              "title": "IA para descrição de imóvel",
+              "description": "Gerar descrição a partir de bullets informados pelo corretor.",
+              "actor": "corretor",
+              "priority": "soon"
+            },
+            {
+              "capabilityId": "aiLeadScoring",
+              "title": "IA para qualificação e follow-up",
+              "description": "Classificar lead como quente/morno/frio a partir de anotações e sugerir próxima mensagem.",
+              "actor": "corretor",
+              "priority": "soon"
+            }
+          ],
+          "ontology": {
+            "entities": {
+              "Property": {
+                "title": "Imóvel",
+                "description": "Unidade imobiliária cadastrada para venda ou locação, com atributos, status e mídia."
+              },
+              "Lead": {
+                "title": "Lead/Cliente",
+                "description": "Pessoa interessada com dados de contato, notas, estágio e temperatura."
+              },
+              "Visit": {
+                "title": "Visita/Agendamento",
+                "description": "Agendamento de visita vinculada a um lead e um imóvel, com data, hora e status."
+              },
+              "Deal": {
+                "title": "Negócio/Proposta",
+                "description": "Compromisso comercial entre lead e imóvel, com valor e etapa do pipeline."
+              },
+              "Broker": {
+                "title": "Corretor",
+                "description": "Usuário responsável pelo atendimento e gestão do funil."
+              }
+            }
+          },
+          "rules": [
+            {
+              "ruleId": "rulePropertyStatus",
+              "title": "Status do imóvel",
+              "description": "Imóvel deve ter status entre disponível, reservado, vendido ou inativo.",
+              "appliesTo": [
+                "Property"
+              ],
+              "layer": "layer_1"
+            },
+            {
+              "ruleId": "ruleLeadTemperature",
+              "title": "Temperatura do lead",
+              "description": "Lead deve ter temperatura quente, morno ou frio.",
+              "appliesTo": [
+                "Lead"
+              ],
+              "layer": "layer_1"
+            },
+            {
+              "ruleId": "ruleLeadStageTransition",
+              "title": "Transição de estágio do lead",
+              "description": "Movimentação no kanban registra histórico e atualiza estágio atual.",
+              "appliesTo": [
+                "Lead"
+              ],
+              "layer": "layer_3"
+            },
+            {
+              "ruleId": "ruleVisitRequiresLinks",
+              "title": "Visita vinculada",
+              "description": "Visita deve estar vinculada a um Lead e a um Imóvel.",
+              "appliesTo": [
+                "Visit"
+              ],
+              "layer": "layer_1"
+            },
+            {
+              "ruleId": "ruleDealRequiresProperty",
+              "title": "Negócio vinculado a imóvel",
+              "description": "Negócio deve estar associado a um Imóvel e um Lead.",
+              "appliesTo": [
+                "Deal"
+              ],
+              "layer": "layer_1"
+            },
+            {
+              "ruleId": "ruleDealStageTransition",
+              "title": "Transição de etapa do negócio",
+              "description": "Atualização de etapa do negócio registra histórico e valor vigente.",
+              "appliesTo": [
+                "Deal"
+              ],
+              "layer": "layer_3"
+            },
+            {
+              "ruleId": "ruleBrokerPermissions",
+              "title": "Permissões por papel",
+              "description": "Corretor gerencia imóveis, leads, visitas e negócios; gestor visualiza métricas e dashboards.",
+              "appliesTo": [
+                "Broker"
+              ],
+              "layer": "layer_2"
+            }
+          ],
+          "relationships": [
+            {
+              "relationshipId": "relLeadBroker",
+              "fromEntity": "Lead",
+              "toEntity": "Broker",
+              "type": "assigned_to",
+              "description": "Lead é atendido por um corretor."
+            },
+            {
+              "relationshipId": "relPropertyBroker",
+              "fromEntity": "Property",
+              "toEntity": "Broker",
+              "type": "owned_by",
+              "description": "Imóvel é gerido por um corretor responsável."
+            },
+            {
+              "relationshipId": "relVisitLead",
+              "fromEntity": "Visit",
+              "toEntity": "Lead",
+              "type": "references",
+              "description": "Visita está ligada a um lead."
+            },
+            {
+              "relationshipId": "relVisitProperty",
+              "fromEntity": "Visit",
+              "toEntity": "Property",
+              "type": "references",
+              "description": "Visita está ligada a um imóvel."
+            },
+            {
+              "relationshipId": "relDealLead",
+              "fromEntity": "Deal",
+              "toEntity": "Lead",
+              "type": "references",
+              "description": "Negócio está ligado a um lead."
+            },
+            {
+              "relationshipId": "relDealProperty",
+              "fromEntity": "Deal",
+              "toEntity": "Property",
+              "type": "references",
+              "description": "Negócio está ligado a um imóvel."
+            }
+          ],
+          "userActions": [
+            {
+              "actionId": "createProperty",
+              "title": "Cadastrar imóvel",
+              "actor": "corretor",
+              "capabilityId": "manageProperties",
+              "description": "Criar imóvel com dados básicos, características e fotos mock.",
+              "commandType": "create",
+              "affectedEntities": [
+                "Property"
+              ],
+              "rulesApplied": [
+                "rulePropertyStatus"
+              ]
+            },
+            {
+              "actionId": "updateProperty",
+              "title": "Editar imóvel",
+              "actor": "corretor",
+              "capabilityId": "manageProperties",
+              "description": "Atualizar dados do imóvel e status.",
+              "commandType": "update",
+              "affectedEntities": [
+                "Property"
+              ],
+              "rulesApplied": [
+                "rulePropertyStatus"
+              ]
+            },
+            {
+              "actionId": "archiveProperty",
+              "title": "Inativar imóvel",
+              "actor": "corretor",
+              "capabilityId": "manageProperties",
+              "description": "Marcar imóvel como inativo quando não estiver mais disponível.",
+              "commandType": "update",
+              "affectedEntities": [
+                "Property"
+              ],
+              "rulesApplied": [
+                "rulePropertyStatus"
+              ]
+            },
+            {
+              "actionId": "searchProperties",
+              "title": "Buscar imóveis",
+              "actor": "corretor",
+              "capabilityId": "manageProperties",
+              "description": "Aplicar filtros por tipo, preço e status.",
+              "commandType": "read",
+              "affectedEntities": [
+                "Property"
+              ]
+            },
+            {
+              "actionId": "createLead",
+              "title": "Cadastrar lead",
+              "actor": "corretor",
+              "capabilityId": "manageLeads",
+              "description": "Criar lead com dados de contato e interesse.",
+              "commandType": "create",
+              "affectedEntities": [
+                "Lead"
+              ],
+              "rulesApplied": [
+                "ruleLeadTemperature"
+              ]
+            },
+            {
+              "actionId": "updateLeadStage",
+              "title": "Mover lead no kanban",
+              "actor": "corretor",
+              "capabilityId": "manageLeads",
+              "description": "Atualizar estágio do lead no pipeline.",
+              "commandType": "update",
+              "affectedEntities": [
+                "Lead"
+              ],
+              "rulesApplied": [
+                "ruleLeadStageTransition"
+              ]
+            },
+            {
+              "actionId": "updateLeadNotes",
+              "title": "Registrar anotações do lead",
+              "actor": "corretor",
+              "capabilityId": "manageLeads",
+              "description": "Adicionar notas e histórico de contato.",
+              "commandType": "update",
+              "affectedEntities": [
+                "Lead"
+              ]
+            },
+            {
+              "actionId": "scheduleVisit",
+              "title": "Agendar visita",
+              "actor": "corretor",
+              "capabilityId": "scheduleVisits",
+              "description": "Criar visita vinculada a lead e imóvel com data e hora.",
+              "commandType": "create",
+              "affectedEntities": [
+                "Visit"
+              ],
+              "rulesApplied": [
+                "ruleVisitRequiresLinks"
+              ]
+            },
+            {
+              "actionId": "rescheduleVisit",
+              "title": "Reagendar visita",
+              "actor": "corretor",
+              "capabilityId": "scheduleVisits",
+              "description": "Alterar data e hora de uma visita.",
+              "commandType": "update",
+              "affectedEntities": [
+                "Visit"
+              ],
+              "rulesApplied": [
+                "ruleVisitRequiresLinks"
+              ]
+            },
+            {
+              "actionId": "cancelVisit",
+              "title": "Cancelar visita",
+              "actor": "corretor",
+              "capabilityId": "scheduleVisits",
+              "description": "Cancelar visita e registrar motivo.",
+              "commandType": "update",
+              "affectedEntities": [
+                "Visit"
+              ],
+              "rulesApplied": [
+                "ruleVisitRequiresLinks"
+              ]
+            },
+            {
+              "actionId": "createDeal",
+              "title": "Criar proposta/negócio",
+              "actor": "corretor",
+              "capabilityId": "trackDeals",
+              "description": "Registrar proposta vinculada a lead e imóvel com valor.",
+              "commandType": "create",
+              "affectedEntities": [
+                "Deal"
+              ],
+              "rulesApplied": [
+                "ruleDealRequiresProperty"
+              ]
+            },
+            {
+              "actionId": "updateDealStage",
+              "title": "Atualizar etapa do negócio",
+              "actor": "corretor",
+              "capabilityId": "trackDeals",
+              "description": "Mover negócio para próxima etapa até fechamento.",
+              "commandType": "update",
+              "affectedEntities": [
+                "Deal"
+              ],
+              "rulesApplied": [
+                "ruleDealStageTransition"
+              ]
+            },
+            {
+              "actionId": "viewDashboard",
+              "title": "Visualizar dashboard",
+              "actor": "gestor",
+              "capabilityId": "viewDashboard",
+              "description": "Acompanhar métricas básicas do CRM.",
+              "commandType": "read",
+              "affectedEntities": [
+                "Property",
+                "Lead",
+                "Deal"
+              ]
+            },
+            {
+              "actionId": "generatePropertyDescription",
+              "title": "Gerar descrição com IA",
+              "actor": "corretor",
+              "capabilityId": "aiPropertyDescription",
+              "description": "Gerar texto a partir de bullets do imóvel.",
+              "commandType": "create",
+              "affectedEntities": [
+                "Property"
+              ]
+            },
+            {
+              "actionId": "qualifyLeadWithAi",
+              "title": "Classificar lead com IA",
+              "actor": "corretor",
+              "capabilityId": "aiLeadScoring",
+              "description": "Classificar lead como quente/morno/frio e sugerir follow-up.",
+              "commandType": "update",
+              "affectedEntities": [
+                "Lead"
+              ],
+              "rulesApplied": [
+                "ruleLeadTemperature"
+              ]
+            }
+          ],
+          "artifactPlan": {
+            "pages": [
+              {
+                "signal": "dashboardPage",
+                "title": "Dashboard",
+                "reason": "Visão rápida de imóveis ativos, leads do mês e pipeline.",
+                "priority": "now",
+                "actor": "gestor",
+                "artifactType": "page",
+                "references": [
+                  "metricDashboardCrmBasico"
+                ],
+                "rulesApplied": [
+                  "ruleBrokerPermissions"
+                ]
+              },
+              {
+                "signal": "propertiesListPage",
+                "title": "Imóveis - Lista e busca",
+                "reason": "Tela principal para navegar e buscar imóveis.",
+                "priority": "now",
+                "actor": "corretor",
+                "artifactType": "page",
+                "references": [
+                  "Property"
+                ],
+                "rulesApplied": [
+                  "rulePropertyStatus"
+                ]
+              },
+              {
+                "signal": "propertyFormPage",
+                "title": "Imóvel - Cadastro/Edição",
+                "reason": "Permite criar e atualizar imóveis com fotos mock e características.",
+                "priority": "now",
+                "actor": "corretor",
+                "artifactType": "page",
+                "references": [
+                  "Property"
+                ],
+                "rulesApplied": [
+                  "rulePropertyStatus"
+                ]
+              },
+              {
+                "signal": "leadsPipelinePage",
+                "title": "Pipeline de Leads (Kanban)",
+                "reason": "Visualização do funil com atualização de estágio.",
+                "priority": "now",
+                "actor": "corretor",
+                "artifactType": "page",
+                "references": [
+                  "Lead"
+                ],
+                "rulesApplied": [
+                  "ruleLeadStageTransition"
+                ]
+              },
+              {
+                "signal": "leadDetailPage",
+                "title": "Lead/Cliente - Detalhe",
+                "reason": "Registrar notas, status e histórico do lead.",
+                "priority": "soon",
+                "actor": "corretor",
+                "artifactType": "page",
+                "references": [
+                  "Lead"
+                ],
+                "rulesApplied": [
+                  "ruleLeadTemperature"
+                ]
+              },
+              {
+                "signal": "visitsSchedulerPage",
+                "title": "Agendador de Visitas",
+                "reason": "Gerenciar visitas e horários vinculados a imóveis e leads.",
+                "priority": "now",
+                "actor": "corretor",
+                "artifactType": "page",
+                "references": [
+                  "Visit"
+                ],
+                "rulesApplied": [
+                  "ruleVisitRequiresLinks"
+                ]
+              },
+              {
+                "signal": "dealsTrackerPage",
+                "title": "Negócios/Propostas - Etapas",
+                "reason": "Acompanhar evolução das propostas até fechamento.",
+                "priority": "now",
+                "actor": "corretor",
+                "artifactType": "page",
+                "references": [
+                  "Deal"
+                ],
+                "rulesApplied": [
+                  "ruleDealStageTransition"
+                ]
+              },
+              {
+                "signal": "adminMetricsPage",
+                "title": "Painel Administrativo de Métricas",
+                "reason": "Painel executivo com KPIs básicos.",
+                "priority": "now",
+                "actor": "gestor",
+                "artifactType": "page",
+                "references": [
+                  "metricDashboardCrmBasico"
+                ],
+                "rulesApplied": [
+                  "ruleBrokerPermissions"
+                ]
+              }
+            ],
+            "workflows": [
+              {
+                "signal": "leadStageWorkflow",
+                "title": "Workflow de estágios de lead",
+                "reason": "Movimentação no kanban e classificação quente/morno/frio.",
+                "priority": "now",
+                "actor": "corretor",
+                "artifactType": "workflow",
+                "references": [
+                  "Lead"
+                ],
+                "rulesApplied": [
+                  "ruleLeadStageTransition",
+                  "ruleLeadTemperature"
+                ]
+              },
+              {
+                "signal": "dealStageWorkflow",
+                "title": "Workflow de etapas de negócio",
+                "reason": "Rastreamento do ciclo de proposta até fechamento.",
+                "priority": "now",
+                "actor": "corretor",
+                "artifactType": "workflow",
+                "references": [
+                  "Deal"
+                ],
+                "rulesApplied": [
+                  "ruleDealStageTransition"
+                ]
+              },
+              {
+                "signal": "visitSchedulingWorkflow",
+                "title": "Workflow de agendamento de visita",
+                "reason": "Criar, reagendar e cancelar visitas.",
+                "priority": "now",
+                "actor": "corretor",
+                "artifactType": "workflow",
+                "references": [
+                  "Visit"
+                ],
+                "rulesApplied": [
+                  "ruleVisitRequiresLinks"
+                ]
+              }
+            ],
+            "plugins": [],
+            "agents": [
+              {
+                "signal": "aiPropertyDescriptionAgent",
+                "title": "Agente de descrição de imóvel",
+                "reason": "Geração de texto com base em bullets do imóvel.",
+                "priority": "soon",
+                "actor": "corretor",
+                "artifactType": "agent",
+                "references": [
+                  "Property"
+                ]
+              },
+              {
+                "signal": "aiLeadQualificationAgent",
+                "title": "Agente de qualificação e follow-up",
+                "reason": "Classifica lead e sugere mensagem de follow-up.",
+                "priority": "soon",
+                "actor": "corretor",
+                "artifactType": "agent",
+                "references": [
+                  "Lead"
+                ],
+                "rulesApplied": [
+                  "ruleLeadTemperature"
+                ]
+              }
+            ],
+            "horizontalModules": [
+              {
+                "signal": "i18nModule",
+                "title": "Internacionalização",
+                "reason": "Suporte a pt-BR e en.",
+                "priority": "now",
+                "artifactType": "horizontalModule",
+                "references": [
+                  "Property",
+                  "Lead",
+                  "Visit",
+                  "Deal"
+                ]
+              },
+              {
+                "signal": "authRolesModule",
+                "title": "Perfis e permissões",
+                "reason": "Papéis de corretor e gestor com acessos distintos.",
+                "priority": "now",
+                "artifactType": "horizontalModule",
+                "references": [
+                  "Broker"
+                ],
+                "rulesApplied": [
+                  "ruleBrokerPermissions"
+                ]
+              }
+            ],
+            "mdm": [
+              {
+                "signal": "realEstateMdm",
+                "title": "MDM de Imóvel, Lead, Visita, Negócio e Corretor",
+                "reason": "Entidades centrais do CRM exigem modelo mestre para relacionamentos e consistência.",
+                "priority": "now",
+                "artifactType": "mdm",
+                "references": [
+                  "Property",
+                  "Lead",
+                  "Visit",
+                  "Deal",
+                  "Broker"
+                ]
+              }
+            ],
+            "metricTables": [
+              {
+                "signal": "metricTableCrmBasico",
+                "title": "Tabela de métricas básicas do CRM",
+                "reason": "Suporta imóveis ativos, leads do mês e volume de pipeline.",
+                "priority": "now",
+                "actor": "gestor",
+                "artifactType": "metricTable",
+                "references": [
+                  "Property",
+                  "Lead",
+                  "Deal"
+                ]
+              }
+            ],
+            "metricDashboards": [
+              {
+                "signal": "metricDashboardCrmBasico",
+                "title": "Dashboard de métricas do gestor",
+                "reason": "Painel com KPIs básicos para acompanhamento de imóveis, leads e pipeline.",
+                "priority": "now",
+                "actor": "gestor",
+                "artifactType": "metricDashboard",
+                "references": [
+                  "metricTableCrmBasico"
+                ]
+              }
+            ],
+            "usecaseEntities": [
+              {
+                "signal": "createPropertyUsecase",
+                "title": "Cadastrar imóvel",
+                "reason": "Operação principal de gestão de imóveis com escrita e validação.",
+                "priority": "now",
+                "actor": "corretor",
+                "artifactType": "usecaseEntity",
+                "references": [
+                  "Property"
+                ],
+                "rulesApplied": [
+                  "rulePropertyStatus"
+                ]
+              },
+              {
+                "signal": "updateLeadStageUsecase",
+                "title": "Atualizar estágio do lead",
+                "reason": "Movimento no kanban exige comando de atualização e histórico.",
+                "priority": "now",
+                "actor": "corretor",
+                "artifactType": "usecaseEntity",
+                "references": [
+                  "Lead"
+                ],
+                "rulesApplied": [
+                  "ruleLeadStageTransition"
+                ]
+              },
+              {
+                "signal": "scheduleVisitUsecase",
+                "title": "Agendar visita",
+                "reason": "Criação de agendamento com vínculo ao lead e imóvel.",
+                "priority": "now",
+                "actor": "corretor",
+                "artifactType": "usecaseEntity",
+                "references": [
+                  "Visit"
+                ],
+                "rulesApplied": [
+                  "ruleVisitRequiresLinks"
+                ]
+              },
+              {
+                "signal": "updateDealStageUsecase",
+                "title": "Atualizar etapa do negócio",
+                "reason": "Mudança de status do negócio e valor associado.",
+                "priority": "now",
+                "actor": "corretor",
+                "artifactType": "usecaseEntity",
+                "references": [
+                  "Deal"
+                ],
+                "rulesApplied": [
+                  "ruleDealStageTransition"
+                ]
+              },
+              {
+                "signal": "generatePropertyDescriptionUsecase",
+                "title": "Gerar descrição de imóvel com IA",
+                "reason": "Chamadas de IA para gerar texto a partir de bullets.",
+                "priority": "soon",
+                "actor": "corretor",
+                "artifactType": "usecaseEntity",
+                "references": [
+                  "Property"
+                ]
+              },
+              {
+                "signal": "qualifyLeadUsecase",
+                "title": "Classificar lead e sugerir follow-up",
+                "reason": "Processo de IA para classificação e sugestão de mensagem.",
+                "priority": "soon",
+                "actor": "corretor",
+                "artifactType": "usecaseEntity",
+                "references": [
+                  "Lead"
+                ],
+                "rulesApplied": [
+                  "ruleLeadTemperature"
+                ]
+              }
+            ]
+          },
+          "coverage": [
+            {
+              "capabilityId": "manageProperties",
+              "coveredBy": [
+                "propertiesListPage",
+                "propertyFormPage",
+                "createPropertyUsecase"
+              ],
+              "notes": "CRUD e busca de imóveis cobertos."
+            },
+            {
+              "capabilityId": "manageLeads",
+              "coveredBy": [
+                "leadsPipelinePage",
+                "leadStageWorkflow",
+                "updateLeadStageUsecase"
+              ],
+              "notes": "Pipeline kanban e atualização de estágio cobertos."
+            },
+            {
+              "capabilityId": "scheduleVisits",
+              "coveredBy": [
+                "visitsSchedulerPage",
+                "visitSchedulingWorkflow",
+                "scheduleVisitUsecase"
+              ],
+              "notes": "Agendador com criação e atualização de visitas coberto."
+            },
+            {
+              "capabilityId": "trackDeals",
+              "coveredBy": [
+                "dealsTrackerPage",
+                "dealStageWorkflow",
+                "updateDealStageUsecase"
+              ],
+              "notes": "Rastreador de negócios por etapas coberto."
+            },
+            {
+              "capabilityId": "viewDashboard",
+              "coveredBy": [
+                "dashboardPage",
+                "adminMetricsPage",
+                "metricDashboardCrmBasico"
+              ],
+              "notes": "KPIs básicos e painel administrativo cobertos."
+            },
+            {
+              "capabilityId": "aiPropertyDescription",
+              "coveredBy": [
+                "aiPropertyDescriptionAgent",
+                "generatePropertyDescriptionUsecase"
+              ],
+              "notes": "IA de descrição planejada para evolução."
+            },
+            {
+              "capabilityId": "aiLeadScoring",
+              "coveredBy": [
+                "aiLeadQualificationAgent",
+                "qualifyLeadUsecase"
+              ],
+              "notes": "IA de qualificação planejada para evolução."
+            }
+          ]
+        },
+        "questions": [
+          "Qual provedor e modelo de LLM serão usados para geração de descrições e qualificação de leads?",
+          "O agendador de visitas precisa de integração com Google/Outlook ou será apenas interno?",
+          "Como as fotos mock dos imóveis devem ser armazenadas (local, base64 ou serviço externo)?"
+        ],
+        "trace": [
+          "Prompt define entidades centrais, telas chave e funcionalidades de IA para CRM imobiliário.",
+          "Esclarecimento confirmou papéis (corretor/gestor), público-alvo, objetivo, visual moderno e pipeline em kanban.",
+          "Escopo e decisões aceitas incluem dashboard de métricas básicas, workflows e módulos horizontais (i18n e permissões)."
+        ]
+      }
+    },
+    "status": "completed",
+    "stepId": 33,
+    "interaction": null,
+    "nextSteps": null
+  }
+}
