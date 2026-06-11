@@ -20,30 +20,6 @@
   "links": [],
   "servicesConfigEnabled": false,
   "modules": [
-    {
-      "moduleName": "manterPropertyFlowCrm",
-      "module": {
-        "moduleName": "propertyFlowCrm",
-        "title": "PropertyFlowCRM",
-        "purpose": "Centralizar a gestão de imóveis, leads, visitas e negócios para imobiliárias e corretores, aumentando a conversão e reduzindo a perda de oportunidades com suporte a IA.",
-        "businessDomain": "Corretagem Imobiliária / CRM",
-        "languages": [
-          "pt-BR",
-          "en"
-        ],
-        "visualStyle": {
-          "tone": "Moderno e profissional, transmitindo confiança e sofisticação",
-          "layout": "Dashboard-first com navegação lateral, kanban para pipeline de leads e rastreador de negócios por etapas",
-          "palette": [
-            "#FFFFFF",
-            "#F4F5F7",
-            "#1E293B",
-            "#2563EB",
-            "#10B981"
-          ]
-        }
-      }
-    }
   ],
   "dependencies": [
     {

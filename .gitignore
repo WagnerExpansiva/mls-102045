@@ -1,0 +1,9 @@
+node_modules
+dist
+.env
+logs
+package-lock.json
+tsconfig.tsbuildinfo
+appconfig.json
+.claude/worktrees/**
+.DS_Store
