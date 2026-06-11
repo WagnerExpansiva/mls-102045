@@ -1,0 +1,1497 @@
+{
+  "schemaVersion": "2026-06-06",
+  "artifactType": "indexCheckpoint",
+  "indexName": "usecasePlan",
+  "moduleName": "manterPropertyFlowCrm",
+  "status": "frozen",
+  "approvedAt": "2026-06-11T01:25:57.628Z",
+  "source": {
+    "agentName": "agentPlanUsecaseEntities",
+    "stepId": 19,
+    "planId": "plan-usecase-entities"
+  },
+  "healthReport": {
+    "localErrors": [],
+    "localWarnings": [
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase moveLeadStageUsecase touches table lead, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[0]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase moveLeadStageUsecase touches table lead, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[0]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase moveLeadStageUsecase touches table monthly_leads_metric, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[0]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.metricWrite.unjustified",
+        "message": "usecase moveLeadStageUsecase writes metric table monthlyLeadsMetric but does not map to any of its measures/sourceWriteEvents; remove the write or propose the missing measure in the metrics index",
+        "path": "usecases[0]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase moveLeadStageUsecase touches table lead_conversion_metric, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[0]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.metricWrite.unjustified",
+        "message": "usecase moveLeadStageUsecase writes metric table leadConversionMetric but does not map to any of its measures/sourceWriteEvents; remove the write or propose the missing measure in the metrics index",
+        "path": "usecases[0]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase advanceDealStageUsecase touches table deal, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[1]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase advanceDealStageUsecase touches table lead, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[1]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase advanceDealStageUsecase touches table property, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[1]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase advanceDealStageUsecase touches table deal, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[1]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase advanceDealStageUsecase touches table deal_pipeline_metric, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[1]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.metricWrite.unjustified",
+        "message": "usecase advanceDealStageUsecase writes metric table dealPipelineMetric but does not map to any of its measures/sourceWriteEvents; remove the write or propose the missing measure in the metrics index",
+        "path": "usecases[1]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase updateVisitStatusUsecase touches table visit, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[2]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase updateVisitStatusUsecase touches table lead, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[2]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase updateVisitStatusUsecase touches table property, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[2]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase updateVisitStatusUsecase touches table corretor, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[2]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase updateVisitStatusUsecase touches table visit, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[2]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase updateVisitStatusUsecase touches table visits_per_month_metric, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[2]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.metricWrite.unjustified",
+        "message": "usecase updateVisitStatusUsecase writes metric table visitsPerMonthMetric but does not map to any of its measures/sourceWriteEvents; remove the write or propose the missing measure in the metrics index",
+        "path": "usecases[2]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase updatePropertyStatusUsecase touches table property, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[3]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase updatePropertyStatusUsecase touches table property, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[3]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase updatePropertyStatusUsecase touches table active_properties_metric, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[3]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.metricWrite.unjustified",
+        "message": "usecase updatePropertyStatusUsecase writes metric table activePropertiesMetric but does not map to any of its measures/sourceWriteEvents; remove the write or propose the missing measure in the metrics index",
+        "path": "usecases[3]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase generatePropertyDescriptionUsecase touches table property, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[4]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase classifyLeadAiUsecase touches table lead, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[5]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase classifyLeadAiUsecase touches table lead, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[5]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase getFollowUpSuggestionUsecase touches table lead, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[6]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase getFollowUpSuggestionUsecase touches table visit, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[6]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase getFollowUpSuggestionUsecase touches table deal, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[6]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase manageLeadUsecase touches table lead, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[7]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase manageLeadUsecase touches table corretor, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[7]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase manageLeadUsecase touches table lead, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[7]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase manageLeadUsecase touches table monthly_leads_metric, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[7]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.metricWrite.unjustified",
+        "message": "usecase manageLeadUsecase writes metric table monthlyLeadsMetric but does not map to any of its measures/sourceWriteEvents; remove the write or propose the missing measure in the metrics index",
+        "path": "usecases[7]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase manageCorretorUsecase touches table corretor, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[8]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase manageCorretorUsecase touches table corretor, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[8]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase queryDashboardMetricsUsecase touches table active_properties_metric, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[9]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase queryDashboardMetricsUsecase touches table monthly_leads_metric, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[9]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase queryDashboardMetricsUsecase touches table deal_pipeline_metric, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[9]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase queryDashboardMetricsUsecase touches table lead_conversion_metric, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[9]"
+      },
+      {
+        "severity": "warning",
+        "code": "usecase.entityCoverage.missing",
+        "message": "usecase queryDashboardMetricsUsecase touches table visits_per_month_metric, which is not in any usecaseEntity sourceTables (no layer_4 entity will own it)",
+        "path": "usecases[9]"
+      }
+    ],
+    "criticErrors": [],
+    "criticWarnings": [],
+    "attempts": 1,
+    "notes": [
+      "critic LLM failed, approved by fallback: critic returned status needs_input"
+    ]
+  },
+  "index": {
+    "runId": "provider-tool-call",
+    "stepId": "16-plan-usecase-entities",
+    "schemaVersion": "2026-06-02",
+    "status": "ok",
+    "result": {
+      "backendArchitecture": {
+        "pattern": "Layered Architecture (Controller → Usecase → Entity/Table)",
+        "layer1Responsibility": "Definições de tabelas externas (moduleOwned) e acesso a dados MDM/horizontal via ctx.data",
+        "layer2Responsibility": "Controllers BFF: recebem requisições, validam autenticação/RBAC e delegam 100% da lógica de negócio para layer_3_usecases",
+        "layer3Responsibility": "Usecases: orquestram regras de negócio, transições de estado, invocação de agentes LLM, escrita em tabelas moduleOwned e leitura de entidades MDM"
+      },
+      "usecaseEntities": [
+        {
+          "usecaseEntityId": "transitionEventLogEntity",
+          "title": "Entidade: Logs de Transição de Etapa/Status",
+          "purpose": "Agrupa os quatro logs de eventos de transição (Lead, Deal, Visit, Property) que registram cada mudança de estado com timestamp, ator e motivo. Serve como fonte para métricas e auditoria.",
+          "layer": "layer_3_usecases",
+          "sourceTables": [
+            {
+              "tableName": "lead_stage_transition_event_log",
+              "ownership": "moduleOwned"
+            },
+            {
+              "tableName": "deal_stage_transition_event_log",
+              "ownership": "moduleOwned"
+            },
+            {
+              "tableName": "visit_status_transition_event_log",
+              "ownership": "moduleOwned"
+            },
+            {
+              "tableName": "property_status_transition_event_log",
+              "ownership": "moduleOwned"
+            }
+          ],
+          "allowedOperations": [
+            "create",
+            "read",
+            "list"
+          ],
+          "rulesApplied": [
+            "rule-lead-stage-transition",
+            "rule-deal-stage-transition",
+            "rule-property-status-transition",
+            "rule-visit-no-conflict"
+          ]
+        },
+        {
+          "usecaseEntityId": "aiCommandLogEntity",
+          "title": "Entidade: Log de Comandos de IA",
+          "purpose": "Registra todas as invocações de agentes LLM (geração de descrição de imóvel, classificação de lead, sugestão de follow-up), armazenando input, output e metadados de execução.",
+          "layer": "layer_3_usecases",
+          "sourceTables": [
+            {
+              "tableName": "ai_command_log",
+              "ownership": "moduleOwned"
+            }
+          ],
+          "allowedOperations": [
+            "create",
+            "read",
+            "list"
+          ],
+          "rulesApplied": [
+            "rule-llm-agent-invocation"
+          ]
+        }
+      ],
+      "usecases": [
+        {
+          "usecaseId": "moveLeadStageUsecase",
+          "title": "Mover Lead no Funil (Transição de Etapa)",
+          "purpose": "Valida e executa a transição de etapa de um lead no pipeline (Kanban), registra o evento de transição e atualiza as métricas de leads do mês e taxa de conversão.",
+          "actor": "corretorActor",
+          "layer": "layer_3_usecases",
+          "inputEntities": [
+            "transitionEventLogEntity"
+          ],
+          "outputEntities": [
+            "transitionEventLogEntity"
+          ],
+          "readsTables": [
+            {
+              "tableName": "lead_stage_transition_event_log",
+              "ownership": "moduleOwned"
+            },
+            {
+              "tableName": "lead",
+              "ownership": "mdmOwned"
+            }
+          ],
+          "writesTables": [
+            {
+              "tableName": "lead_stage_transition_event_log",
+              "ownership": "moduleOwned"
+            },
+            {
+              "tableName": "lead",
+              "ownership": "mdmOwned"
+            },
+            {
+              "tableName": "monthly_leads_metric",
+              "ownership": "mdmOwned"
+            },
+            {
+              "tableName": "lead_conversion_metric",
+              "ownership": "mdmOwned"
+            }
+          ],
+          "rulesApplied": [
+            "rule-lead-stage-transition",
+            "rule-rbac-data-isolation"
+          ],
+          "commands": [
+            {
+              "commandId": "moveLeadStage",
+              "input": [
+                {
+                  "name": "leadId",
+                  "type": "string",
+                  "required": true
+                },
+                {
+                  "name": "fromStage",
+                  "type": "LeadStageEnum",
+                  "required": true
+                },
+                {
+                  "name": "toStage",
+                  "type": "LeadStageEnum",
+                  "required": true
+                },
+                {
+                  "name": "reason",
+                  "type": "string",
+                  "required": false
+                },
+                {
+                  "name": "corretorId",
+                  "type": "string",
+                  "required": true
+                }
+              ],
+              "output": [
+                {
+                  "name": "eventId",
+                  "type": "string"
+                },
+                {
+                  "name": "leadId",
+                  "type": "string"
+                },
+                {
+                  "name": "newStage",
+                  "type": "LeadStageEnum"
+                },
+                {
+                  "name": "transitionedAt",
+                  "type": "date"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "usecaseId": "advanceDealStageUsecase",
+          "title": "Avançar / Regredir Etapa do Negócio",
+          "purpose": "Valida e executa a transição de etapa de um negócio/proposta, registra o evento de transição e atualiza a métrica de pipeline de fechamentos.",
+          "actor": "corretorActor",
+          "layer": "layer_3_usecases",
+          "inputEntities": [
+            "transitionEventLogEntity"
+          ],
+          "outputEntities": [
+            "transitionEventLogEntity"
+          ],
+          "readsTables": [
+            {
+              "tableName": "deal_stage_transition_event_log",
+              "ownership": "moduleOwned"
+            },
+            {
+              "tableName": "deal",
+              "ownership": "mdmOwned"
+            },
+            {
+              "tableName": "lead",
+              "ownership": "mdmOwned"
+            },
+            {
+              "tableName": "property",
+              "ownership": "mdmOwned"
+            }
+          ],
+          "writesTables": [
+            {
+              "tableName": "deal_stage_transition_event_log",
+              "ownership": "moduleOwned"
+            },
+            {
+              "tableName": "deal",
+              "ownership": "mdmOwned"
+            },
+            {
+              "tableName": "deal_pipeline_metric",
+              "ownership": "mdmOwned"
+            }
+          ],
+          "rulesApplied": [
+            "rule-deal-stage-transition",
+            "rule-deal-requires-property-and-lead",
+            "rule-rbac-data-isolation"
+          ],
+          "commands": [
+            {
+              "commandId": "advanceDealStage",
+              "input": [
+                {
+                  "name": "dealId",
+                  "type": "string",
+                  "required": true
+                },
+                {
+                  "name": "fromStage",
+                  "type": "DealStageEnum",
+                  "required": true
+                },
+                {
+                  "name": "toStage",
+                  "type": "DealStageEnum",
+                  "required": true
+                },
+                {
+                  "name": "reason",
+                  "type": "string",
+                  "required": false
+                },
+                {
+                  "name": "corretorId",
+                  "type": "string",
+                  "required": true
+                }
+              ],
+              "output": [
+                {
+                  "name": "eventId",
+                  "type": "string"
+                },
+                {
+                  "name": "dealId",
+                  "type": "string"
+                },
+                {
+                  "name": "newStage",
+                  "type": "DealStageEnum"
+                },
+                {
+                  "name": "transitionedAt",
+                  "type": "date"
+                }
+              ]
+            },
+            {
+              "commandId": "markDealLost",
+              "input": [
+                {
+                  "name": "dealId",
+                  "type": "string",
+                  "required": true
+                },
+                {
+                  "name": "lostReason",
+                  "type": "string",
+                  "required": true
+                },
+                {
+                  "name": "corretorId",
+                  "type": "string",
+                  "required": true
+                }
+              ],
+              "output": [
+                {
+                  "name": "eventId",
+                  "type": "string"
+                },
+                {
+                  "name": "dealId",
+                  "type": "string"
+                },
+                {
+                  "name": "newStage",
+                  "type": "DealStageEnum"
+                },
+                {
+                  "name": "transitionedAt",
+                  "type": "date"
+                }
+              ]
+            },
+            {
+              "commandId": "createDeal",
+              "input": [
+                {
+                  "name": "leadId",
+                  "type": "string",
+                  "required": true
+                },
+                {
+                  "name": "propertyId",
+                  "type": "string",
+                  "required": true
+                },
+                {
+                  "name": "corretorId",
+                  "type": "string",
+                  "required": true
+                },
+                {
+                  "name": "proposedValue",
+                  "type": "number",
+                  "required": false
+                },
+                {
+                  "name": "notes",
+                  "type": "string",
+                  "required": false
+                }
+              ],
+              "output": [
+                {
+                  "name": "dealId",
+                  "type": "string"
+                },
+                {
+                  "name": "stage",
+                  "type": "DealStageEnum"
+                },
+                {
+                  "name": "createdAt",
+                  "type": "date"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "usecaseId": "updateVisitStatusUsecase",
+          "title": "Atualizar Status da Visita",
+          "purpose": "Valida e executa a transição de status de uma visita (agendada → confirmada → realizada / cancelada / reagendada), verifica conflito de horário, registra o evento e atualiza a métrica de visitas do mês.",
+          "actor": "corretorActor",
+          "layer": "layer_3_usecases",
+          "inputEntities": [
+            "transitionEventLogEntity"
+          ],
+          "outputEntities": [
+            "transitionEventLogEntity"
+          ],
+          "readsTables": [
+            {
+              "tableName": "visit_status_transition_event_log",
+              "ownership": "moduleOwned"
+            },
+            {
+              "tableName": "visit",
+              "ownership": "mdmOwned"
+            },
+            {
+              "tableName": "lead",
+              "ownership": "mdmOwned"
+            },
+            {
+              "tableName": "property",
+              "ownership": "mdmOwned"
+            },
+            {
+              "tableName": "corretor",
+              "ownership": "mdmOwned"
+            }
+          ],
+          "writesTables": [
+            {
+              "tableName": "visit_status_transition_event_log",
+              "ownership": "moduleOwned"
+            },
+            {
+              "tableName": "visit",
+              "ownership": "mdmOwned"
+            },
+            {
+              "tableName": "visits_per_month_metric",
+              "ownership": "mdmOwned"
+            }
+          ],
+          "rulesApplied": [
+            "rule-visit-no-conflict",
+            "rule-visit-requires-property-lead-corretor",
+            "rule-rbac-data-isolation"
+          ],
+          "commands": [
+            {
+              "commandId": "scheduleVisit",
+              "input": [
+                {
+                  "name": "leadId",
+                  "type": "string",
+                  "required": true
+                },
+                {
+                  "name": "propertyId",
+                  "type": "string",
+                  "required": true
+                },
+                {
+                  "name": "corretorId",
+                  "type": "string",
+                  "required": true
+                },
+                {
+                  "name": "scheduledAt",
+                  "type": "date",
+                  "required": true
+                },
+                {
+                  "name": "notes",
+                  "type": "string",
+                  "required": false
+                }
+              ],
+              "output": [
+                {
+                  "name": "visitId",
+                  "type": "string"
+                },
+                {
+                  "name": "status",
+                  "type": "VisitStatusEnum"
+                },
+                {
+                  "name": "scheduledAt",
+                  "type": "date"
+                }
+              ]
+            },
+            {
+              "commandId": "updateVisitStatus",
+              "input": [
+                {
+                  "name": "visitId",
+                  "type": "string",
+                  "required": true
+                },
+                {
+                  "name": "fromStatus",
+                  "type": "VisitStatusEnum",
+                  "required": true
+                },
+                {
+                  "name": "toStatus",
+                  "type": "VisitStatusEnum",
+                  "required": true
+                },
+                {
+                  "name": "reason",
+                  "type": "string",
+                  "required": false
+                },
+                {
+                  "name": "corretorId",
+                  "type": "string",
+                  "required": true
+                }
+              ],
+              "output": [
+                {
+                  "name": "eventId",
+                  "type": "string"
+                },
+                {
+                  "name": "visitId",
+                  "type": "string"
+                },
+                {
+                  "name": "newStatus",
+                  "type": "VisitStatusEnum"
+                },
+                {
+                  "name": "transitionedAt",
+                  "type": "date"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "usecaseId": "updatePropertyStatusUsecase",
+          "title": "Atualizar Status do Imóvel",
+          "purpose": "Valida e executa a transição de status de um imóvel (disponivel → reservado → vendido/alugado/inativo), registra o evento de transição e atualiza a métrica de imóveis ativos.",
+          "actor": "adminActor",
+          "layer": "layer_3_usecases",
+          "inputEntities": [
+            "transitionEventLogEntity"
+          ],
+          "outputEntities": [
+            "transitionEventLogEntity"
+          ],
+          "readsTables": [
+            {
+              "tableName": "property_status_transition_event_log",
+              "ownership": "moduleOwned"
+            },
+            {
+              "tableName": "property",
+              "ownership": "mdmOwned"
+            }
+          ],
+          "writesTables": [
+            {
+              "tableName": "property_status_transition_event_log",
+              "ownership": "moduleOwned"
+            },
+            {
+              "tableName": "property",
+              "ownership": "mdmOwned"
+            },
+            {
+              "tableName": "active_properties_metric",
+              "ownership": "mdmOwned"
+            }
+          ],
+          "rulesApplied": [
+            "rule-property-status-transition",
+            "rule-rbac-data-isolation"
+          ],
+          "commands": [
+            {
+              "commandId": "createProperty",
+              "input": [
+                {
+                  "name": "title",
+                  "type": "string",
+                  "required": true
+                },
+                {
+                  "name": "type",
+                  "type": "string",
+                  "required": true
+                },
+                {
+                  "name": "address",
+                  "type": "string",
+                  "required": true
+                },
+                {
+                  "name": "price",
+                  "type": "number",
+                  "required": true
+                },
+                {
+                  "name": "area",
+                  "type": "number",
+                  "required": false
+                },
+                {
+                  "name": "bedrooms",
+                  "type": "number",
+                  "required": false
+                },
+                {
+                  "name": "bathrooms",
+                  "type": "number",
+                  "required": false
+                },
+                {
+                  "name": "imageUrl",
+                  "type": "string",
+                  "required": false
+                },
+                {
+                  "name": "description",
+                  "type": "string",
+                  "required": false
+                }
+              ],
+              "output": [
+                {
+                  "name": "propertyId",
+                  "type": "string"
+                },
+                {
+                  "name": "status",
+                  "type": "PropertyStatusEnum"
+                },
+                {
+                  "name": "createdAt",
+                  "type": "date"
+                }
+              ]
+            },
+            {
+              "commandId": "editProperty",
+              "input": [
+                {
+                  "name": "propertyId",
+                  "type": "string",
+                  "required": true
+                },
+                {
+                  "name": "title",
+                  "type": "string",
+                  "required": false
+                },
+                {
+                  "name": "price",
+                  "type": "number",
+                  "required": false
+                },
+                {
+                  "name": "description",
+                  "type": "string",
+                  "required": false
+                },
+                {
+                  "name": "imageUrl",
+                  "type": "string",
+                  "required": false
+                }
+              ],
+              "output": [
+                {
+                  "name": "propertyId",
+                  "type": "string"
+                },
+                {
+                  "name": "updatedAt",
+                  "type": "date"
+                }
+              ]
+            },
+            {
+              "commandId": "updatePropertyStatus",
+              "input": [
+                {
+                  "name": "propertyId",
+                  "type": "string",
+                  "required": true
+                },
+                {
+                  "name": "fromStatus",
+                  "type": "PropertyStatusEnum",
+                  "required": true
+                },
+                {
+                  "name": "toStatus",
+                  "type": "PropertyStatusEnum",
+                  "required": true
+                },
+                {
+                  "name": "reason",
+                  "type": "string",
+                  "required": false
+                }
+              ],
+              "output": [
+                {
+                  "name": "eventId",
+                  "type": "string"
+                },
+                {
+                  "name": "propertyId",
+                  "type": "string"
+                },
+                {
+                  "name": "newStatus",
+                  "type": "PropertyStatusEnum"
+                },
+                {
+                  "name": "transitionedAt",
+                  "type": "date"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "usecaseId": "generatePropertyDescriptionUsecase",
+          "title": "Gerar Descrição de Imóvel com IA",
+          "purpose": "Invoca o agente LLM de geração de descrição de imóvel, registra o comando no log de IA e retorna o texto gerado para o corretor revisar antes de salvar.",
+          "actor": "corretorActor",
+          "layer": "layer_3_usecases",
+          "inputEntities": [
+            "aiCommandLogEntity"
+          ],
+          "outputEntities": [
+            "aiCommandLogEntity"
+          ],
+          "readsTables": [
+            {
+              "tableName": "property",
+              "ownership": "mdmOwned"
+            }
+          ],
+          "writesTables": [
+            {
+              "tableName": "ai_command_log",
+              "ownership": "moduleOwned"
+            }
+          ],
+          "rulesApplied": [
+            "rule-llm-agent-invocation",
+            "rule-rbac-data-isolation"
+          ],
+          "commands": [
+            {
+              "commandId": "generatePropertyDescription",
+              "input": [
+                {
+                  "name": "propertyId",
+                  "type": "string",
+                  "required": true
+                },
+                {
+                  "name": "tone",
+                  "type": "string",
+                  "required": false
+                },
+                {
+                  "name": "language",
+                  "type": "string",
+                  "required": false
+                }
+              ],
+              "output": [
+                {
+                  "name": "commandLogId",
+                  "type": "string"
+                },
+                {
+                  "name": "generatedDescription",
+                  "type": "string"
+                },
+                {
+                  "name": "generatedAt",
+                  "type": "date"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "usecaseId": "classifyLeadAiUsecase",
+          "title": "Classificar Lead com IA (Quente/Morno/Frio)",
+          "purpose": "Invoca o agente LLM de classificação de lead, registra o comando no log de IA, persiste a classificação no lead e retorna o resultado ao corretor.",
+          "actor": "corretorActor",
+          "layer": "layer_3_usecases",
+          "inputEntities": [
+            "aiCommandLogEntity"
+          ],
+          "outputEntities": [
+            "aiCommandLogEntity"
+          ],
+          "readsTables": [
+            {
+              "tableName": "lead",
+              "ownership": "mdmOwned"
+            },
+            {
+              "tableName": "lead_stage_transition_event_log",
+              "ownership": "moduleOwned"
+            }
+          ],
+          "writesTables": [
+            {
+              "tableName": "ai_command_log",
+              "ownership": "moduleOwned"
+            },
+            {
+              "tableName": "lead",
+              "ownership": "mdmOwned"
+            }
+          ],
+          "rulesApplied": [
+            "rule-llm-agent-invocation",
+            "rule-rbac-data-isolation"
+          ],
+          "commands": [
+            {
+              "commandId": "classifyLeadAi",
+              "input": [
+                {
+                  "name": "leadId",
+                  "type": "string",
+                  "required": true
+                },
+                {
+                  "name": "corretorId",
+                  "type": "string",
+                  "required": true
+                }
+              ],
+              "output": [
+                {
+                  "name": "commandLogId",
+                  "type": "string"
+                },
+                {
+                  "name": "classification",
+                  "type": "LeadTemperatureEnum"
+                },
+                {
+                  "name": "justification",
+                  "type": "string"
+                },
+                {
+                  "name": "classifiedAt",
+                  "type": "date"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "usecaseId": "getFollowUpSuggestionUsecase",
+          "title": "Obter Sugestão de Mensagem de Follow-up com IA",
+          "purpose": "Invoca o agente LLM de sugestão de follow-up com base no histórico do lead, registra o comando no log de IA e retorna a mensagem sugerida.",
+          "actor": "corretorActor",
+          "layer": "layer_3_usecases",
+          "inputEntities": [
+            "aiCommandLogEntity"
+          ],
+          "outputEntities": [
+            "aiCommandLogEntity"
+          ],
+          "readsTables": [
+            {
+              "tableName": "lead",
+              "ownership": "mdmOwned"
+            },
+            {
+              "tableName": "lead_stage_transition_event_log",
+              "ownership": "moduleOwned"
+            },
+            {
+              "tableName": "visit",
+              "ownership": "mdmOwned"
+            },
+            {
+              "tableName": "deal",
+              "ownership": "mdmOwned"
+            }
+          ],
+          "writesTables": [
+            {
+              "tableName": "ai_command_log",
+              "ownership": "moduleOwned"
+            }
+          ],
+          "rulesApplied": [
+            "rule-llm-agent-invocation",
+            "rule-rbac-data-isolation"
+          ],
+          "commands": [
+            {
+              "commandId": "getFollowUpSuggestion",
+              "input": [
+                {
+                  "name": "leadId",
+                  "type": "string",
+                  "required": true
+                },
+                {
+                  "name": "corretorId",
+                  "type": "string",
+                  "required": true
+                },
+                {
+                  "name": "channel",
+                  "type": "string",
+                  "required": false
+                }
+              ],
+              "output": [
+                {
+                  "name": "commandLogId",
+                  "type": "string"
+                },
+                {
+                  "name": "suggestedMessage",
+                  "type": "string"
+                },
+                {
+                  "name": "generatedAt",
+                  "type": "date"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "usecaseId": "manageLeadUsecase",
+          "title": "Gerenciar Lead / Cliente (CRUD)",
+          "purpose": "Cria e edita leads/clientes, aplicando isolamento de dados por perfil. Atualiza a métrica de leads do mês ao criar um novo lead.",
+          "actor": "corretorActor",
+          "layer": "layer_3_usecases",
+          "inputEntities": [],
+          "outputEntities": [],
+          "readsTables": [
+            {
+              "tableName": "lead",
+              "ownership": "mdmOwned"
+            },
+            {
+              "tableName": "corretor",
+              "ownership": "mdmOwned"
+            }
+          ],
+          "writesTables": [
+            {
+              "tableName": "lead",
+              "ownership": "mdmOwned"
+            },
+            {
+              "tableName": "monthly_leads_metric",
+              "ownership": "mdmOwned"
+            }
+          ],
+          "rulesApplied": [
+            "rule-rbac-data-isolation"
+          ],
+          "commands": [
+            {
+              "commandId": "createLead",
+              "input": [
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": true
+                },
+                {
+                  "name": "email",
+                  "type": "string",
+                  "required": false
+                },
+                {
+                  "name": "phone",
+                  "type": "string",
+                  "required": false
+                },
+                {
+                  "name": "source",
+                  "type": "string",
+                  "required": false
+                },
+                {
+                  "name": "corretorId",
+                  "type": "string",
+                  "required": true
+                },
+                {
+                  "name": "notes",
+                  "type": "string",
+                  "required": false
+                }
+              ],
+              "output": [
+                {
+                  "name": "leadId",
+                  "type": "string"
+                },
+                {
+                  "name": "stage",
+                  "type": "LeadStageEnum"
+                },
+                {
+                  "name": "createdAt",
+                  "type": "date"
+                }
+              ]
+            },
+            {
+              "commandId": "editLead",
+              "input": [
+                {
+                  "name": "leadId",
+                  "type": "string",
+                  "required": true
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false
+                },
+                {
+                  "name": "email",
+                  "type": "string",
+                  "required": false
+                },
+                {
+                  "name": "phone",
+                  "type": "string",
+                  "required": false
+                },
+                {
+                  "name": "notes",
+                  "type": "string",
+                  "required": false
+                }
+              ],
+              "output": [
+                {
+                  "name": "leadId",
+                  "type": "string"
+                },
+                {
+                  "name": "updatedAt",
+                  "type": "date"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "usecaseId": "manageCorretorUsecase",
+          "title": "Gerenciar Corretores (Admin)",
+          "purpose": "Permite ao Admin criar, editar e ativar/inativar corretores na plataforma, aplicando RBAC.",
+          "actor": "adminActor",
+          "layer": "layer_3_usecases",
+          "inputEntities": [],
+          "outputEntities": [],
+          "readsTables": [
+            {
+              "tableName": "corretor",
+              "ownership": "mdmOwned"
+            }
+          ],
+          "writesTables": [
+            {
+              "tableName": "corretor",
+              "ownership": "mdmOwned"
+            }
+          ],
+          "rulesApplied": [
+            "rule-rbac-data-isolation"
+          ],
+          "commands": [
+            {
+              "commandId": "createCorretor",
+              "input": [
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": true
+                },
+                {
+                  "name": "email",
+                  "type": "string",
+                  "required": true
+                },
+                {
+                  "name": "phone",
+                  "type": "string",
+                  "required": false
+                },
+                {
+                  "name": "creci",
+                  "type": "string",
+                  "required": false
+                }
+              ],
+              "output": [
+                {
+                  "name": "corretorId",
+                  "type": "string"
+                },
+                {
+                  "name": "status",
+                  "type": "CorretorStatusEnum"
+                },
+                {
+                  "name": "createdAt",
+                  "type": "date"
+                }
+              ]
+            },
+            {
+              "commandId": "editCorretor",
+              "input": [
+                {
+                  "name": "corretorId",
+                  "type": "string",
+                  "required": true
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false
+                },
+                {
+                  "name": "phone",
+                  "type": "string",
+                  "required": false
+                },
+                {
+                  "name": "status",
+                  "type": "CorretorStatusEnum",
+                  "required": false
+                }
+              ],
+              "output": [
+                {
+                  "name": "corretorId",
+                  "type": "string"
+                },
+                {
+                  "name": "updatedAt",
+                  "type": "date"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "usecaseId": "queryDashboardMetricsUsecase",
+          "title": "Consultar Métricas do Dashboard Operacional",
+          "purpose": "Agrega e retorna as métricas operacionais (imóveis ativos, leads do mês, pipeline de fechamentos, taxa de conversão, visitas realizadas) para o Dashboard do Admin.",
+          "actor": "adminActor",
+          "layer": "layer_3_usecases",
+          "inputEntities": [],
+          "outputEntities": [],
+          "readsTables": [
+            {
+              "tableName": "active_properties_metric",
+              "ownership": "mdmOwned"
+            },
+            {
+              "tableName": "monthly_leads_metric",
+              "ownership": "mdmOwned"
+            },
+            {
+              "tableName": "deal_pipeline_metric",
+              "ownership": "mdmOwned"
+            },
+            {
+              "tableName": "lead_conversion_metric",
+              "ownership": "mdmOwned"
+            },
+            {
+              "tableName": "visits_per_month_metric",
+              "ownership": "mdmOwned"
+            },
+            {
+              "tableName": "lead_stage_transition_event_log",
+              "ownership": "moduleOwned"
+            },
+            {
+              "tableName": "deal_stage_transition_event_log",
+              "ownership": "moduleOwned"
+            }
+          ],
+          "writesTables": [],
+          "rulesApplied": [
+            "rule-rbac-data-isolation"
+          ],
+          "commands": [
+            {
+              "commandId": "getDashboardMetrics",
+              "input": [
+                {
+                  "name": "periodStart",
+                  "type": "date",
+                  "required": false
+                },
+                {
+                  "name": "periodEnd",
+                  "type": "date",
+                  "required": false
+                }
+              ],
+              "output": [
+                {
+                  "name": "activeProperties",
+                  "type": "number"
+                },
+                {
+                  "name": "monthlyLeads",
+                  "type": "number"
+                },
+                {
+                  "name": "dealPipelineValue",
+                  "type": "number"
+                },
+                {
+                  "name": "leadConversionRate",
+                  "type": "number"
+                },
+                {
+                  "name": "visitsPerMonth",
+                  "type": "number"
+                },
+                {
+                  "name": "generatedAt",
+                  "type": "date"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "controllerRules": {
+        "bffMustCallUsecases": true,
+        "bffDirectTableAccessForbidden": true
+      }
+    },
+    "questions": [],
+    "trace": [
+      "Analisados os persistenceTables: 4 logs de transição (lead, deal, visit, property) + 1 ai_command_log (moduleOwned). Todas as demais entidades (Property, Lead, Deal, Visit, Corretor, métricas) são mdmOwned conforme excludedEntities.",
+      "Consolidados os logs de transição em um único usecaseEntity 'transitionEventLogEntity' (4 sourceTables) e os comandos de IA em 'aiCommandLogEntity' (1 sourceTable). O approvedArtifacts.usecaseEntities tinha 1 grupo aprovado — a contagem de usecaseEntities (2) não precisa ser igual, conforme regra de cobertura.",
+      "Criados 10 usecases cobrindo todas as userActions do finalPlan: moveLeadStage, advanceDealStage (inclui markDealLost e createDeal), updateVisitStatus (inclui scheduleVisit), updatePropertyStatus (inclui createProperty e editProperty), generatePropertyDescription, classifyLeadAi, getFollowUpSuggestion, manageLead (createLead/editLead), manageCorretor, queryDashboardMetrics.",
+      "Métricas incluídas em writesTables apenas nos usecases que escrevem as tabelas base correspondentes: moveLeadStage → monthly_leads_metric + lead_conversion_metric; advanceDealStage → deal_pipeline_metric; updateVisitStatus → visits_per_month_metric; updatePropertyStatus → active_properties_metric; manageLeadUsecase (createLead) → monthly_leads_metric.",
+      "queryDashboardMetricsUsecase lê todas as 5 métricas + logs de transição para suportar o Dashboard Operacional sem escrever nenhuma tabela (operação puramente de leitura).",
+      "Todos os usecases declaram rule-rbac-data-isolation. Regras de transição de estado aplicadas nos usecases correspondentes.",
+      "controllerRules: bffMustCallUsecases=true, bffDirectTableAccessForbidden=true — controllers BFF nunca acessam tabelas diretamente.",
+      "Cada tabela referenciada em readsTables/writesTables de qualquer usecase aparece em sourceTables de pelo menos um usecaseEntity (moduleOwned) ou está marcada como mdmOwned (acesso via ctx.data.mdmDocument).",
+      "Todos os commands têm commandId em camelCase, input com campos tipados e required, output com campos tipados — sem código TypeScript gerado."
+    ]
+  }
+}

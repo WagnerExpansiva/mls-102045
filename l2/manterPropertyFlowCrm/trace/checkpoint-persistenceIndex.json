@@ -1,0 +1,303 @@
+{
+  "schemaVersion": "2026-06-06",
+  "artifactType": "indexCheckpoint",
+  "indexName": "persistenceIndex",
+  "moduleName": "manterPropertyFlowCrm",
+  "status": "frozen",
+  "approvedAt": "2026-06-11T01:19:44.811Z",
+  "source": {
+    "agentName": "agentPlanPersistenceIndex",
+    "stepId": 15,
+    "planId": "plan-persistence-index"
+  },
+  "healthReport": {
+    "localErrors": [],
+    "localWarnings": [],
+    "criticErrors": [],
+    "criticWarnings": [],
+    "attempts": 1,
+    "notes": []
+  },
+  "index": {
+    "runId": "provider-tool-call",
+    "stepId": "12-plan-persistence-index",
+    "schemaVersion": "2026-06-02",
+    "status": "ok",
+    "result": {
+      "persistenceScope": {
+        "moduleId": "propertyFlowCrm",
+        "newTablesRequired": true,
+        "metricsTablesRequired": true,
+        "excludedEntities": [
+          {
+            "entityId": "Property",
+            "ownership": "mdmOwned",
+            "reason": "Imóvel é uma masterEntity gerenciada pelo MDM: Imóvel. Dados de ciclo de vida e CRUD residem no domínio MDM."
+          },
+          {
+            "entityId": "Lead",
+            "ownership": "mdmOwned",
+            "reason": "Lead / Cliente é uma masterEntity gerenciada pelo MDM: Lead / Cliente. Dados de ciclo de vida residem no domínio MDM."
+          },
+          {
+            "entityId": "Corretor",
+            "ownership": "mdmOwned",
+            "reason": "Corretor é uma masterEntity gerenciada pelo MDM: Corretor. Gestão de corretores reside no domínio MDM."
+          },
+          {
+            "entityId": "Visit",
+            "ownership": "mdmOwned",
+            "reason": "Visita / Agendamento é uma transactionalEntity gerenciada pelo MDM: Visita / Agendamento conforme plano aprovado."
+          },
+          {
+            "entityId": "Deal",
+            "ownership": "mdmOwned",
+            "reason": "Negócio / Proposta é uma transactionalEntity gerenciada pelo MDM: Negócio / Proposta conforme plano aprovado."
+          },
+          {
+            "entityId": "UserAccount",
+            "ownership": "horizontalOwned",
+            "reason": "Conta de usuário pertence ao módulo horizontal de Autenticação e Controle de Acesso (RBAC)."
+          },
+          {
+            "entityId": "Role",
+            "ownership": "horizontalOwned",
+            "reason": "Perfil/Role pertence ao módulo horizontal de Autenticação e Controle de Acesso (RBAC)."
+          },
+          {
+            "entityId": "Permission",
+            "ownership": "horizontalOwned",
+            "reason": "Permissão pertence ao módulo horizontal de Autenticação e Controle de Acesso (RBAC)."
+          },
+          {
+            "entityId": "NotificationTemplate",
+            "ownership": "horizontalOwned",
+            "reason": "Template de notificação pertence ao módulo horizontal de Notificações Internas (In-App)."
+          },
+          {
+            "entityId": "NotificationDelivery",
+            "ownership": "horizontalOwned",
+            "reason": "Entrega de notificação pertence ao módulo horizontal de Notificações Internas (In-App)."
+          },
+          {
+            "entityId": "NotificationPreference",
+            "ownership": "horizontalOwned",
+            "reason": "Preferência de notificação pertence ao módulo horizontal de Notificações Internas (In-App)."
+          },
+          {
+            "entityId": "ActivePropertiesMetric",
+            "ownership": "mdmOwned",
+            "reason": "Tabela de métricas planejada separadamente na etapa de metric tables; não é tabela transacional do módulo."
+          },
+          {
+            "entityId": "MonthlyLeadsMetric",
+            "ownership": "mdmOwned",
+            "reason": "Tabela de métricas planejada separadamente na etapa de metric tables; não é tabela transacional do módulo."
+          },
+          {
+            "entityId": "DealPipelineMetric",
+            "ownership": "mdmOwned",
+            "reason": "Tabela de métricas planejada separadamente na etapa de metric tables; não é tabela transacional do módulo."
+          },
+          {
+            "entityId": "LeadConversionMetric",
+            "ownership": "mdmOwned",
+            "reason": "Tabela de métricas planejada separadamente na etapa de metric tables; não é tabela transacional do módulo."
+          },
+          {
+            "entityId": "VisitsPerMonthMetric",
+            "ownership": "mdmOwned",
+            "reason": "Tabela de métricas planejada separadamente na etapa de metric tables; não é tabela transacional do módulo."
+          }
+        ]
+      },
+      "tables": [
+        {
+          "tableId": "leadStageTransitionEventLog",
+          "tableName": "lead_stage_transition_event_log",
+          "title": "Log de Transições de Etapa do Lead",
+          "purpose": "Registra cada transição de etapa do lead no funil (Kanban), preservando o histórico completo de movimentações para auditoria, rastreabilidade e suporte às regras de transição válidas.",
+          "ownership": "moduleOwned",
+          "rootEntity": "LeadStageTransitionEvent",
+          "sourceEntities": [
+            "LeadStageTransitionEvent",
+            "Lead"
+          ],
+          "embeddedEntities": [],
+          "persistencePattern": "eventLog",
+          "tableKind": "transactional",
+          "detailsColumnRecommended": true,
+          "priority": "now",
+          "readsByArtifacts": [
+            "Pipeline de Leads (Kanban / Lista)",
+            "Detalhe do Lead / Cliente",
+            "Workflow: Transição de Etapa do Lead",
+            "Dashboard Operacional"
+          ],
+          "writesByArtifacts": [
+            "Workflow: Transição de Etapa do Lead",
+            "action-move-lead-stage",
+            "action-classify-lead-ai"
+          ],
+          "rulesApplied": [
+            "rule-lead-stage-transition",
+            "rule-rbac-data-isolation"
+          ],
+          "reason": "LeadStageTransitionEvent é uma usecaseEntity moduleOwned que precisa de persistência própria como log imutável de eventos. Suporta o Workflow de Transição de Etapa do Lead e o Pipeline Kanban. O campo details (JSON) armazena metadados contextuais da transição (motivo, origem, dados do agente IA)."
+        },
+        {
+          "tableId": "dealStageTransitionEventLog",
+          "tableName": "deal_stage_transition_event_log",
+          "title": "Log de Transições de Etapa do Negócio",
+          "purpose": "Registra cada avanço ou regressão de etapa de um negócio/proposta, mantendo histórico auditável das progressões e perdas para análise de pipeline e conformidade com regras de transição.",
+          "ownership": "moduleOwned",
+          "rootEntity": "DealStageTransitionEvent",
+          "sourceEntities": [
+            "DealStageTransitionEvent",
+            "Deal"
+          ],
+          "embeddedEntities": [],
+          "persistencePattern": "eventLog",
+          "tableKind": "transactional",
+          "detailsColumnRecommended": true,
+          "priority": "now",
+          "readsByArtifacts": [
+            "Rastreador de Negócios / Propostas",
+            "Workflow: Progressão de Etapas do Negócio",
+            "Dashboard Operacional"
+          ],
+          "writesByArtifacts": [
+            "Workflow: Progressão de Etapas do Negócio",
+            "action-advance-deal-stage",
+            "action-mark-deal-lost",
+            "action-create-deal"
+          ],
+          "rulesApplied": [
+            "rule-deal-stage-transition",
+            "rule-deal-requires-property-and-lead",
+            "rule-rbac-data-isolation"
+          ],
+          "reason": "DealStageTransitionEvent é uma usecaseEntity moduleOwned que requer log imutável de eventos para rastrear progressão de negócios. Suporta o Rastreador de Negócios e o Workflow de Progressão de Etapas. O campo details (JSON) armazena contexto da transição (motivo de perda, valor proposto, observações)."
+        },
+        {
+          "tableId": "visitStatusTransitionEventLog",
+          "tableName": "visit_status_transition_event_log",
+          "title": "Log de Transições de Status da Visita",
+          "purpose": "Registra cada mudança de status de uma visita (agendada → confirmada → realizada / cancelada / reagendada), garantindo rastreabilidade e suporte à regra de não-conflito de horários.",
+          "ownership": "moduleOwned",
+          "rootEntity": "VisitStatusTransitionEvent",
+          "sourceEntities": [
+            "VisitStatusTransitionEvent",
+            "Visit"
+          ],
+          "embeddedEntities": [],
+          "persistencePattern": "eventLog",
+          "tableKind": "transactional",
+          "detailsColumnRecommended": true,
+          "priority": "now",
+          "readsByArtifacts": [
+            "Agendador de Visitas",
+            "Workflow: Ciclo de Vida da Visita",
+            "Dashboard Operacional"
+          ],
+          "writesByArtifacts": [
+            "Workflow: Ciclo de Vida da Visita",
+            "action-schedule-visit",
+            "action-update-visit-status"
+          ],
+          "rulesApplied": [
+            "rule-visit-no-conflict",
+            "rule-visit-requires-property-lead-corretor",
+            "rule-rbac-data-isolation"
+          ],
+          "reason": "VisitStatusTransitionEvent é uma usecaseEntity moduleOwned que precisa de log imutável para auditoria do ciclo de vida das visitas. Suporta o Agendador de Visitas e o Workflow de Ciclo de Vida da Visita. O campo details (JSON) armazena motivo de cancelamento/reagendamento e referência ao evento de calendário externo (plugin futuro)."
+        },
+        {
+          "tableId": "propertyStatusTransitionEventLog",
+          "tableName": "property_status_transition_event_log",
+          "title": "Log de Transições de Status do Imóvel",
+          "purpose": "Registra cada mudança de status de um imóvel (disponível → reservado → vendido/alugado/inativo), preservando histórico para auditoria e suporte às regras de transição válidas.",
+          "ownership": "moduleOwned",
+          "rootEntity": "PropertyStatusTransitionEvent",
+          "sourceEntities": [
+            "PropertyStatusTransitionEvent",
+            "Property"
+          ],
+          "embeddedEntities": [],
+          "persistencePattern": "eventLog",
+          "tableKind": "transactional",
+          "detailsColumnRecommended": true,
+          "priority": "now",
+          "readsByArtifacts": [
+            "Lista de Imóveis (CRUD + Busca)",
+            "Detalhe / Formulário de Imóvel",
+            "Workflow: Atualização de Status do Imóvel",
+            "Dashboard Operacional"
+          ],
+          "writesByArtifacts": [
+            "Workflow: Atualização de Status do Imóvel",
+            "action-update-property-status"
+          ],
+          "rulesApplied": [
+            "rule-property-status-transition",
+            "rule-rbac-data-isolation"
+          ],
+          "reason": "PropertyStatusTransitionEvent é uma usecaseEntity moduleOwned que requer log imutável para rastrear o ciclo de vida dos imóveis. Suporta o Workflow de Atualização de Status do Imóvel e a Lista de Imóveis. O campo details (JSON) armazena contexto da transição (usuário responsável, negócio vinculado, observações)."
+        },
+        {
+          "tableId": "aiCommandLog",
+          "tableName": "ai_command_log",
+          "title": "Log de Comandos de IA (LLM)",
+          "purpose": "Registra todas as invocações dos agentes LLM (geração de descrição de imóvel, classificação de lead e sugestão de follow-up), armazenando input, output, modelo utilizado, latência e status para rastreabilidade, auditoria e melhoria contínua.",
+          "ownership": "moduleOwned",
+          "rootEntity": "PropertyDescriptionCommand",
+          "sourceEntities": [
+            "PropertyDescriptionCommand",
+            "LeadClassificationCommand",
+            "FollowUpSuggestionCommand"
+          ],
+          "embeddedEntities": [],
+          "persistencePattern": "eventLog",
+          "tableKind": "transactional",
+          "detailsColumnRecommended": true,
+          "priority": "now",
+          "readsByArtifacts": [
+            "Detalhe / Formulário de Imóvel",
+            "Detalhe do Lead / Cliente",
+            "Pipeline de Leads (Kanban / Lista)"
+          ],
+          "writesByArtifacts": [
+            "action-generate-property-description",
+            "action-classify-lead-ai",
+            "action-get-followup-suggestion",
+            "Agente: Geração de Descrição de Imóvel",
+            "Agente: Classificação de Lead (Quente/Morno/Frio)",
+            "Agente: Sugestão de Mensagem de Follow-up"
+          ],
+          "rulesApplied": [
+            "rule-llm-agent-invocation",
+            "rule-rbac-data-isolation"
+          ],
+          "reason": "As três usecaseEntities de comando LLM (PropertyDescriptionCommand, LeadClassificationCommand, FollowUpSuggestionCommand) compartilham o mesmo padrão de log de invocação de agente. Consolidá-las em uma única tabela de log com discriminador de tipo reduz fragmentação e facilita análise de uso de IA. O campo details (JSON) armazena prompt, resposta, modelo, tokens e latência."
+        }
+      ]
+    },
+    "questions": [],
+    "trace": [
+      "1. Identificando escopo do módulo: propertyFlowCrm — domínio Corretagem Imobiliária / CRM.",
+      "2. Separando entidades MDM: Property, Lead, Corretor, Visit e Deal são todas mdmOwned conforme ontologia e plano aprovado (MDM explícito para cada uma). Adicionadas a excludedEntities.",
+      "3. Separando entidades horizontais: UserAccount, Role, Permission → horizontalOwned (módulo horizontal RBAC). NotificationTemplate, NotificationDelivery, NotificationPreference → horizontalOwned (módulo horizontal Notificações). Adicionadas a excludedEntities.",
+      "4. Separando métricas: ActivePropertiesMetric, MonthlyLeadsMetric, DealPipelineMetric, LeadConversionMetric, VisitsPerMonthMetric → planejadas na etapa de metric tables, não são tabelas transacionais. initialMetricsRequested=true → metricsTablesRequired=true.",
+      "5. Identificando usecaseEntities moduleOwned que requerem persistência transacional: LeadStageTransitionEvent, DealStageTransitionEvent, VisitStatusTransitionEvent, PropertyStatusTransitionEvent, PropertyDescriptionCommand, LeadClassificationCommand, FollowUpSuggestionCommand.",
+      "6. Aplicando padrão eventLog para todos os eventos de transição de ciclo de vida (LeadStageTransitionEvent, DealStageTransitionEvent, VisitStatusTransitionEvent, PropertyStatusTransitionEvent) — dados imutáveis, append-only, suportam auditoria e regras de transição.",
+      "7. Consolidando os três comandos LLM (PropertyDescriptionCommand, LeadClassificationCommand, FollowUpSuggestionCommand) em uma única tabela ai_command_log com padrão eventLog e discriminador de tipo — evita fragmentação desnecessária, todos compartilham o mesmo padrão de invocação (rule-llm-agent-invocation).",
+      "8. Verificando que nenhuma tabela de scheduling, payment, finance, cart, order ou delivery foi introduzida — correto, nenhuma dessas features está no plano aprovado.",
+      "9. Verificando que plugins (llmProviderPlugin, i18nPlugin, mockImagePlugin, calendarIntegrationPlugin, photoUploadPlugin) não geram tabelas transacionais próprias neste módulo — correto, são pluginOwned e não listados como entidades ontológicas com persistência própria.",
+      "10. Confirmando detailsColumnRecommended=true para todas as tabelas eventLog — necessário para armazenar metadados contextuais variáveis de cada evento/comando.",
+      "11. Confirmando priority=now para todas as tabelas — todas suportam capabilities de prioridade 'now' no plano aprovado.",
+      "12. Verificando cobertura de artifacts: todos os workflows aprovados (Transição de Etapa do Lead, Ciclo de Vida da Visita, Progressão de Etapas do Negócio, Atualização de Status do Imóvel) têm tabela correspondente. Todos os agentes LLM cobertos pela tabela ai_command_log.",
+      "13. Confirmando ownership=moduleOwned e tableKind=transactional para todas as tabelas geradas.",
+      "14. Resultado: 5 tabelas transacionais moduleOwned planejadas, metricsTablesRequired=true, newTablesRequired=true."
+    ]
+  }
+}

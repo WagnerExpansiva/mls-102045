@@ -1,0 +1,84 @@
+{
+  "savedAt": "2026-06-11T01:25:57.623Z",
+  "agentName": "agentCriticPlanIndex",
+  "stepId": 46,
+  "planning": {
+    "planId": "plan-index-critic:usecasePlan:1",
+    "dependsOn": [
+      "plan-usecase-entities"
+    ],
+    "executionMode": "sequential",
+    "executionHost": "client"
+  },
+  "status": "waiting_after_prompt",
+  "payload": {
+    "type": "flexible",
+    "result": {
+      "toolName": "submitPlanIndexCritique",
+      "arguments": {
+        "status": "needs_input",
+        "result": {
+          "approved": false,
+          "errors": [
+            {
+              "code": "usecase.read.missing.properties",
+              "message": "Faltam usecases de leitura para imóveis (listar/buscar e obter detalhe), necessários às páginas aprovadas 'Lista de Imóveis (CRUD + Busca)' e 'Detalhe / Formulário de Imóvel'.",
+              "path": "usecases"
+            },
+            {
+              "code": "usecase.read.missing.leads",
+              "message": "Faltam usecases de leitura para leads (listar e obter detalhe), necessários às páginas aprovadas 'Pipeline de Leads (Kanban / Lista)' e 'Detalhe do Lead / Cliente'.",
+              "path": "usecases"
+            },
+            {
+              "code": "usecase.read.missing.visits",
+              "message": "Falta usecase de leitura para visitas (listar), necessário à página aprovada 'Agendador de Visitas'.",
+              "path": "usecases"
+            },
+            {
+              "code": "usecase.read.missing.deals",
+              "message": "Falta usecase de leitura para negócios/propostas (listar), necessário à página aprovada 'Rastreador de Negócios / Propostas'.",
+              "path": "usecases"
+            },
+            {
+              "code": "usecase.read.missing.corretores",
+              "message": "Falta usecase de leitura para corretores (listar), necessário à página aprovada 'Gestão de Corretores (Admin)'.",
+              "path": "usecases"
+            },
+            {
+              "code": "usecase.missingWrites.dealSideEffects",
+              "message": "O usecase advanceDealStageUsecase não declara escrita nas tabelas property, property_status_transition_event_log e lead, mas as ações de usuário e regras de negócio exigem atualização do status do imóvel e sincronização do lead ao criar, fechar ou perder um negócio.",
+              "path": "usecases[1]"
+            }
+          ],
+          "warnings": [
+            {
+              "code": "usecase.commandBundle.mixedConcerns",
+              "message": "O usecase updatePropertyStatusUsecase agrupa comandos de CRUD (createProperty, editProperty) com transição de status, dificultando o controle de escrita condicional em tabelas de eventos e métricas.",
+              "path": "usecases[3]"
+            },
+            {
+              "code": "usecase.commandBundle.mixedConcerns",
+              "message": "O usecase manageLeadUsecase agrupa createLead e editLead; o comando editLead realiza edições descritivas, mas o usecase declara escrita em monthly_leads_metric, o que exige lógica condicional para não violar T-014.",
+              "path": "usecases[7]"
+            }
+          ]
+        },
+        "questions": [
+          "Os usecases de leitura (listar/obter) serão adicionados como usecases separados ou integrados aos existentes via comandos de consulta?",
+          "O usecase advanceDealStageUsecase deve atualizar diretamente property e lead, ou orquestrar chamadas a usecases dedicados de transição?"
+        ],
+        "trace": [
+          "Verificados todos os writes em tabelas moduleOwned: leadStageTransitionEventLog, dealStageTransitionEventLog, visitStatusTransitionEventLog, propertyStatusTransitionEventLog e aiCommandLog — todos cobertos por usecases.",
+          "Verificadas transições de ciclo de vida de lead, deal, visit e property: todas possuem usecases de transição.",
+          "Identificada ausência de usecases de leitura para propriedades, leads, visitas, negócios e corretores, necessários às páginas aprovadas.",
+          "Identificado que advanceDealStageUsecase não declara escritas em property, property_status_transition_event_log e lead exigidas pelas regras de negócio e ações de usuário."
+        ]
+      }
+    },
+    "status": "completed",
+    "stepId": 47,
+    "interaction": null,
+    "nextSteps": null
+  }
+}

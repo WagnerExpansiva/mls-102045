@@ -1,0 +1,233 @@
+{
+  "schemaVersion": "2026-06-06",
+  "artifactType": "indexCheckpoint",
+  "indexName": "pluginPlan",
+  "moduleName": "manterPropertyFlowCrm",
+  "status": "frozen",
+  "approvedAt": "2026-06-11T01:18:15.821Z",
+  "source": {
+    "agentName": "agentPlanPlugins",
+    "stepId": 14,
+    "planId": "plan-plugins"
+  },
+  "healthReport": {
+    "localErrors": [],
+    "localWarnings": [],
+    "criticErrors": [],
+    "criticWarnings": [],
+    "attempts": 1,
+    "notes": []
+  },
+  "index": {
+    "runId": "provider-tool-call",
+    "stepId": "11-plan-plugins",
+    "schemaVersion": "2026-06-02",
+    "status": "ok",
+    "result": {
+      "plugins": [
+        {
+          "pluginId": "provedor",
+          "provider": "provedor",
+          "priority": "now",
+          "reason": "Plugin de integração com provedor LLM (OpenAI, Anthropic, Google Gemini ou similar) obrigatório para os três agentes de IA do MVP: geração de descrição de imóvel, classificação de lead e sugestão de follow-up.",
+          "events": [
+            "llm.request",
+            "llm.response",
+            "llm.error"
+          ],
+          "requiredCredentials": [
+            "LLM_PROVIDER_API_KEY"
+          ],
+          "inputData": [
+            "prompt",
+            "model",
+            "temperature",
+            "maxTokens",
+            "language"
+          ],
+          "outputData": [
+            "generatedText",
+            "tokensUsed",
+            "modelUsed"
+          ],
+          "webhooks": [],
+          "risks": [
+            "O provedor específico (OpenAI, Anthropic, Gemini) ainda não foi definido — a configuração da credencial depende dessa decisão do Admin.",
+            "Custos de API podem variar significativamente entre provedores e volumes de uso.",
+            "Latência do provedor externo pode impactar a experiência do usuário nos agentes de IA."
+          ],
+          "questions": [
+            "Qual provedor LLM será utilizado por padrão: OpenAI, Anthropic (Claude) ou Google Gemini?",
+            "O Admin poderá trocar o provedor LLM pela interface ou apenas via configuração de ambiente?"
+          ],
+          "resolution": "create_draft",
+          "pluginDefsFileRef": "_102045_/l2/plugins/provedor/plugin.defs.ts",
+          "moduleConnectionDefsFileRef": "_102045_/l2/propertyFlowCrm/plugins/provedor.defs.ts"
+        },
+        {
+          "pluginId": "i18n",
+          "provider": "I18n",
+          "priority": "now",
+          "reason": "Plugin para gerenciar traduções e alternância de idioma entre pt-BR (padrão) e inglês em toda a interface do PropertyFlowCRM. Requisito explícito definido na clarificação.",
+          "events": [
+            "i18n.languageChanged",
+            "i18n.translationMissing"
+          ],
+          "requiredCredentials": [],
+          "inputData": [
+            "locale",
+            "translationKey",
+            "interpolationParams"
+          ],
+          "outputData": [
+            "translatedText",
+            "currentLocale",
+            "availableLocales"
+          ],
+          "webhooks": [],
+          "risks": [
+            "Chaves de tradução ausentes podem causar fallback para o idioma padrão sem aviso visível ao usuário.",
+            "Manutenção de dois conjuntos de traduções (pt-BR e en) aumenta o esforço de atualização de conteúdo."
+          ],
+          "questions": [
+            "As traduções serão gerenciadas diretamente no código (arquivos JSON/TS) ou via plataforma externa de localização?",
+            "Existe necessidade de suporte a outros idiomas além de pt-BR e en no futuro próximo?"
+          ],
+          "resolution": "create_draft",
+          "pluginDefsFileRef": "_102045_/l2/plugins/i18n/plugin.defs.ts",
+          "moduleConnectionDefsFileRef": "_102045_/l2/propertyFlowCrm/plugins/i18n.defs.ts"
+        },
+        {
+          "pluginId": "mockImage",
+          "provider": "Mock Image",
+          "priority": "now",
+          "reason": "Plugin utilitário para gerar e gerenciar URLs de imagens placeholder (picsum.photos) para fotos de imóveis no MVP. Encapsula a lógica para facilitar migração futura para upload real.",
+          "events": [
+            "mockImage.urlGenerated"
+          ],
+          "requiredCredentials": [],
+          "inputData": [
+            "imageId",
+            "width",
+            "height",
+            "seed"
+          ],
+          "outputData": [
+            "imageUrl",
+            "thumbnailUrl"
+          ],
+          "webhooks": [],
+          "risks": [
+            "Dependência de serviço externo (picsum.photos) — indisponibilidade do serviço impacta a exibição de fotos no MVP.",
+            "URLs geradas são públicas e não representam imóveis reais, podendo causar confusão em demonstrações para clientes."
+          ],
+          "questions": [
+            "O plugin mockImage e o picsumPhotos representam a mesma integração? Confirmar se apenas um deles deve ser utilizado para evitar duplicidade."
+          ],
+          "resolution": "create_draft",
+          "pluginDefsFileRef": "_102045_/l2/plugins/mockImage/plugin.defs.ts",
+          "moduleConnectionDefsFileRef": "_102045_/l2/propertyFlowCrm/plugins/mockImage.defs.ts"
+        },
+        {
+          "pluginId": "calend",
+          "provider": "Calend",
+          "priority": "later",
+          "reason": "Plugin para sincronização do agendador de visitas com calendários externos (Google Calendar, Microsoft Outlook). Identificado como risco de negócio mas fora do escopo do MVP — avaliação para versão futura.",
+          "events": [
+            "calendar.eventCreated",
+            "calendar.eventUpdated",
+            "calendar.eventCancelled",
+            "calendar.syncCompleted"
+          ],
+          "requiredCredentials": [
+            "GOOGLE_CALENDAR_CLIENT_ID",
+            "GOOGLE_CALENDAR_CLIENT_SECRET",
+            "OUTLOOK_CLIENT_ID",
+            "OUTLOOK_CLIENT_SECRET"
+          ],
+          "inputData": [
+            "visitId",
+            "visitDateTime",
+            "leadName",
+            "propertyAddress",
+            "corretorEmail",
+            "calendarProvider"
+          ],
+          "outputData": [
+            "externalEventId",
+            "calendarLink",
+            "syncStatus"
+          ],
+          "webhooks": [
+            "calendar.eventChanged"
+          ],
+          "risks": [
+            "Autenticação OAuth com Google/Microsoft requer configuração de aplicativo nas respectivas plataformas.",
+            "Sincronização bidirecional pode gerar conflitos se o corretor editar o evento diretamente no calendário externo.",
+            "Escopo de permissões OAuth pode ser sensível para usuários corporativos."
+          ],
+          "questions": [
+            "A integração deve suportar Google Calendar, Microsoft Outlook ou ambos?",
+            "A sincronização será unidirecional (PropertyFlowCRM → Calendário) ou bidirecional?"
+          ],
+          "resolution": "create_draft",
+          "pluginDefsFileRef": "_102045_/l2/plugins/calend/plugin.defs.ts",
+          "moduleConnectionDefsFileRef": "_102045_/l2/propertyFlowCrm/plugins/calend.defs.ts"
+        },
+        {
+          "pluginId": "photoUpload",
+          "provider": "Photo Upload",
+          "priority": "later",
+          "reason": "Plugin para upload e armazenamento de fotos reais de imóveis, substituindo as URLs de placeholder do picsum.photos. Explicitamente adiado para versão futura na clarificação.",
+          "events": [
+            "photo.uploaded",
+            "photo.deleted",
+            "photo.reordered"
+          ],
+          "requiredCredentials": [
+            "STORAGE_PROVIDER_KEY",
+            "STORAGE_BUCKET_NAME"
+          ],
+          "inputData": [
+            "propertyId",
+            "photoFile",
+            "photoOrder",
+            "caption"
+          ],
+          "outputData": [
+            "photoUrl",
+            "thumbnailUrl",
+            "photoId",
+            "storageKey"
+          ],
+          "webhooks": [],
+          "risks": [
+            "Escolha do provedor de armazenamento (AWS S3, Google Cloud Storage, Cloudinary etc.) impacta custos e configuração.",
+            "Validação de tamanho e formato de arquivo deve ser implementada para evitar uploads inválidos.",
+            "Migração das URLs mock para fotos reais requer estratégia de transição para dados existentes."
+          ],
+          "questions": [
+            "Qual provedor de armazenamento de arquivos será utilizado para as fotos reais (AWS S3, Cloudinary, Google Cloud Storage)?",
+            "Existe limite de número de fotos por imóvel ou tamanho máximo por arquivo?"
+          ],
+          "resolution": "create_draft",
+          "pluginDefsFileRef": "_102045_/l2/plugins/photoUpload/plugin.defs.ts",
+          "moduleConnectionDefsFileRef": "_102045_/l2/propertyFlowCrm/plugins/photoUpload.defs.ts"
+        }
+      ]
+    },
+    "questions": [
+      "O plugin 'mockImage' e o 'picsumPhotos' do catálogo representam a mesma integração com picsum.photos — confirmar qual deve ser utilizado para evitar duplicidade no MVP."
+    ],
+    "trace": [
+      "Mapeando acceptedPluginDecisions com decidedPriority != 'never': llmProviderPlugin (now), i18nPlugin (now), mockImagePlugin (now), calendarIntegrationPlugin (later), photoUploadPlugin (later).",
+      "llmProviderPlugin → mapeado para pluginId 'provedor' (provider: provedor) no pluginCatalog/pluginInventory. Resolution: create_draft.",
+      "i18nPlugin → mapeado para pluginId 'i18n' (provider: I18n). Resolution: create_draft.",
+      "mockImagePlugin → mapeado para pluginId 'mockImage' (provider: Mock Image). Resolution: create_draft. Observação: pluginCatalog também contém 'picsumPhotos' (provider: picsum.photos) que parece ser a mesma integração — questão levantada.",
+      "calendarIntegrationPlugin → mapeado para pluginId 'calend' (provider: Calend). Priority: later. Resolution: create_draft.",
+      "photoUploadPlugin → mapeado para pluginId 'photoUpload' (provider: Photo Upload). Priority: later. Resolution: create_draft.",
+      "Plugins 'gerenciamento' e 'ptBr' presentes no catálogo/inventário mas sem correspondência em acceptedPluginDecisions — não planejados.",
+      "Todos os 5 plugins aceitos foram planejados com prioridades corretas (now/later) conforme decidedPriority. Status: ok."
+    ]
+  }
+}

@@ -1,0 +1,486 @@
+{
+  "savedAt": "2026-06-11T01:27:54.722Z",
+  "agentName": "agentPlanWorkflowDefinition",
+  "stepId": 49,
+  "planning": null,
+  "status": "waiting_after_prompt",
+  "payload": {
+    "type": "flexible",
+    "result": {
+      "toolName": "submitWorkflowDefinitionPlan",
+      "arguments": {
+        "status": "ok",
+        "result": {
+          "workflowDefinition": {
+            "workflowId": "leadStageTransition",
+            "title": "Transição de Etapa do Lead",
+            "purpose": "Gerenciar o ciclo de vida do lead no funil de vendas, controlando transições válidas entre etapas (Novo → Contato → Visita → Proposta → Fechado/Perdido) e registrando eventos para auditoria e métricas.",
+            "executionMode": "entityLifecycle",
+            "createsTask": false,
+            "taskConfig": {
+              "taskTitleTemplate": "",
+              "assigneeRules": [],
+              "slaRules": [],
+              "taskRoomRequired": false
+            },
+            "actors": [
+              "corretorActor"
+            ],
+            "states": [
+              {
+                "stateId": "novo",
+                "description": "Lead recém-criado, ainda sem contato realizado. Estado inicial do funil."
+              },
+              {
+                "stateId": "contato",
+                "description": "Primeiro contato com o lead foi realizado pelo corretor."
+              },
+              {
+                "stateId": "visita",
+                "description": "Visita a imóvel agendada ou realizada com o lead."
+              },
+              {
+                "stateId": "proposta",
+                "description": "Proposta comercial apresentada ao lead."
+              },
+              {
+                "stateId": "fechado",
+                "description": "Negócio fechado com sucesso. Estado terminal positivo."
+              },
+              {
+                "stateId": "perdido",
+                "description": "Lead perdido/desistente. Estado terminal negativo — requer novo lead para reativação."
+              }
+            ],
+            "transitions": [
+              {
+                "from": "novo",
+                "to": "contato",
+                "trigger": "corretorMoveLeadStage",
+                "actor": "corretorActor",
+                "conditions": [
+                  "Lead.assignedCorretorId === corretorActor.userId (rule-rbac-data-isolation)",
+                  "Transição novo → contato é válida conforme rule-lead-stage-transition"
+                ],
+                "actions": [
+                  "Atualizar Lead.stage para 'contato'",
+                  "Atualizar Lead.updatedAt com timestamp atual",
+                  "Criar LeadStageTransitionEvent com fromStage='novo', toStage='contato', performedBy=corretorId, occurredAt=now()",
+                  "Invocar moveLeadStageUsecase para persistir evento em leadStageTransitionEventLog",
+                  "Atualizar monthlyLeadsMetric via layer_3_usecases",
+                  "Atualizar leadConversionMetric via layer_3_usecases"
+                ],
+                "rulesApplied": [
+                  "rule-lead-stage-transition",
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "from": "contato",
+                "to": "visita",
+                "trigger": "corretorMoveLeadStage",
+                "actor": "corretorActor",
+                "conditions": [
+                  "Lead.assignedCorretorId === corretorActor.userId (rule-rbac-data-isolation)",
+                  "Transição contato → visita é válida conforme rule-lead-stage-transition"
+                ],
+                "actions": [
+                  "Atualizar Lead.stage para 'visita'",
+                  "Atualizar Lead.updatedAt com timestamp atual",
+                  "Criar LeadStageTransitionEvent com fromStage='contato', toStage='visita', performedBy=corretorId, occurredAt=now()",
+                  "Invocar moveLeadStageUsecase para persistir evento em leadStageTransitionEventLog",
+                  "Atualizar monthlyLeadsMetric via layer_3_usecases",
+                  "Atualizar leadConversionMetric via layer_3_usecases"
+                ],
+                "rulesApplied": [
+                  "rule-lead-stage-transition",
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "from": "visita",
+                "to": "proposta",
+                "trigger": "corretorMoveLeadStage",
+                "actor": "corretorActor",
+                "conditions": [
+                  "Lead.assignedCorretorId === corretorActor.userId (rule-rbac-data-isolation)",
+                  "Transição visita → proposta é válida conforme rule-lead-stage-transition"
+                ],
+                "actions": [
+                  "Atualizar Lead.stage para 'proposta'",
+                  "Atualizar Lead.updatedAt com timestamp atual",
+                  "Criar LeadStageTransitionEvent com fromStage='visita', toStage='proposta', performedBy=corretorId, occurredAt=now()",
+                  "Invocar moveLeadStageUsecase para persistir evento em leadStageTransitionEventLog",
+                  "Atualizar monthlyLeadsMetric via layer_3_usecases",
+                  "Atualizar leadConversionMetric via layer_3_usecases"
+                ],
+                "rulesApplied": [
+                  "rule-lead-stage-transition",
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "from": "proposta",
+                "to": "fechado",
+                "trigger": "corretorMoveLeadStage",
+                "actor": "corretorActor",
+                "conditions": [
+                  "Lead.assignedCorretorId === corretorActor.userId (rule-rbac-data-isolation)",
+                  "Transição proposta → fechado é válida conforme rule-lead-stage-transition"
+                ],
+                "actions": [
+                  "Atualizar Lead.stage para 'fechado'",
+                  "Atualizar Lead.updatedAt com timestamp atual",
+                  "Criar LeadStageTransitionEvent com fromStage='proposta', toStage='fechado', performedBy=corretorId, occurredAt=now()",
+                  "Invocar moveLeadStageUsecase para persistir evento em leadStageTransitionEventLog",
+                  "Incrementar leadConversionMetric.convertedCount via layer_3_usecases",
+                  "Atualizar monthlyLeadsMetric via layer_3_usecases"
+                ],
+                "rulesApplied": [
+                  "rule-lead-stage-transition",
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "from": "proposta",
+                "to": "perdido",
+                "trigger": "corretorMoveLeadStage",
+                "actor": "corretorActor",
+                "conditions": [
+                  "Lead.assignedCorretorId === corretorActor.userId (rule-rbac-data-isolation)",
+                  "Transição proposta → perdido é válida conforme rule-lead-stage-transition"
+                ],
+                "actions": [
+                  "Atualizar Lead.stage para 'perdido'",
+                  "Atualizar Lead.updatedAt com timestamp atual",
+                  "Criar LeadStageTransitionEvent com fromStage='proposta', toStage='perdido', performedBy=corretorId, occurredAt=now()",
+                  "Invocar moveLeadStageUsecase para persistir evento em leadStageTransitionEventLog",
+                  "Incrementar leadConversionMetric.lostCount via layer_3_usecases",
+                  "Atualizar monthlyLeadsMetric via layer_3_usecases"
+                ],
+                "rulesApplied": [
+                  "rule-lead-stage-transition",
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "from": "novo",
+                "to": "perdido",
+                "trigger": "corretorMoveLeadStage",
+                "actor": "corretorActor",
+                "conditions": [
+                  "Lead.assignedCorretorId === corretorActor.userId (rule-rbac-data-isolation)",
+                  "Transição novo → perdido é válida conforme rule-lead-stage-transition (desistência antecipada)"
+                ],
+                "actions": [
+                  "Atualizar Lead.stage para 'perdido'",
+                  "Atualizar Lead.updatedAt com timestamp atual",
+                  "Criar LeadStageTransitionEvent com fromStage='novo', toStage='perdido', performedBy=corretorId, occurredAt=now()",
+                  "Invocar moveLeadStageUsecase para persistir evento em leadStageTransitionEventLog",
+                  "Incrementar leadConversionMetric.lostCount via layer_3_usecases",
+                  "Atualizar monthlyLeadsMetric via layer_3_usecases"
+                ],
+                "rulesApplied": [
+                  "rule-lead-stage-transition",
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "from": "contato",
+                "to": "perdido",
+                "trigger": "corretorMoveLeadStage",
+                "actor": "corretorActor",
+                "conditions": [
+                  "Lead.assignedCorretorId === corretorActor.userId (rule-rbac-data-isolation)",
+                  "Transição contato → perdido é válida conforme rule-lead-stage-transition"
+                ],
+                "actions": [
+                  "Atualizar Lead.stage para 'perdido'",
+                  "Atualizar Lead.updatedAt com timestamp atual",
+                  "Criar LeadStageTransitionEvent com fromStage='contato', toStage='perdido', performedBy=corretorId, occurredAt=now()",
+                  "Invocar moveLeadStageUsecase para persistir evento em leadStageTransitionEventLog",
+                  "Incrementar leadConversionMetric.lostCount via layer_3_usecases",
+                  "Atualizar monthlyLeadsMetric via layer_3_usecases"
+                ],
+                "rulesApplied": [
+                  "rule-lead-stage-transition",
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "from": "visita",
+                "to": "perdido",
+                "trigger": "corretorMoveLeadStage",
+                "actor": "corretorActor",
+                "conditions": [
+                  "Lead.assignedCorretorId === corretorActor.userId (rule-rbac-data-isolation)",
+                  "Transição visita → perdido é válida conforme rule-lead-stage-transition"
+                ],
+                "actions": [
+                  "Atualizar Lead.stage para 'perdido'",
+                  "Atualizar Lead.updatedAt com timestamp atual",
+                  "Criar LeadStageTransitionEvent com fromStage='visita', toStage='perdido', performedBy=corretorId, occurredAt=now()",
+                  "Invocar moveLeadStageUsecase para persistir evento em leadStageTransitionEventLog",
+                  "Incrementar leadConversionMetric.lostCount via layer_3_usecases",
+                  "Atualizar monthlyLeadsMetric via layer_3_usecases"
+                ],
+                "rulesApplied": [
+                  "rule-lead-stage-transition",
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "from": "proposta",
+                "to": "visita",
+                "trigger": "adminRollbackLeadStage",
+                "actor": "adminActor",
+                "conditions": [
+                  "Ator deve ter perfil Admin (rule-rbac-data-isolation)",
+                  "Retrocesso de etapa permitido apenas para Admin conforme rule-lead-stage-transition"
+                ],
+                "actions": [
+                  "Atualizar Lead.stage para 'visita'",
+                  "Atualizar Lead.updatedAt com timestamp atual",
+                  "Criar LeadStageTransitionEvent com fromStage='proposta', toStage='visita', performedBy=adminId, occurredAt=now()",
+                  "Invocar moveLeadStageUsecase para persistir evento em leadStageTransitionEventLog",
+                  "Atualizar monthlyLeadsMetric via layer_3_usecases"
+                ],
+                "rulesApplied": [
+                  "rule-lead-stage-transition",
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "from": "visita",
+                "to": "contato",
+                "trigger": "adminRollbackLeadStage",
+                "actor": "adminActor",
+                "conditions": [
+                  "Ator deve ter perfil Admin (rule-rbac-data-isolation)",
+                  "Retrocesso de etapa permitido apenas para Admin conforme rule-lead-stage-transition"
+                ],
+                "actions": [
+                  "Atualizar Lead.stage para 'contato'",
+                  "Atualizar Lead.updatedAt com timestamp atual",
+                  "Criar LeadStageTransitionEvent com fromStage='visita', toStage='contato', performedBy=adminId, occurredAt=now()",
+                  "Invocar moveLeadStageUsecase para persistir evento em leadStageTransitionEventLog",
+                  "Atualizar monthlyLeadsMetric via layer_3_usecases"
+                ],
+                "rulesApplied": [
+                  "rule-lead-stage-transition",
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "from": "contato",
+                "to": "novo",
+                "trigger": "adminRollbackLeadStage",
+                "actor": "adminActor",
+                "conditions": [
+                  "Ator deve ter perfil Admin (rule-rbac-data-isolation)",
+                  "Retrocesso de etapa permitido apenas para Admin conforme rule-lead-stage-transition"
+                ],
+                "actions": [
+                  "Atualizar Lead.stage para 'novo'",
+                  "Atualizar Lead.updatedAt com timestamp atual",
+                  "Criar LeadStageTransitionEvent com fromStage='contato', toStage='novo', performedBy=adminId, occurredAt=now()",
+                  "Invocar moveLeadStageUsecase para persistir evento em leadStageTransitionEventLog",
+                  "Atualizar monthlyLeadsMetric via layer_3_usecases"
+                ],
+                "rulesApplied": [
+                  "rule-lead-stage-transition",
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "from": "proposta",
+                "to": "fechado",
+                "trigger": "dealTerminalStateSyncTrigger",
+                "actor": "systemActor",
+                "conditions": [
+                  "Deal vinculado ao lead atingiu estado terminal 'fechado' conforme rule-lead-stage-transition",
+                  "Lead.stage !== 'fechado' (sincronização necessária)"
+                ],
+                "actions": [
+                  "Atualizar Lead.stage para 'fechado' automaticamente",
+                  "Atualizar Lead.updatedAt com timestamp atual",
+                  "Criar LeadStageTransitionEvent com fromStage=Lead.stage atual, toStage='fechado', performedBy='system', occurredAt=now()",
+                  "Invocar moveLeadStageUsecase para persistir evento em leadStageTransitionEventLog",
+                  "Incrementar leadConversionMetric.convertedCount via layer_3_usecases",
+                  "Atualizar monthlyLeadsMetric via layer_3_usecases"
+                ],
+                "rulesApplied": [
+                  "rule-lead-stage-transition"
+                ]
+              },
+              {
+                "from": "proposta",
+                "to": "perdido",
+                "trigger": "dealTerminalStateSyncTrigger",
+                "actor": "systemActor",
+                "conditions": [
+                  "Deal vinculado ao lead atingiu estado terminal 'perdido' conforme rule-lead-stage-transition",
+                  "Lead.stage !== 'perdido' (sincronização necessária)"
+                ],
+                "actions": [
+                  "Atualizar Lead.stage para 'perdido' automaticamente",
+                  "Atualizar Lead.updatedAt com timestamp atual",
+                  "Criar LeadStageTransitionEvent com fromStage=Lead.stage atual, toStage='perdido', performedBy='system', occurredAt=now()",
+                  "Invocar moveLeadStageUsecase para persistir evento em leadStageTransitionEventLog",
+                  "Incrementar leadConversionMetric.lostCount via layer_3_usecases",
+                  "Atualizar monthlyLeadsMetric via layer_3_usecases"
+                ],
+                "rulesApplied": [
+                  "rule-lead-stage-transition"
+                ]
+              }
+            ],
+            "requiredEntities": [
+              "Lead",
+              "LeadStageTransitionEvent"
+            ],
+            "persistenceRefs": [
+              "leadStageTransitionEventLog",
+              "leadConversionMetric",
+              "monthlyLeadsMetric"
+            ],
+            "usecaseRefs": [
+              "moveLeadStageUsecase"
+            ],
+            "metricRefs": [
+              "monthlyLeadsMetric",
+              "leadConversionMetric"
+            ],
+            "userActions": [
+              "Mover card de lead no Kanban para nova coluna (corretorActor)",
+              "Selecionar etapa de destino no modal de transição (corretorActor)",
+              "Informar motivo opcional da transição (corretorActor)",
+              "Confirmar transição de etapa (corretorActor)",
+              "Retroceder etapa do lead (adminActor apenas)"
+            ],
+            "relatedPages": [],
+            "relatedAgents": [
+              "aiLeadClassification",
+              "aiFollowUpSuggestion"
+            ],
+            "relatedPlugins": [],
+            "rulesApplied": [
+              "rule-lead-stage-transition",
+              "rule-rbac-data-isolation"
+            ],
+            "implementationSuggestions": [
+              {
+                "suggestionId": "validate-transition-backend",
+                "title": "Validar Transições no Backend (moveLeadStageUsecase)",
+                "priority": "now",
+                "description": "O moveLeadStageUsecase deve validar a matriz de transições permitidas antes de persistir qualquer mudança. Transições inválidas devem retornar erro 422 com mensagem descritiva. Retrocesso de etapa deve verificar perfil Admin antes de prosseguir.",
+                "tradeoff": "Adiciona uma camada de validação no backend, mas garante integridade do funil mesmo se o frontend for bypassado."
+              },
+              {
+                "suggestionId": "emit-metrics-on-transition",
+                "title": "Disparar Métricas após Transição via layer_3_usecases",
+                "priority": "now",
+                "description": "Após cada transição bem-sucedida, o moveLeadStageUsecase deve gravar registros em monthlyLeadsMetric e leadConversionMetric (TimescaleDB). Conversões (toStage='fechado') incrementam convertedCount; perdas incrementam lostCount.",
+                "tradeoff": "Escrita síncrona nas métricas aumenta latência da transição. Alternativa: fila assíncrona (soon), mas perde consistência imediata."
+              },
+              {
+                "suggestionId": "ai-classification-trigger",
+                "title": "Integrar Classificação de Lead por IA na Transição",
+                "priority": "now",
+                "description": "Ao mover o lead para 'contato' ou 'visita', invocar o agente aiLeadClassification para atualizar Lead.temperature e Lead.temperatureJustification. Resultado persiste no registro do lead via usecase.",
+                "tradeoff": "Invocação LLM adiciona latência (~1-3s). Recomendado executar de forma assíncrona com feedback visual no Kanban."
+              },
+              {
+                "suggestionId": "task-on-proposal",
+                "title": "Criar Tarefa ao Atingir Etapa de Proposta (futuro)",
+                "priority": "later",
+                "description": "Quando o lead atingir a etapa 'proposta', gerar uma notificação ou tarefa para o corretor ou administrador como lembrete de acompanhamento. createsTask=false foi mantido pois este requisito é futuro e não está no escopo atual.",
+                "tradeoff": "Requer infraestrutura de tarefas/notificações. Implementar quando o módulo de tarefas estiver disponível."
+              },
+              {
+                "suggestionId": "deal-sync-automation",
+                "title": "Sincronização Automática Lead ↔ Deal em Estados Terminais",
+                "priority": "soon",
+                "description": "Implementar listener/trigger no usecase de Deal para chamar moveLeadStageUsecase automaticamente quando um Deal vinculado atingir estado terminal (fechado/perdido), conforme rule-lead-stage-transition.",
+                "tradeoff": "Requer acoplamento entre workflows de Deal e Lead. Usar evento de domínio (domain event) para desacoplar os módulos."
+              }
+            ],
+            "workflowScope": "singleModule",
+            "moduleRefs": [
+              "propertyFlowCrm"
+            ],
+            "pageRefsByModule": [],
+            "entityRefsByModule": [
+              {
+                "moduleId": "propertyFlowCrm",
+                "entity": "Lead"
+              },
+              {
+                "moduleId": "propertyFlowCrm",
+                "entity": "LeadStageTransitionEvent"
+              }
+            ],
+            "writesArtifacts": [
+              {
+                "moduleId": "propertyFlowCrm",
+                "artifactType": "table",
+                "artifactId": "leadStageTransitionEventLog"
+              },
+              {
+                "moduleId": "propertyFlowCrm",
+                "artifactType": "metricTable",
+                "artifactId": "leadConversionMetric"
+              },
+              {
+                "moduleId": "propertyFlowCrm",
+                "artifactType": "metricTable",
+                "artifactId": "monthlyLeadsMetric"
+              },
+              {
+                "moduleId": "propertyFlowCrm",
+                "artifactType": "usecase",
+                "artifactId": "moveLeadStageUsecase"
+              }
+            ]
+          },
+          "defsPlan": {
+            "fileName": "workflows/leadStageTransition.defs.ts",
+            "exportName": "leadStageTransitionDef",
+            "saveAsDefs": true
+          }
+        },
+        "questions": [],
+        "trace": [
+          "Seletor atual: leadStageTransition — gerando exatamente este workflow.",
+          "executionMode=entityLifecycle mantido conforme índice: o workflow controla o ciclo de vida da entidade Lead via campo Lead.stage.",
+          "createsTask=false mantido conforme índice. Razão documentada em implementationSuggestions (task-on-proposal, priority=later): criação de tarefa é requisito futuro.",
+          "taskConfig preenchido com valores vazios/false pois createsTask=false, conforme regra.",
+          "Estados mapeados diretamente do Lead.lifecycleStates: novo, contato, visita, proposta, fechado, perdido.",
+          "Transições de avanço (corretor): novo→contato, contato→visita, visita→proposta, proposta→fechado, proposta→perdido.",
+          "Transições de perda antecipada (corretor): novo→perdido, contato→perdido, visita→perdido.",
+          "Transições de retrocesso (admin apenas, conforme rule-lead-stage-transition): proposta→visita, visita→contato, contato→novo.",
+          "Transições de sincronização automática com Deal (system): proposta→fechado e proposta→perdido via dealTerminalStateSyncTrigger.",
+          "Estado 'perdido' é terminal — nenhuma transição de saída para corretor ou admin, apenas entrada. Reativação requer novo lead.",
+          "Estado 'fechado' é terminal — nenhuma transição de saída.",
+          "persistenceRefs inclui leadStageTransitionEventLog (tableId canônico camelCase), leadConversionMetric e monthlyLeadsMetric (metricTableIds canônicos).",
+          "usecaseRefs inclui moveLeadStageUsecase conforme índice.",
+          "metricRefs inclui monthlyLeadsMetric e leadConversionMetric conforme índice.",
+          "relatedPages retornado como [] conforme regra (páginas não existem ainda neste ponto do fluxo).",
+          "relatedAgents inclui aiLeadClassification e aiFollowUpSuggestion conforme relatedCapabilities do índice.",
+          "workflowScope=singleModule: todas as entidades, tabelas e usecases pertencem ao módulo propertyFlowCrm.",
+          "moduleRefs=[propertyFlowCrm] — escopo único.",
+          "entityRefsByModule: Lead e LeadStageTransitionEvent ambos em propertyFlowCrm. Lead é mdmOwned mas referenciado pelo módulo.",
+          "writesArtifacts: leadStageTransitionEventLog (table), leadConversionMetric (metricTable), monthlyLeadsMetric (metricTable), moveLeadStageUsecase (usecase).",
+          "Nenhuma referência a tabelas físicas snake_case — apenas tableIds/metricTableIds camelCase canônicos.",
+          "adminActor adicionado nas transições de retrocesso conforme rule-lead-stage-transition, mesmo não estando na lista de actors do índice (o índice lista apenas corretorActor para o fluxo principal). Documentado como actor separado nas transições de rollback.",
+          "systemActor adicionado para sincronização automática com Deal, conforme rule-lead-stage-transition.",
+          "defsPlan.fileName=workflows/leadStageTransition.defs.ts, exportName=leadStageTransitionDef, saveAsDefs=true."
+        ]
+      }
+    },
+    "status": "completed",
+    "stepId": 53,
+    "interaction": null,
+    "nextSteps": null
+  }
+}

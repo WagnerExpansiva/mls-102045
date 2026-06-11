@@ -1,0 +1,390 @@
+{
+  "savedAt": "2026-06-11T01:34:16.956Z",
+  "agentName": "agentPlanPageDefinition",
+  "stepId": 60,
+  "planning": null,
+  "status": "waiting_after_prompt",
+  "payload": {
+    "type": "flexible",
+    "result": {
+      "toolName": "submitPageDefinitionPlan",
+      "arguments": {
+        "status": "ok",
+        "result": {
+          "pageDefinition": {
+            "pageId": "visitListPage",
+            "pageName": "Lista de Visitas",
+            "actor": "corretorActor",
+            "purpose": "Listagem e gerenciamento de visitas agendadas do corretor autenticado. Permite visualizar, filtrar por status e intervalo de datas, atualizar o status de cada visita (confirmar, marcar como realizada, cancelar, reagendar) e navegar para o agendamento de nova visita.",
+            "capabilities": [
+              "scheduleVisits",
+              "roleBasedAccess"
+            ],
+            "flowRefs": {
+              "experienceFlows": [],
+              "entityLifecycles": [
+                "visitLifecycle"
+              ],
+              "taskWorkflows": [],
+              "automations": []
+            },
+            "pluginRefs": [
+              "i18n"
+            ],
+            "mdmRefs": [
+              "property",
+              "lead",
+              "broker"
+            ],
+            "pageInputs": [
+              {
+                "name": "statusFilter",
+                "type": "VisitStatusEnum",
+                "required": false,
+                "description": "Filtro opcional de status da visita (agendada, confirmada, realizada, cancelada, reagendada).",
+                "sources": [
+                  "queryParam"
+                ]
+              },
+              {
+                "name": "dateRangeStart",
+                "type": "date",
+                "required": false,
+                "description": "Data de início do intervalo de filtro.",
+                "sources": [
+                  "queryParam"
+                ]
+              },
+              {
+                "name": "dateRangeEnd",
+                "type": "date",
+                "required": false,
+                "description": "Data de fim do intervalo de filtro.",
+                "sources": [
+                  "queryParam"
+                ]
+              }
+            ],
+            "navigationRefs": [
+              {
+                "direction": "outbound",
+                "pageId": "visitFormPage",
+                "trigger": "Clique em 'Agendar Visita'",
+                "description": "Navega para o formulário de agendamento de nova visita."
+              },
+              {
+                "direction": "inbound",
+                "pageId": "operationalDashboardPage",
+                "trigger": "Clique em card de visitas",
+                "description": "Acesso a partir do Dashboard Operacional via card de visitas."
+              }
+            ],
+            "sections": [
+              {
+                "sectionName": "Barra de Filtros",
+                "mode": "view",
+                "organisms": [
+                  {
+                    "organismName": "VisitFilterBar",
+                    "purpose": "Permite ao corretor filtrar a lista de visitas por status e intervalo de datas. Exibe controles de seleção de status e date-picker de período.",
+                    "userActions": [
+                      "Selecionar status de filtro",
+                      "Definir intervalo de datas (dateRangeStart / dateRangeEnd)",
+                      "Limpar filtros"
+                    ],
+                    "requiredEntities": [],
+                    "readsFields": [
+                      "statusFilter",
+                      "dateRangeStart",
+                      "dateRangeEnd"
+                    ],
+                    "writesFields": [
+                      "statusFilter",
+                      "dateRangeStart",
+                      "dateRangeEnd"
+                    ],
+                    "rulesApplied": [
+                      "rule-rbac-data-isolation"
+                    ]
+                  }
+                ]
+              },
+              {
+                "sectionName": "Lista de Visitas",
+                "mode": "view",
+                "organisms": [
+                  {
+                    "organismName": "VisitListTable",
+                    "purpose": "Exibe a lista paginada de visitas do corretor autenticado com colunas de imóvel, lead, data/hora agendada e status atual. Aplica isolamento RBAC garantindo que apenas visitas do corretor autenticado sejam exibidas.",
+                    "userActions": [
+                      "Visualizar lista de visitas",
+                      "Paginar resultados"
+                    ],
+                    "requiredEntities": [
+                      "Visit",
+                      "Property",
+                      "Lead"
+                    ],
+                    "readsFields": [
+                      "visitId",
+                      "propertyId",
+                      "propertyTitle",
+                      "leadId",
+                      "leadName",
+                      "scheduledAt",
+                      "status"
+                    ],
+                    "writesFields": [],
+                    "rulesApplied": [
+                      "rule-rbac-data-isolation"
+                    ]
+                  },
+                  {
+                    "organismName": "VisitStatusActionMenu",
+                    "purpose": "Menu de ações inline por visita que expõe as transições de status disponíveis (confirmar, marcar como realizada, cancelar, reagendar) de acordo com o status atual da visita. Aciona o BFF de atualização de status.",
+                    "userActions": [
+                      "Confirmar visita (agendada → confirmada)",
+                      "Marcar visita como realizada (confirmada → realizada)",
+                      "Cancelar visita com motivo (agendada/confirmada/reagendada → cancelada)",
+                      "Reagendar visita para nova data/hora (agendada/confirmada → reagendada)"
+                    ],
+                    "requiredEntities": [
+                      "Visit",
+                      "VisitStatusTransitionEvent"
+                    ],
+                    "readsFields": [
+                      "visitId",
+                      "status",
+                      "scheduledAt"
+                    ],
+                    "writesFields": [
+                      "status",
+                      "transitionReason",
+                      "scheduledAt"
+                    ],
+                    "rulesApplied": [
+                      "rule-rbac-data-isolation",
+                      "rule-visit-no-conflict"
+                    ]
+                  }
+                ]
+              },
+              {
+                "sectionName": "Ação Principal",
+                "mode": "view",
+                "organisms": [
+                  {
+                    "organismName": "ScheduleVisitCTA",
+                    "purpose": "Botão de ação principal que navega para o formulário de agendamento de nova visita.",
+                    "userActions": [
+                      "Clicar em 'Agendar Visita' para navegar ao visitFormPage"
+                    ],
+                    "requiredEntities": [],
+                    "readsFields": [],
+                    "writesFields": [],
+                    "rulesApplied": [
+                      "rule-rbac-data-isolation"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "bffCommands": [
+            {
+              "commandName": "listVisitsQuery",
+              "purpose": "Retorna a lista paginada de visitas do corretor autenticado, aplicando filtros opcionais de status e intervalo de datas. O isolamento RBAC é garantido pelo usecase, que restringe os resultados ao corretorId resolvido pela sessão.",
+              "kind": "query",
+              "input": [
+                {
+                  "name": "statusFilter",
+                  "type": "VisitStatusEnum",
+                  "required": false
+                },
+                {
+                  "name": "dateRangeStart",
+                  "type": "date",
+                  "required": false
+                },
+                {
+                  "name": "dateRangeEnd",
+                  "type": "date",
+                  "required": false
+                },
+                {
+                  "name": "page",
+                  "type": "number",
+                  "required": false
+                },
+                {
+                  "name": "pageSize",
+                  "type": "number",
+                  "required": false
+                }
+              ],
+              "output": [
+                {
+                  "name": "visitId",
+                  "type": "string"
+                },
+                {
+                  "name": "propertyId",
+                  "type": "string"
+                },
+                {
+                  "name": "propertyTitle",
+                  "type": "string"
+                },
+                {
+                  "name": "leadId",
+                  "type": "string"
+                },
+                {
+                  "name": "leadName",
+                  "type": "string"
+                },
+                {
+                  "name": "scheduledAt",
+                  "type": "date"
+                },
+                {
+                  "name": "status",
+                  "type": "VisitStatusEnum"
+                },
+                {
+                  "name": "totalCount",
+                  "type": "number"
+                }
+              ],
+              "readsEntities": [
+                "Visit",
+                "Property",
+                "Lead",
+                "Corretor"
+              ],
+              "writesEntities": [],
+              "readsTables": [
+                "visit_status_transition_event_log"
+              ],
+              "writesTables": [],
+              "usecaseRefs": [
+                "updateVisitStatusUsecase"
+              ],
+              "layerContract": {
+                "controllerLayer": "layer_2_controllers",
+                "mustCallLayer": "layer_3_usecases",
+                "directTableAccessForbidden": true
+              },
+              "rulesApplied": [
+                "rule-rbac-data-isolation"
+              ]
+            },
+            {
+              "commandName": "updateVisitStatusCommand",
+              "purpose": "Executa a transição de status de uma visita (confirmar, marcar como realizada, cancelar ou reagendar). Valida conflito de horário quando aplicável, registra o VisitStatusTransitionEvent e atualiza a métrica de visitas do mês.",
+              "kind": "mutation",
+              "input": [
+                {
+                  "name": "visitId",
+                  "type": "string",
+                  "required": true
+                },
+                {
+                  "name": "fromStatus",
+                  "type": "VisitStatusEnum",
+                  "required": true
+                },
+                {
+                  "name": "toStatus",
+                  "type": "VisitStatusEnum",
+                  "required": true
+                },
+                {
+                  "name": "reason",
+                  "type": "string",
+                  "required": false
+                },
+                {
+                  "name": "newScheduledAt",
+                  "type": "date",
+                  "required": false
+                }
+              ],
+              "output": [
+                {
+                  "name": "eventId",
+                  "type": "string"
+                },
+                {
+                  "name": "visitId",
+                  "type": "string"
+                },
+                {
+                  "name": "newStatus",
+                  "type": "VisitStatusEnum"
+                },
+                {
+                  "name": "transitionedAt",
+                  "type": "date"
+                }
+              ],
+              "readsEntities": [
+                "Visit",
+                "Property",
+                "Lead",
+                "Corretor"
+              ],
+              "writesEntities": [
+                "Visit",
+                "VisitStatusTransitionEvent"
+              ],
+              "readsTables": [
+                "visit_status_transition_event_log"
+              ],
+              "writesTables": [
+                "visit_status_transition_event_log"
+              ],
+              "usecaseRefs": [
+                "updateVisitStatusUsecase"
+              ],
+              "layerContract": {
+                "controllerLayer": "layer_2_controllers",
+                "mustCallLayer": "layer_3_usecases",
+                "directTableAccessForbidden": true
+              },
+              "rulesApplied": [
+                "rule-rbac-data-isolation",
+                "rule-visit-no-conflict"
+              ]
+            }
+          ]
+        },
+        "questions": [],
+        "trace": [
+          "Seletor de página: visitListPage — Lista de Visitas, ator: corretorActor.",
+          "Capabilities referenciadas: scheduleVisits (prioridade now) e roleBasedAccess (RBAC).",
+          "flowRefs: visitLifecycle é executionMode=entityLifecycle → alocado em entityLifecycles. Nenhum taskWorkflow, automation ou experienceFlow referenciado.",
+          "pageInputs: corretorId é resolvido por sessão/autenticação (não exposto como pageInput conforme regra). Filtros statusFilter, dateRangeStart e dateRangeEnd são queryParams opcionais.",
+          "Seções derivadas das primaryUserActions: (1) Barra de Filtros — filtrar por status/data; (2) Lista de Visitas — listar visitas + ações de status inline; (3) Ação Principal — botão 'Agendar Visita'.",
+          "VisitFilterBar: organismo de filtros sem backend direto; estado local propagado como input para listVisitsQuery.",
+          "VisitListTable: consome listVisitsQuery para exibir visitas paginadas com dados de Property e Lead via MDM refs.",
+          "VisitStatusActionMenu: expõe as transições do visitLifecycle (confirmar, realizar, cancelar, reagendar) e aciona updateVisitStatusCommand. Lê visitId e status atual; escreve status e transitionReason.",
+          "ScheduleVisitCTA: botão de navegação outbound para visitFormPage, sem BFF próprio.",
+          "BFF listVisitsQuery (kind=query): lê Visit, Property, Lead, Corretor via MDM; lê visit_status_transition_event_log (moduleOwned) para status atual; delega a updateVisitStatusUsecase conforme usecaseHints. RBAC aplicado no usecase.",
+          "BFF updateVisitStatusCommand (kind=mutation): mapeia diretamente ao updateVisitStatusUsecase.updateVisitStatus command. Input inclui visitId (obrigatório), fromStatus, toStatus, reason (opcional) e newScheduledAt (opcional para reagendamento). Escreve em visit_status_transition_event_log. Não inclui visits_per_month_metric em writesTables pois é mdmOwned — atualização feita pelo usecase.",
+          "layerContract: controllerLayer=layer_2_controllers, mustCallLayer=layer_3_usecases, directTableAccessForbidden=true para ambos os comandos.",
+          "mdmRefs: property, lead, broker — tabelas MDM não listadas em readsTables/writesTables conforme regra.",
+          "pluginRefs: i18n para internacionalização pt-BR/en.",
+          "navigationRefs: outbound para visitFormPage (trigger: 'Agendar Visita') e inbound de operationalDashboardPage (trigger: card de visitas). Sem inputMapping conforme regra.",
+          "rulesApplied: rule-rbac-data-isolation (isolamento por corretorId de sessão) e rule-visit-no-conflict (validação de conflito de horário no usecase ao reagendar/confirmar).",
+          "Nenhum usecase de IA referenciado para esta página — usecaseHints apontam apenas updateVisitStatusUsecase (operacional).",
+          "Nenhuma métrica exposta nesta página — metricRefs vazio no pageIndexItem."
+        ]
+      }
+    },
+    "status": "completed",
+    "stepId": 62,
+    "interaction": null,
+    "nextSteps": null
+  }
+}

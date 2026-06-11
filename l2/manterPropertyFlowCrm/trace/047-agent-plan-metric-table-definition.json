@@ -1,0 +1,238 @@
+{
+  "savedAt": "2026-06-11T01:23:12.729Z",
+  "agentName": "agentPlanMetricTableDefinition",
+  "stepId": 47,
+  "planning": null,
+  "status": "waiting_after_prompt",
+  "payload": {
+    "type": "flexible",
+    "result": {
+      "toolName": "submitMetricTableDefinitionPlan",
+      "arguments": {
+        "status": "ok",
+        "result": {
+          "metricTableDefinition": {
+            "metricTableId": "dealPipelineMetric",
+            "tableName": "deal_pipeline_metric",
+            "title": "Pipeline de Fechamentos",
+            "moduleId": "propertyFlowCrm",
+            "purpose": "Rastrear o volume e progresso de negócios no pipeline de vendas ao longo do tempo, permitindo previsão de receita, identificação de negócios parados e otimização do funil de fechamento.",
+            "tableKind": "metricTimeseries",
+            "storageEngine": "postgresTimescaleDB",
+            "layer": "layer_1_external",
+            "timeColumn": "recorded_at",
+            "columns": [
+              {
+                "name": "recorded_at",
+                "type": "timestamptz",
+                "nullable": false,
+                "description": "Timestamp do registro da métrica. Coluna de tempo principal do hypertable TimescaleDB."
+              },
+              {
+                "name": "deal_id",
+                "type": "uuid",
+                "nullable": false,
+                "description": "Identificador do negócio (Deal). Dimensão FK derivada da relação ontológica Deal → Deal."
+              },
+              {
+                "name": "lead_id",
+                "type": "uuid",
+                "nullable": false,
+                "description": "Lead vinculado ao negócio. Dimensão FK derivada da relação ontológica Deal → Lead (rel-deal-lead)."
+              },
+              {
+                "name": "property_id",
+                "type": "uuid",
+                "nullable": false,
+                "description": "Imóvel vinculado ao negócio. Dimensão FK derivada da relação ontológica Deal → Property (rel-deal-property)."
+              },
+              {
+                "name": "corretor_id",
+                "type": "uuid",
+                "nullable": false,
+                "description": "Corretor responsável pelo negócio. Dimensão FK derivada da relação ontológica Deal → Corretor (rel-deal-corretor)."
+              },
+              {
+                "name": "stage",
+                "type": "text",
+                "nullable": false,
+                "description": "Etapa atual do negócio no funil de fechamento (proposta, negociacao, contrato, fechado, perdido)."
+              },
+              {
+                "name": "deal_count",
+                "type": "integer",
+                "nullable": false,
+                "default": 0,
+                "description": "Quantidade de negócios registrados neste ponto temporal. Medida principal agregada por sum."
+              }
+            ],
+            "dimensions": [
+              {
+                "dimensionId": "dealId",
+                "column": "deal_id",
+                "type": "uuid",
+                "description": "Identificador do negócio"
+              },
+              {
+                "dimensionId": "leadId",
+                "column": "lead_id",
+                "type": "uuid",
+                "description": "Lead vinculado ao negócio — FK da relação ontológica Deal → Lead (rel-deal-lead)"
+              },
+              {
+                "dimensionId": "propertyId",
+                "column": "property_id",
+                "type": "uuid",
+                "description": "Imóvel vinculado ao negócio — FK da relação ontológica Deal → Property (rel-deal-property)"
+              },
+              {
+                "dimensionId": "corretorId",
+                "column": "corretor_id",
+                "type": "uuid",
+                "description": "Corretor responsável pelo negócio — FK da relação ontológica Deal → Corretor (rel-deal-corretor)"
+              },
+              {
+                "dimensionId": "stage",
+                "column": "stage",
+                "type": "text",
+                "description": "Etapa atual do negócio no funil de fechamento"
+              }
+            ],
+            "measures": [
+              {
+                "measureId": "dealCount",
+                "column": "deal_count",
+                "aggregation": "sum",
+                "unit": "negócios",
+                "description": "Quantidade de negócios registrados no ponto temporal"
+              }
+            ],
+            "sourceWriteEvents": [
+              "deal.created",
+              "deal.stage.updated",
+              "dealStageTransitionEvent.created"
+            ],
+            "rulesApplied": [
+              "rule-deal-stage-transition",
+              "rule-deal-requires-property-and-lead",
+              "rule-rbac-data-isolation"
+            ],
+            "updatePolicy": {
+              "updatedByLayer": "layer_3_usecases",
+              "pagesMayUpdate": false,
+              "controllersMayUpdate": false,
+              "usecaseRefs": [
+                "dealStageWorkflow",
+                "action-create-deal",
+                "action-advance-deal-stage",
+                "action-mark-deal-lost"
+              ]
+            },
+            "accessPolicy": {
+              "directAccessAllowedFor": [
+                "layer_3_usecases"
+              ],
+              "forbiddenFor": [
+                "pages",
+                "layer_2_controllers",
+                "agents"
+              ]
+            },
+            "hypertable": {
+              "timeColumn": "recorded_at",
+              "chunkTimeInterval": "7 days",
+              "retentionPolicy": "2 years",
+              "compressionPolicy": "compress chunks older than 30 days",
+              "indexes": [
+                {
+                  "indexName": "idx_deal_pipeline_metric_recorded_at",
+                  "columns": [
+                    "recorded_at"
+                  ],
+                  "unique": false,
+                  "purpose": "Índice primário de tempo exigido pelo hypertable TimescaleDB para particionamento e queries de range temporal."
+                },
+                {
+                  "indexName": "idx_deal_pipeline_metric_deal_id_recorded_at",
+                  "columns": [
+                    "deal_id",
+                    "recorded_at"
+                  ],
+                  "unique": false,
+                  "purpose": "Lookup de série temporal por negócio específico. Usado pelo Rastreador de Negócios e pelo dealStageWorkflow."
+                },
+                {
+                  "indexName": "idx_deal_pipeline_metric_corretor_id_recorded_at",
+                  "columns": [
+                    "corretor_id",
+                    "recorded_at"
+                  ],
+                  "unique": false,
+                  "purpose": "Filtro por corretor com range temporal para isolamento RBAC (rule-rbac-data-isolation) e Dashboard Operacional filtrado por corretorId."
+                },
+                {
+                  "indexName": "idx_deal_pipeline_metric_stage_recorded_at",
+                  "columns": [
+                    "stage",
+                    "recorded_at"
+                  ],
+                  "unique": false,
+                  "purpose": "Filtro por etapa do funil com range temporal para o widget de funil de negócios no Dashboard Operacional."
+                },
+                {
+                  "indexName": "idx_deal_pipeline_metric_lead_id_recorded_at",
+                  "columns": [
+                    "lead_id",
+                    "recorded_at"
+                  ],
+                  "unique": false,
+                  "purpose": "Lookup de métricas de pipeline associadas a um lead específico. Suporta LeadConversionMetric e tela Detalhe do Lead."
+                },
+                {
+                  "indexName": "idx_deal_pipeline_metric_property_id_recorded_at",
+                  "columns": [
+                    "property_id",
+                    "recorded_at"
+                  ],
+                  "unique": false,
+                  "purpose": "Lookup de negócios associados a um imóvel específico ao longo do tempo. Suporta tela Detalhe do Imóvel e análise de giro de imóveis."
+                }
+              ]
+            }
+          },
+          "defsPlan": {
+            "fileName": "tables/dealPipelineMetric.defs.ts",
+            "exportName": "dealPipelineMetricTableDefinition",
+            "saveAsDefs": true
+          }
+        },
+        "questions": [],
+        "trace": [
+          "Seletor atual: dealPipelineMetric — gerando exclusivamente a definição desta tabela de métrica.",
+          "tableKind definido como 'metricTimeseries' conforme regra obrigatória.",
+          "storageEngine: postgresTimescaleDB conforme metrics index e solution plan.",
+          "timeColumn: 'recorded_at' conforme declarado no metrics index item.",
+          "Dimensões preservadas integralmente do metrics index: dealId, leadId, propertyId, corretorId, stage — nenhuma dimensão removida.",
+          "Dimensões FK verificadas contra ontologia: Deal → Lead (rel-deal-lead), Deal → Property (rel-deal-property), Deal → Corretor (rel-deal-corretor) — todas presentes como dimensões.",
+          "Medida dealCount (sum) preservada do metrics index.",
+          "sourceWriteEvents mapeados: deal.created, deal.stage.updated, dealStageTransitionEvent.created — alinhados com sourceTables [deal, deal_stage_transition_event_log].",
+          "hypertable.timeColumn = metricTableDefinition.timeColumn = 'recorded_at' — regra satisfeita.",
+          "hypertable.chunkTimeInterval = '7 days' — intervalo adequado para volume de negócios imobiliários com janelas de agregação de 1h a 1 mês.",
+          "hypertable.retentionPolicy = '2 years' — conforme definido no metrics index item.",
+          "hypertable.compressionPolicy = 'compress chunks older than 30 days' — otimização de armazenamento para dados históricos.",
+          "hypertable.indexes: 6 índices definidos — (1) recorded_at obrigatório pelo hypertable, (2) deal_id+recorded_at para lookup por negócio, (3) corretor_id+recorded_at para RBAC, (4) stage+recorded_at para funil do dashboard, (5) lead_id+recorded_at para LeadConversionMetric, (6) property_id+recorded_at para análise de imóveis.",
+          "Regra de acesso: directAccessAllowedFor=[layer_3_usecases], forbiddenFor=[pages, layer_2_controllers, agents] — camada layer_1_external com acesso restrito.",
+          "updatePolicy: updatedByLayer=layer_3_usecases, pagesMayUpdate=false, controllersMayUpdate=false — conforme regras obrigatórias.",
+          "usecaseRefs vinculados: dealStageWorkflow, action-create-deal, action-advance-deal-stage, action-mark-deal-lost — todos os pontos de escrita do plano aprovado.",
+          "rulesApplied: rule-deal-stage-transition, rule-deal-requires-property-and-lead, rule-rbac-data-isolation — alinhados com o metrics index item.",
+          "defsPlan.fileName = 'tables/dealPipelineMetric.defs.ts' — estável e específico para esta tabela de métrica.",
+          "Nenhum código TypeScript gerado — apenas definição estrutural."
+        ]
+      }
+    },
+    "status": "completed",
+    "stepId": 50,
+    "interaction": null,
+    "nextSteps": null
+  }
+}

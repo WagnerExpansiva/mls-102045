@@ -1,0 +1,400 @@
+{
+  "savedAt": "2026-06-11T01:27:48.378Z",
+  "agentName": "agentPlanWorkflowDefinition",
+  "stepId": 50,
+  "planning": null,
+  "status": "waiting_after_prompt",
+  "payload": {
+    "type": "flexible",
+    "result": {
+      "toolName": "submitWorkflowDefinitionPlan",
+      "arguments": {
+        "status": "ok",
+        "result": {
+          "workflowDefinition": {
+            "workflowId": "visitLifecycle",
+            "title": "Ciclo de Vida da Visita",
+            "purpose": "Controlar o fluxo de agendamento, confirmação, realização, cancelamento e reagendamento de visitas, garantindo a ausência de conflitos de horário e vinculação obrigatória com imóvel, lead e corretor.",
+            "executionMode": "entityLifecycle",
+            "createsTask": false,
+            "taskConfig": {
+              "taskTitleTemplate": "",
+              "assigneeRules": [],
+              "slaRules": [],
+              "taskRoomRequired": false
+            },
+            "actors": [
+              "corretorActor"
+            ],
+            "states": [
+              {
+                "stateId": "agendada",
+                "description": "Visita criada e agendada pelo corretor. Imóvel, lead e corretor vinculados. Conflito de horário validado."
+              },
+              {
+                "stateId": "confirmada",
+                "description": "Visita confirmada pelo corretor. Todos os vínculos obrigatórios verificados. Pronta para realização."
+              },
+              {
+                "stateId": "realizada",
+                "description": "Visita concluída com sucesso. Métrica visitsPerMonthMetric incrementada."
+              },
+              {
+                "stateId": "cancelada",
+                "description": "Visita cancelada pelo corretor. Motivo de cancelamento registrado no evento de transição."
+              },
+              {
+                "stateId": "reagendada",
+                "description": "Visita reagendada para nova data/hora. Nova validação de conflito de horário executada."
+              }
+            ],
+            "transitions": [
+              {
+                "from": "INITIAL",
+                "to": "agendada",
+                "trigger": "scheduleVisit",
+                "actor": "corretorActor",
+                "conditions": [
+                  "propertyId, leadId e corretorId devem estar preenchidos (rule-visit-requires-property-lead-corretor)",
+                  "scheduledAt deve ser uma data/hora futura válida",
+                  "Nenhuma outra visita do mesmo corretor no mesmo horário (rule-visit-no-conflict)",
+                  "Corretor autenticado deve ser o corretorId informado (rule-rbac-data-isolation)"
+                ],
+                "actions": [
+                  "Criar registro Visit com status = agendada",
+                  "Definir Visit.createdAt e Visit.updatedAt com timestamp atual",
+                  "Definir Visit.createdBy com userId do corretor autenticado",
+                  "Invocar updateVisitStatusUsecase (scheduleVisit command)",
+                  "Criar VisitStatusTransitionEvent: fromStatus = null, toStatus = agendada",
+                  "Persistir evento em visitStatusTransitionEventLog",
+                  "Inserir registro em visitsPerMonthMetric com status = agendada, visit_count = 1"
+                ],
+                "rulesApplied": [
+                  "rule-visit-requires-property-lead-corretor",
+                  "rule-visit-no-conflict",
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "from": "agendada",
+                "to": "confirmada",
+                "trigger": "confirmVisit",
+                "actor": "corretorActor",
+                "conditions": [
+                  "Visit.status deve ser agendada",
+                  "propertyId, leadId e corretorId devem estar preenchidos (rule-visit-requires-property-lead-corretor)",
+                  "Corretor autenticado deve ser o corretorId da visita (rule-rbac-data-isolation)"
+                ],
+                "actions": [
+                  "Atualizar Visit.status = confirmada",
+                  "Atualizar Visit.updatedAt com timestamp atual",
+                  "Invocar updateVisitStatusUsecase (updateVisitStatus command: agendada → confirmada)",
+                  "Criar VisitStatusTransitionEvent: fromStatus = agendada, toStatus = confirmada",
+                  "Persistir evento em visitStatusTransitionEventLog",
+                  "Atualizar registro em visitsPerMonthMetric com status = confirmada"
+                ],
+                "rulesApplied": [
+                  "rule-visit-requires-property-lead-corretor",
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "from": "confirmada",
+                "to": "realizada",
+                "trigger": "markVisitCompleted",
+                "actor": "corretorActor",
+                "conditions": [
+                  "Visit.status deve ser confirmada",
+                  "Corretor autenticado deve ser o corretorId da visita (rule-rbac-data-isolation)"
+                ],
+                "actions": [
+                  "Atualizar Visit.status = realizada",
+                  "Atualizar Visit.updatedAt com timestamp atual",
+                  "Invocar updateVisitStatusUsecase (updateVisitStatus command: confirmada → realizada)",
+                  "Criar VisitStatusTransitionEvent: fromStatus = confirmada, toStatus = realizada",
+                  "Persistir evento em visitStatusTransitionEventLog",
+                  "Atualizar registro em visitsPerMonthMetric: status = realizada, completed_visit_count = 1"
+                ],
+                "rulesApplied": [
+                  "rule-rbac-data-isolation",
+                  "rule-visit-no-conflict"
+                ]
+              },
+              {
+                "from": "agendada",
+                "to": "cancelada",
+                "trigger": "cancelVisit",
+                "actor": "corretorActor",
+                "conditions": [
+                  "Visit.status deve ser agendada",
+                  "cancelReason deve ser informado",
+                  "Corretor autenticado deve ser o corretorId da visita (rule-rbac-data-isolation)"
+                ],
+                "actions": [
+                  "Atualizar Visit.status = cancelada",
+                  "Atualizar Visit.cancelReason com o motivo informado",
+                  "Atualizar Visit.updatedAt com timestamp atual",
+                  "Invocar updateVisitStatusUsecase (updateVisitStatus command: agendada → cancelada)",
+                  "Criar VisitStatusTransitionEvent: fromStatus = agendada, toStatus = cancelada, transitionReason = cancelReason",
+                  "Persistir evento em visitStatusTransitionEventLog",
+                  "Atualizar registro em visitsPerMonthMetric: status = cancelada, cancelled_visit_count = 1"
+                ],
+                "rulesApplied": [
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "from": "confirmada",
+                "to": "cancelada",
+                "trigger": "cancelVisit",
+                "actor": "corretorActor",
+                "conditions": [
+                  "Visit.status deve ser confirmada",
+                  "cancelReason deve ser informado",
+                  "Corretor autenticado deve ser o corretorId da visita (rule-rbac-data-isolation)"
+                ],
+                "actions": [
+                  "Atualizar Visit.status = cancelada",
+                  "Atualizar Visit.cancelReason com o motivo informado",
+                  "Atualizar Visit.updatedAt com timestamp atual",
+                  "Invocar updateVisitStatusUsecase (updateVisitStatus command: confirmada → cancelada)",
+                  "Criar VisitStatusTransitionEvent: fromStatus = confirmada, toStatus = cancelada, transitionReason = cancelReason",
+                  "Persistir evento em visitStatusTransitionEventLog",
+                  "Atualizar registro em visitsPerMonthMetric: status = cancelada, cancelled_visit_count = 1"
+                ],
+                "rulesApplied": [
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "from": "agendada",
+                "to": "reagendada",
+                "trigger": "rescheduleVisit",
+                "actor": "corretorActor",
+                "conditions": [
+                  "Visit.status deve ser agendada",
+                  "Nova scheduledAt deve ser uma data/hora futura válida",
+                  "Nenhuma outra visita do mesmo corretor no novo horário (rule-visit-no-conflict)",
+                  "Corretor autenticado deve ser o corretorId da visita (rule-rbac-data-isolation)"
+                ],
+                "actions": [
+                  "Atualizar Visit.scheduledAt com nova data/hora",
+                  "Atualizar Visit.status = reagendada",
+                  "Atualizar Visit.updatedAt com timestamp atual",
+                  "Invocar updateVisitStatusUsecase (updateVisitStatus command: agendada → reagendada)",
+                  "Criar VisitStatusTransitionEvent: fromStatus = agendada, toStatus = reagendada",
+                  "Persistir evento em visitStatusTransitionEventLog",
+                  "Atualizar registro em visitsPerMonthMetric com status = reagendada"
+                ],
+                "rulesApplied": [
+                  "rule-visit-no-conflict",
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "from": "confirmada",
+                "to": "reagendada",
+                "trigger": "rescheduleVisit",
+                "actor": "corretorActor",
+                "conditions": [
+                  "Visit.status deve ser confirmada",
+                  "Nova scheduledAt deve ser uma data/hora futura válida",
+                  "Nenhuma outra visita do mesmo corretor no novo horário (rule-visit-no-conflict)",
+                  "Corretor autenticado deve ser o corretorId da visita (rule-rbac-data-isolation)"
+                ],
+                "actions": [
+                  "Atualizar Visit.scheduledAt com nova data/hora",
+                  "Atualizar Visit.status = reagendada",
+                  "Atualizar Visit.updatedAt com timestamp atual",
+                  "Invocar updateVisitStatusUsecase (updateVisitStatus command: confirmada → reagendada)",
+                  "Criar VisitStatusTransitionEvent: fromStatus = confirmada, toStatus = reagendada",
+                  "Persistir evento em visitStatusTransitionEventLog",
+                  "Atualizar registro em visitsPerMonthMetric com status = reagendada"
+                ],
+                "rulesApplied": [
+                  "rule-visit-no-conflict",
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "from": "reagendada",
+                "to": "confirmada",
+                "trigger": "confirmVisit",
+                "actor": "corretorActor",
+                "conditions": [
+                  "Visit.status deve ser reagendada",
+                  "propertyId, leadId e corretorId devem estar preenchidos (rule-visit-requires-property-lead-corretor)",
+                  "Corretor autenticado deve ser o corretorId da visita (rule-rbac-data-isolation)"
+                ],
+                "actions": [
+                  "Atualizar Visit.status = confirmada",
+                  "Atualizar Visit.updatedAt com timestamp atual",
+                  "Invocar updateVisitStatusUsecase (updateVisitStatus command: reagendada → confirmada)",
+                  "Criar VisitStatusTransitionEvent: fromStatus = reagendada, toStatus = confirmada",
+                  "Persistir evento em visitStatusTransitionEventLog",
+                  "Atualizar registro em visitsPerMonthMetric com status = confirmada"
+                ],
+                "rulesApplied": [
+                  "rule-visit-requires-property-lead-corretor",
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "from": "reagendada",
+                "to": "cancelada",
+                "trigger": "cancelVisit",
+                "actor": "corretorActor",
+                "conditions": [
+                  "Visit.status deve ser reagendada",
+                  "cancelReason deve ser informado",
+                  "Corretor autenticado deve ser o corretorId da visita (rule-rbac-data-isolation)"
+                ],
+                "actions": [
+                  "Atualizar Visit.status = cancelada",
+                  "Atualizar Visit.cancelReason com o motivo informado",
+                  "Atualizar Visit.updatedAt com timestamp atual",
+                  "Invocar updateVisitStatusUsecase (updateVisitStatus command: reagendada → cancelada)",
+                  "Criar VisitStatusTransitionEvent: fromStatus = reagendada, toStatus = cancelada, transitionReason = cancelReason",
+                  "Persistir evento em visitStatusTransitionEventLog",
+                  "Atualizar registro em visitsPerMonthMetric: status = cancelada, cancelled_visit_count = 1"
+                ],
+                "rulesApplied": [
+                  "rule-rbac-data-isolation"
+                ]
+              }
+            ],
+            "requiredEntities": [
+              "Visit",
+              "VisitStatusTransitionEvent"
+            ],
+            "persistenceRefs": [
+              "visitStatusTransitionEventLog",
+              "visitsPerMonthMetric"
+            ],
+            "usecaseRefs": [
+              "updateVisitStatusUsecase"
+            ],
+            "metricRefs": [
+              "visitsPerMonthMetric"
+            ],
+            "userActions": [
+              "Agendar nova visita com imóvel, lead, corretor e data/hora",
+              "Confirmar visita agendada ou reagendada",
+              "Marcar visita como realizada",
+              "Cancelar visita com motivo obrigatório",
+              "Reagendar visita para nova data/hora com revalidação de conflito"
+            ],
+            "relatedPages": [],
+            "relatedAgents": [],
+            "relatedPlugins": [
+              "calendarIntegrationPlugin"
+            ],
+            "rulesApplied": [
+              "rule-rbac-data-isolation",
+              "rule-visit-no-conflict",
+              "rule-visit-requires-property-lead-corretor"
+            ],
+            "implementationSuggestions": [
+              {
+                "suggestionId": "conflict-validation",
+                "title": "Validar Conflitos de Horário",
+                "priority": "now",
+                "description": "Antes de confirmar qualquer agendamento ou reagendamento, o updateVisitStatusUsecase deve consultar visitStatusTransitionEventLog e a entidade Visit (MDM) para garantir que o corretor não possui outra visita no mesmo intervalo de tempo. A validação deve ocorrer em layer_3_usecases, nunca no controller ou na página.",
+                "tradeoff": "Adiciona uma query extra por transição de agendamento/reagendamento. Pode ser otimizada com índice composto (corretor_id, scheduled_at) na entidade Visit."
+              },
+              {
+                "suggestionId": "required-links",
+                "title": "Validar Vínculos Obrigatórios",
+                "priority": "now",
+                "description": "O updateVisitStatusUsecase deve verificar que propertyId, leadId e corretorId estão preenchidos e existem no MDM antes de permitir a transição para confirmada. Retornar erro de validação explícito caso algum vínculo esteja ausente.",
+                "tradeoff": "Requer leitura das entidades MDM (property, lead, corretor) no usecase. Custo mínimo pois são lookups por PK."
+              },
+              {
+                "suggestionId": "visit-metrics",
+                "title": "Atualizar Métricas de Visitas",
+                "priority": "now",
+                "description": "O updateVisitStatusUsecase deve inserir/atualizar um registro em visitsPerMonthMetric a cada transição de status, incrementando completed_visit_count quando toStatus = realizada e cancelled_visit_count quando toStatus = cancelada. Isso garante que o Dashboard Operacional reflita dados em tempo real.",
+                "tradeoff": "Escrita síncrona na métrica dentro do mesmo usecase. Alternativa assíncrona (event-driven) pode ser adotada futuramente para maior resiliência."
+              },
+              {
+                "suggestionId": "noTaskReason",
+                "title": "Sem Criação de Task para Este Workflow",
+                "priority": "never",
+                "description": "O ciclo de vida da visita é controlado diretamente pelo corretor via transições de status na entidade Visit. Não há necessidade de criar uma Task separada, pois o próprio registro de visita serve como unidade de trabalho rastreável com estados bem definidos.",
+                "tradeoff": "Caso seja necessário atribuir revisão ou aprovação por um terceiro (ex: gerente), uma Task poderia ser útil. Por ora, o modelo entityLifecycle é suficiente."
+              },
+              {
+                "suggestionId": "calendar-sync",
+                "title": "Sincronizar com Calendário Externo",
+                "priority": "later",
+                "description": "Integrar com Google Calendar / Outlook via calendarIntegrationPlugin ao confirmar ou reagendar uma visita. O evento de calendário externo pode ser referenciado no campo details (JSONB) do visitStatusTransitionEventLog.",
+                "tradeoff": "Dependência de plugin externo e latência adicional. Deve ser implementado de forma assíncrona para não bloquear o fluxo principal."
+              }
+            ],
+            "workflowScope": "singleModule",
+            "moduleRefs": [
+              "propertyFlowCrm"
+            ],
+            "pageRefsByModule": [],
+            "entityRefsByModule": [
+              {
+                "moduleId": "propertyFlowCrm",
+                "entity": "Visit"
+              },
+              {
+                "moduleId": "propertyFlowCrm",
+                "entity": "VisitStatusTransitionEvent"
+              }
+            ],
+            "writesArtifacts": [
+              {
+                "moduleId": "propertyFlowCrm",
+                "artifactType": "table",
+                "artifactId": "visitStatusTransitionEventLog"
+              },
+              {
+                "moduleId": "propertyFlowCrm",
+                "artifactType": "metricTable",
+                "artifactId": "visitsPerMonthMetric"
+              },
+              {
+                "moduleId": "propertyFlowCrm",
+                "artifactType": "usecase",
+                "artifactId": "updateVisitStatusUsecase"
+              }
+            ]
+          },
+          "defsPlan": {
+            "fileName": "workflows/visitLifecycle.defs.ts",
+            "exportName": "visitLifecycleDef",
+            "saveAsDefs": true
+          }
+        },
+        "questions": [],
+        "trace": [
+          "Seletor atual: visitLifecycle — gerando exatamente este workflow.",
+          "executionMode=entityLifecycle mantido conforme índice: o workflow controla o ciclo de vida da entidade Visit com estados bem definidos.",
+          "createsTask=false mantido conforme índice: a entidade Visit já serve como unidade de trabalho rastreável; uma Task separada seria redundante. Explicado em implementationSuggestions (noTaskReason).",
+          "taskConfig preenchido com valores vazios/false pois createsTask=false, conforme regra.",
+          "Estados mapeados diretamente do statusEnum da entidade Visit: agendada, confirmada, realizada, cancelada, reagendada.",
+          "Estado INITIAL adicionado como origem da transição scheduleVisit (criação da visita).",
+          "Transições cobertas: INITIAL→agendada, agendada→confirmada, confirmada→realizada, agendada→cancelada, confirmada→cancelada, agendada→reagendada, confirmada→reagendada, reagendada→confirmada, reagendada→cancelada.",
+          "Todas as transições invocam updateVisitStatusUsecase (layer_3_usecases) e criam VisitStatusTransitionEvent, conforme rule-visit-no-conflict.",
+          "persistenceRefs usa camelCase canônico: visitStatusTransitionEventLog (tableId) e visitsPerMonthMetric (metricTableId), nunca os nomes físicos snake_case.",
+          "metricRefs inclui visitsPerMonthMetric pois a transição confirmada→realizada incrementa completed_visit_count.",
+          "relatedPages retornado como [] conforme regra (páginas não existem ainda neste ponto do fluxo).",
+          "relatedPlugins inclui calendarIntegrationPlugin referenciado no índice (sugestão calendar-sync, priority=later).",
+          "workflowScope=singleModule: todos os artefatos pertencem ao módulo propertyFlowCrm.",
+          "moduleRefs=[propertyFlowCrm] consistente com singleModule.",
+          "entityRefsByModule: Visit e VisitStatusTransitionEvent ambas em propertyFlowCrm (Visit é mdmOwned mas o módulo a referencia; VisitStatusTransitionEvent é moduleOwned).",
+          "writesArtifacts: visitStatusTransitionEventLog (table), visitsPerMonthMetric (metricTable), updateVisitStatusUsecase (usecase).",
+          "defsPlan: fileName=workflows/visitLifecycle.defs.ts, exportName=visitLifecycleDef, saveAsDefs=true."
+        ]
+      }
+    },
+    "status": "completed",
+    "stepId": 53,
+    "interaction": null,
+    "nextSteps": null
+  }
+}

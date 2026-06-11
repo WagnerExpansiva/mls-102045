@@ -1,0 +1,44 @@
+{
+  "savedAt": "2026-06-11T01:32:38.823Z",
+  "agentName": "agentCriticPlanIndex",
+  "stepId": 54,
+  "planning": {
+    "planId": "plan-index-critic:pageIndex:2",
+    "dependsOn": [
+      "plan-page-index"
+    ],
+    "executionMode": "sequential",
+    "executionHost": "client"
+  },
+  "status": "waiting_after_prompt",
+  "payload": {
+    "type": "flexible",
+    "result": {
+      "toolName": "submitPlanIndexCritique",
+      "arguments": {
+        "status": "ok",
+        "result": {
+          "approved": true,
+          "errors": [],
+          "warnings": []
+        },
+        "questions": [],
+        "trace": [
+          "Verificação de actors: todos os page actors (adminActor, corretorActor) são actorIds finais do plano.",
+          "Verificação de capabilities: todas as capabilities 'now' que exigem interação do usuário estão cobertas por páginas.",
+          "Verificação de usecaseHints: todos os usecaseIds referenciados existem no plano aprovado (queryDashboardMetricsUsecase, updatePropertyStatusUsecase, generatePropertyDescriptionUsecase, moveLeadStageUsecase, classifyLeadAiUsecase, getFollowUpSuggestionUsecase, manageLeadUsecase, updateVisitStatusUsecase, advanceDealStageUsecase).",
+          "Verificação de bffCommandHints[].name: todos os nomes referenciam usecaseIds existentes no plano aprovado.",
+          "Verificação de flowRefs: todos os workflowIds referenciados existem no bucket de workflows (propertyStatusUpdate, leadStageTransition, visitLifecycle, dealStageProgression).",
+          "Verificação de metric dashboard: initialMetricsRequested=true e a página operationalDashboardPage existe restrita ao actor adminActor, conforme declarado no metricDashboards aprovado.",
+          "Verificação de pluginRefs, mdmRefs, metricRefs, rulesApplied: todas as referências existem nos artefatos aprovados.",
+          "Nenhuma página inventada ou capability não aprovada foi identificada.",
+          "Nenhum erro de contrato detectado."
+        ]
+      }
+    },
+    "status": "completed",
+    "stepId": 55,
+    "interaction": null,
+    "nextSteps": null
+  }
+}

@@ -1,0 +1,365 @@
+{
+  "savedAt": "2026-06-11T01:27:48.894Z",
+  "agentName": "agentPlanWorkflowDefinition",
+  "stepId": 51,
+  "planning": null,
+  "status": "waiting_after_prompt",
+  "payload": {
+    "type": "flexible",
+    "result": {
+      "toolName": "submitWorkflowDefinitionPlan",
+      "arguments": {
+        "status": "ok",
+        "result": {
+          "workflowDefinition": {
+            "workflowId": "dealStageProgression",
+            "title": "Progressão de Etapas do Negócio",
+            "purpose": "Gerenciar a evolução de uma proposta comercial através das etapas de negociação, contrato e fechamento, assegurando que imóvel e lead estejam vinculados e registrando transições para o pipeline.",
+            "executionMode": "entityLifecycle",
+            "createsTask": false,
+            "taskConfig": {
+              "taskTitleTemplate": "",
+              "assigneeRules": [],
+              "slaRules": [],
+              "taskRoomRequired": false
+            },
+            "actors": [
+              "corretorActor"
+            ],
+            "states": [
+              {
+                "stateId": "proposta",
+                "description": "Negócio criado com imóvel e lead vinculados. Proposta inicial registrada, aguardando início da negociação."
+              },
+              {
+                "stateId": "negociacao",
+                "description": "Proposta aceita pelo lead; negociação de valores, condições e prazos em andamento entre corretor e cliente."
+              },
+              {
+                "stateId": "contrato",
+                "description": "Termos acordados; contrato em elaboração ou assinatura pendente. Negócio comprometido mas não finalizado."
+              },
+              {
+                "stateId": "fechado",
+                "description": "Negócio concluído com sucesso. Imóvel vinculado atualizado para vendido/alugado e lead sincronizado para fechado. Estado terminal."
+              },
+              {
+                "stateId": "perdido",
+                "description": "Negócio encerrado sem conversão. Imóvel retorna a disponível e lead é sincronizado para perdido. Estado terminal."
+              }
+            ],
+            "transitions": [
+              {
+                "from": "proposta",
+                "to": "negociacao",
+                "trigger": "corretorAdvancesToNegociacao",
+                "actor": "corretorActor",
+                "conditions": [
+                  "Deal.propertyId não nulo (rule-deal-requires-property-and-lead)",
+                  "Deal.leadId não nulo (rule-deal-requires-property-and-lead)",
+                  "Corretor autenticado é o corretorId do negócio (rule-rbac-data-isolation)",
+                  "Transição proposta → negociacao é válida (rule-deal-stage-transition)"
+                ],
+                "actions": [
+                  "Atualizar Deal.stage para 'negociacao'",
+                  "Atualizar Deal.updatedAt com timestamp atual",
+                  "Criar DealStageTransitionEvent com fromStage='proposta', toStage='negociacao', performedBy=corretorId, occurredAt=now()",
+                  "Invocar advanceDealStageUsecase (comando advanceDealStage)",
+                  "Atualizar dealPipelineMetric via layer_3_usecases"
+                ],
+                "rulesApplied": [
+                  "rule-deal-stage-transition",
+                  "rule-deal-requires-property-and-lead",
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "from": "negociacao",
+                "to": "contrato",
+                "trigger": "corretorAdvancesToContrato",
+                "actor": "corretorActor",
+                "conditions": [
+                  "Deal.propertyId não nulo (rule-deal-requires-property-and-lead)",
+                  "Deal.leadId não nulo (rule-deal-requires-property-and-lead)",
+                  "Corretor autenticado é o corretorId do negócio (rule-rbac-data-isolation)",
+                  "Transição negociacao → contrato é válida (rule-deal-stage-transition)"
+                ],
+                "actions": [
+                  "Atualizar Deal.stage para 'contrato'",
+                  "Atualizar Deal.updatedAt com timestamp atual",
+                  "Criar DealStageTransitionEvent com fromStage='negociacao', toStage='contrato', performedBy=corretorId, occurredAt=now()",
+                  "Invocar advanceDealStageUsecase (comando advanceDealStage)",
+                  "Atualizar dealPipelineMetric via layer_3_usecases"
+                ],
+                "rulesApplied": [
+                  "rule-deal-stage-transition",
+                  "rule-deal-requires-property-and-lead",
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "from": "contrato",
+                "to": "fechado",
+                "trigger": "corretorCloseDeal",
+                "actor": "corretorActor",
+                "conditions": [
+                  "Deal.propertyId não nulo (rule-deal-requires-property-and-lead)",
+                  "Deal.leadId não nulo (rule-deal-requires-property-and-lead)",
+                  "Corretor autenticado é o corretorId do negócio (rule-rbac-data-isolation)",
+                  "Transição contrato → fechado é válida (rule-deal-stage-transition)"
+                ],
+                "actions": [
+                  "Atualizar Deal.stage para 'fechado'",
+                  "Atualizar Deal.closedAt com timestamp atual",
+                  "Atualizar Deal.updatedAt com timestamp atual",
+                  "Criar DealStageTransitionEvent com fromStage='contrato', toStage='fechado', performedBy=corretorId, occurredAt=now()",
+                  "Invocar advanceDealStageUsecase (comando advanceDealStage)",
+                  "Sincronizar Property.status para 'vendido' ou 'alugado' conforme Deal.dealType (rule-deal-stage-transition)",
+                  "Sincronizar Lead.stage para 'fechado' (rule-deal-stage-transition)",
+                  "Atualizar dealPipelineMetric e leadConversionMetric via layer_3_usecases"
+                ],
+                "rulesApplied": [
+                  "rule-deal-stage-transition",
+                  "rule-deal-requires-property-and-lead",
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "from": "proposta",
+                "to": "perdido",
+                "trigger": "corretorMarkLostFromProposta",
+                "actor": "corretorActor",
+                "conditions": [
+                  "Corretor autenticado é o corretorId do negócio (rule-rbac-data-isolation)",
+                  "lostReason fornecido pelo corretor",
+                  "Transição proposta → perdido é válida (rule-deal-stage-transition)"
+                ],
+                "actions": [
+                  "Atualizar Deal.stage para 'perdido'",
+                  "Atualizar Deal.lostReason com motivo informado",
+                  "Atualizar Deal.updatedAt com timestamp atual",
+                  "Criar DealStageTransitionEvent com fromStage='proposta', toStage='perdido', performedBy=corretorId, occurredAt=now()",
+                  "Invocar advanceDealStageUsecase (comando markDealLost)",
+                  "Sincronizar Property.status para 'disponivel' (rule-deal-stage-transition)",
+                  "Sincronizar Lead.stage para 'perdido' (rule-deal-stage-transition)",
+                  "Atualizar dealPipelineMetric e leadConversionMetric via layer_3_usecases"
+                ],
+                "rulesApplied": [
+                  "rule-deal-stage-transition",
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "from": "negociacao",
+                "to": "perdido",
+                "trigger": "corretorMarkLostFromNegociacao",
+                "actor": "corretorActor",
+                "conditions": [
+                  "Corretor autenticado é o corretorId do negócio (rule-rbac-data-isolation)",
+                  "lostReason fornecido pelo corretor",
+                  "Transição negociacao → perdido é válida (rule-deal-stage-transition)"
+                ],
+                "actions": [
+                  "Atualizar Deal.stage para 'perdido'",
+                  "Atualizar Deal.lostReason com motivo informado",
+                  "Atualizar Deal.updatedAt com timestamp atual",
+                  "Criar DealStageTransitionEvent com fromStage='negociacao', toStage='perdido', performedBy=corretorId, occurredAt=now()",
+                  "Invocar advanceDealStageUsecase (comando markDealLost)",
+                  "Sincronizar Property.status para 'disponivel' (rule-deal-stage-transition)",
+                  "Sincronizar Lead.stage para 'perdido' (rule-deal-stage-transition)",
+                  "Atualizar dealPipelineMetric e leadConversionMetric via layer_3_usecases"
+                ],
+                "rulesApplied": [
+                  "rule-deal-stage-transition",
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "from": "contrato",
+                "to": "perdido",
+                "trigger": "corretorMarkLostFromContrato",
+                "actor": "corretorActor",
+                "conditions": [
+                  "Corretor autenticado é o corretorId do negócio (rule-rbac-data-isolation)",
+                  "lostReason fornecido pelo corretor",
+                  "Transição contrato → perdido é válida (rule-deal-stage-transition)"
+                ],
+                "actions": [
+                  "Atualizar Deal.stage para 'perdido'",
+                  "Atualizar Deal.lostReason com motivo informado",
+                  "Atualizar Deal.updatedAt com timestamp atual",
+                  "Criar DealStageTransitionEvent com fromStage='contrato', toStage='perdido', performedBy=corretorId, occurredAt=now()",
+                  "Invocar advanceDealStageUsecase (comando markDealLost)",
+                  "Sincronizar Property.status para 'disponivel' (rule-deal-stage-transition)",
+                  "Sincronizar Lead.stage para 'perdido' (rule-deal-stage-transition)",
+                  "Atualizar dealPipelineMetric e leadConversionMetric via layer_3_usecases"
+                ],
+                "rulesApplied": [
+                  "rule-deal-stage-transition",
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "from": "proposta",
+                "to": "proposta",
+                "trigger": "corretorCreateDeal",
+                "actor": "corretorActor",
+                "conditions": [
+                  "propertyId fornecido e não nulo (rule-deal-requires-property-and-lead)",
+                  "leadId fornecido e não nulo (rule-deal-requires-property-and-lead)",
+                  "corretorId autenticado corresponde ao usuário logado (rule-rbac-data-isolation)"
+                ],
+                "actions": [
+                  "Criar Deal com stage='proposta', propertyId, leadId, corretorId, dealValue, dealType, createdAt=now(), updatedAt=now()",
+                  "Invocar advanceDealStageUsecase (comando createDeal)",
+                  "Criar DealStageTransitionEvent com fromStage='', toStage='proposta', performedBy=corretorId, occurredAt=now()",
+                  "Atualizar dealPipelineMetric via layer_3_usecases"
+                ],
+                "rulesApplied": [
+                  "rule-deal-requires-property-and-lead",
+                  "rule-rbac-data-isolation"
+                ]
+              }
+            ],
+            "requiredEntities": [
+              "Deal",
+              "DealStageTransitionEvent"
+            ],
+            "persistenceRefs": [
+              "dealStageTransitionEventLog",
+              "dealPipelineMetric",
+              "leadConversionMetric"
+            ],
+            "usecaseRefs": [
+              "advanceDealStageUsecase"
+            ],
+            "metricRefs": [
+              "dealPipelineMetric",
+              "leadConversionMetric"
+            ],
+            "userActions": [
+              "Criar novo negócio/proposta vinculando imóvel e lead",
+              "Avançar negócio de proposta para negociação",
+              "Avançar negócio de negociação para contrato",
+              "Fechar negócio (contrato → fechado)",
+              "Marcar negócio como perdido em qualquer etapa ativa, informando motivo"
+            ],
+            "relatedPages": [],
+            "relatedAgents": [],
+            "relatedPlugins": [],
+            "rulesApplied": [
+              "rule-rbac-data-isolation",
+              "rule-deal-stage-transition",
+              "rule-deal-requires-property-and-lead"
+            ],
+            "implementationSuggestions": [
+              {
+                "suggestionId": "deal-link-validation",
+                "title": "Validar Vínculo de Imóvel e Lead",
+                "priority": "now",
+                "description": "Bloquear criação ou avanço de negócio sem propertyId e leadId preenchidos. A validação deve ocorrer no advanceDealStageUsecase (layer_3) antes de qualquer escrita, retornando erro de domínio descritivo ao BFF.",
+                "tradeoff": "Adiciona uma leitura extra ao MDM de Deal na entrada do usecase; custo mínimo frente à integridade garantida."
+              },
+              {
+                "suggestionId": "deal-transition-rules",
+                "title": "Aplicar Regras de Transição de Etapa",
+                "priority": "now",
+                "description": "Implementar uma máquina de estados no advanceDealStageUsecase que rejeite transições inválidas (ex: proposta → fechado direto, ou qualquer saída de 'fechado'/'perdido'). Estados terminais devem ser imutáveis após atingidos.",
+                "tradeoff": "Requer manutenção da tabela de transições válidas no usecase; simplifica testes e auditoria."
+              },
+              {
+                "suggestionId": "pipeline-metrics",
+                "title": "Atualizar Pipeline de Fechamentos",
+                "priority": "now",
+                "description": "A cada transição de etapa, o advanceDealStageUsecase deve inserir um registro em dealPipelineMetric e, quando a transição envolver fechamento ou perda, também em leadConversionMetric. Ambas as escritas devem ocorrer na mesma transação do usecase.",
+                "tradeoff": "Acoplamento transacional entre log de evento e métrica; garante consistência mas aumenta latência da operação de transição."
+              },
+              {
+                "suggestionId": "property-status-sync",
+                "title": "Sincronizar Status do Imóvel no Fechamento",
+                "priority": "soon",
+                "description": "Ao fechar negócio (→ fechado), o usecase deve atualizar Property.status para 'vendido' ou 'alugado' conforme Deal.dealType. Ao marcar como perdido, reverter Property.status para 'disponivel'. Essa sincronização deve ser atômica com a transição do Deal.",
+                "tradeoff": "Requer acesso ao MDM de Property dentro do usecase; aumenta o escopo da transação mas elimina inconsistências de status entre Deal e Property."
+              },
+              {
+                "suggestionId": "no-task-rationale",
+                "title": "Sem Criação de Task (Justificativa)",
+                "priority": "never",
+                "description": "Este workflow opera como ciclo de vida de entidade (entityLifecycle): o corretor avança etapas diretamente via UI no Rastreador de Negócios. Não há necessidade de task assíncrona pois cada transição é uma ação síncrona e imediata do corretor. Tasks seriam redundantes e adicionariam fricção desnecessária ao fluxo de trabalho.",
+                "tradeoff": "Sem tasks, não há notificações automáticas de prazo (SLA). Se SLAs por etapa forem necessários no futuro, considerar adicionar taskWorkflow complementar."
+              }
+            ],
+            "workflowScope": "singleModule",
+            "moduleRefs": [
+              "propertyFlowCrm"
+            ],
+            "pageRefsByModule": [],
+            "entityRefsByModule": [
+              {
+                "moduleId": "propertyFlowCrm",
+                "entity": "Deal"
+              },
+              {
+                "moduleId": "propertyFlowCrm",
+                "entity": "DealStageTransitionEvent"
+              }
+            ],
+            "writesArtifacts": [
+              {
+                "moduleId": "propertyFlowCrm",
+                "artifactType": "table",
+                "artifactId": "dealStageTransitionEventLog"
+              },
+              {
+                "moduleId": "propertyFlowCrm",
+                "artifactType": "metricTable",
+                "artifactId": "dealPipelineMetric"
+              },
+              {
+                "moduleId": "propertyFlowCrm",
+                "artifactType": "metricTable",
+                "artifactId": "leadConversionMetric"
+              },
+              {
+                "moduleId": "propertyFlowCrm",
+                "artifactType": "usecase",
+                "artifactId": "advanceDealStageUsecase"
+              }
+            ]
+          },
+          "defsPlan": {
+            "fileName": "workflows/dealStageProgression.defs.ts",
+            "exportName": "dealStageProgressionDef",
+            "saveAsDefs": true
+          }
+        },
+        "questions": [],
+        "trace": [
+          "Seletor: dealStageProgression — módulo propertyFlowCrm.",
+          "executionMode=entityLifecycle e createsTask=false mantidos conforme índice; o workflow modela o ciclo de vida da entidade Deal sem necessidade de task assíncrona.",
+          "taskConfig preenchido com valores vazios/false pois createsTask=false; justificativa detalhada na implementationSuggestion 'no-task-rationale'.",
+          "Estados derivados diretamente do statusEnum/lifecycleStates da entidade Deal: proposta, negociacao, contrato, fechado, perdido.",
+          "Estados terminais: 'fechado' e 'perdido' — nenhuma transição de saída definida para eles, conforme rule-deal-stage-transition.",
+          "Transição de criação modelada como proposta→proposta (self-loop) com trigger corretorCreateDeal, mapeando o comando createDeal do advanceDealStageUsecase.",
+          "Transições de avanço: proposta→negociacao, negociacao→contrato, contrato→fechado.",
+          "Transições de perda: proposta→perdido, negociacao→perdido, contrato→perdido — todas invocam comando markDealLost.",
+          "Todas as transições exigem validação de propertyId e leadId (rule-deal-requires-property-and-lead) e isolamento RBAC por corretorId (rule-rbac-data-isolation).",
+          "Fechamento (→fechado) inclui sincronização de Property.status e Lead.stage conforme rule-deal-stage-transition.",
+          "Perda (→perdido) inclui reversão de Property.status para 'disponivel' e sincronização de Lead.stage para 'perdido'.",
+          "persistenceRefs: dealStageTransitionEventLog (tableId canônico), dealPipelineMetric e leadConversionMetric (metricTableIds canônicos) — todos em camelCase conforme índice de persistência.",
+          "metricRefs: dealPipelineMetric e leadConversionMetric — alimentados a cada transição via layer_3_usecases.",
+          "usecaseRefs: advanceDealStageUsecase — único usecase referenciado no índice.",
+          "relatedPages retornado como [] conforme regra (páginas ainda não existem).",
+          "workflowScope=singleModule pois todos os artefatos pertencem ao módulo propertyFlowCrm.",
+          "moduleRefs=[propertyFlowCrm]; pageRefsByModule=[]; entityRefsByModule inclui Deal e DealStageTransitionEvent ambos em propertyFlowCrm.",
+          "writesArtifacts inclui dealStageTransitionEventLog (table), dealPipelineMetric (metricTable), leadConversionMetric (metricTable) e advanceDealStageUsecase (usecase).",
+          "defsPlan: fileName=workflows/dealStageProgression.defs.ts, exportName=dealStageProgressionDef, saveAsDefs=true."
+        ]
+      }
+    },
+    "status": "completed",
+    "stepId": 54,
+    "interaction": null,
+    "nextSteps": null
+  }
+}
