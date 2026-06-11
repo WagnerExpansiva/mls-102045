@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "2026-06-06",
+  "artifactType": "planHealthReport",
+  "moduleName": "manterPropertyFlowCrm",
+  "savedAt": "2026-06-11T01:37:30.124Z",
+  "source": {
+    "agentName": "agentValidateSolutionCoverage",
+    "stepId": 26,
+    "planId": "org-materialization"
+  },
+  "report": {
+    "summary": {
+      "passed": false,
+      "errorCount": 3,
+      "warningCount": 0
+    },
+    "issues": [
+      {
+        "severity": "error",
+        "code": "usecase.consumer.missing",
+        "message": "usecase manageCorretorUsecase has no consumer (no page BFF command, workflow or agent references it); it declares BFF commands, so a page should expose it as an action",
+        "path": "usecase.manageCorretorUsecase",
+        "evidence": []
+      },
+      {
+        "severity": "error",
+        "code": "horizontal.artifact.missing",
+        "message": "approved horizontal module authAndRbacModule produced no plan item/artifact",
+        "path": "approvedArtifacts.horizontalModules[0]",
+        "evidence": []
+      },
+      {
+        "severity": "error",
+        "code": "horizontal.artifact.missing",
+        "message": "approved horizontal module auditLogModule produced no plan item/artifact",
+        "path": "approvedArtifacts.horizontalModules[2]",
+        "evidence": []
+      }
+    ],
+    "checklistResults": null,
+    "readyToSaveDefs": false,
+    "deterministicOnly": true,
+    "refreshedAt": "2026-06-11T01:37:30.124Z",
+    "refreshedBy": "agentNewSolutionFinal (T-016 deterministic re-validation)"
+  }
+}
