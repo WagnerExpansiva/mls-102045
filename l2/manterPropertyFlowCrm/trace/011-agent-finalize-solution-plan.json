@@ -1,0 +1,2523 @@
+{
+  "savedAt": "2026-06-11T01:17:09.770Z",
+  "agentName": "agentFinalizeSolutionPlan",
+  "stepId": 11,
+  "planning": {
+    "planId": "plan-finalize-solution-plan",
+    "dependsOn": [
+      "plan-blueprint-review"
+    ],
+    "executionMode": "sequential",
+    "executionHost": "client"
+  },
+  "status": "waiting_after_prompt",
+  "payload": {
+    "type": "flexible",
+    "result": {
+      "toolName": "submitFinalSolutionPlan",
+      "arguments": {
+        "status": "ok",
+        "result": {
+          "module": {
+            "moduleName": "propertyFlowCrm",
+            "title": "PropertyFlowCRM",
+            "purpose": "Centralizar a gestão de imóveis, leads, visitas e negócios para imobiliárias e corretores, aumentando a conversão e reduzindo a perda de oportunidades com suporte a IA.",
+            "businessDomain": "Corretagem Imobiliária / CRM",
+            "languages": [
+              "pt-BR",
+              "en"
+            ],
+            "visualStyle": {
+              "tone": "Moderno e profissional, transmitindo confiança e sofisticação",
+              "layout": "Dashboard-first com navegação lateral, kanban para pipeline de leads e rastreador de negócios por etapas",
+              "palette": [
+                "#FFFFFF",
+                "#F4F5F7",
+                "#1E293B",
+                "#2563EB",
+                "#10B981"
+              ]
+            }
+          },
+          "actors": [
+            {
+              "actorId": "adminActor",
+              "title": "Admin (Imobiliária)",
+              "description": "Gestor da imobiliária com acesso total ao sistema: todos os imóveis, leads, visitas, negócios e corretores. Pode configurar o sistema, gerenciar usuários e visualizar métricas globais."
+            },
+            {
+              "actorId": "corretorActor",
+              "title": "Corretor",
+              "description": "Corretor de imóveis com acesso restrito aos seus próprios registros de leads, visitas e negócios. Pode usar os agentes de IA para classificação de leads e geração de descrições."
+            },
+            {
+              "actorId": "assistenteActor",
+              "title": "Assistente",
+              "description": "Assistente da equipe com acesso restrito, podendo apoiar no cadastro de imóveis e agendamento de visitas conforme permissões definidas pelo Admin. Opera sob as mesmas capabilities do Corretor com restrições adicionais aplicadas via rule-rbac-data-isolation. Acessa apenas registros atribuídos ao seu perfil."
+            }
+          ],
+          "capabilities": [
+            {
+              "capabilityId": "manageProperties",
+              "title": "Gestão de Imóveis (CRUD + Busca)",
+              "description": "Cadastrar, editar, visualizar e remover imóveis com endereço, tipo, preço, status, características e fotos mock via picsum.photos. Inclui busca por texto e filtros por tipo, status, preço e localização.",
+              "actor": "adminActor",
+              "priority": "now"
+            },
+            {
+              "capabilityId": "manageLeads",
+              "title": "Gestão de Leads/Clientes",
+              "description": "Cadastrar e gerenciar leads com dados de contato, anotações, histórico de interações e corretor responsável.",
+              "actor": "corretorActor",
+              "priority": "now"
+            },
+            {
+              "capabilityId": "leadPipelineKanban",
+              "title": "Pipeline de Leads (Kanban + Lista)",
+              "description": "Visualizar e mover leads entre etapas do funil em formato kanban como visualização principal, com alternância para lista. Exibe classificação de temperatura em cada card.",
+              "actor": "corretorActor",
+              "priority": "now"
+            },
+            {
+              "capabilityId": "scheduleVisits",
+              "title": "Agendamento de Visitas",
+              "description": "Criar, editar e cancelar visitas vinculando lead, imóvel, corretor e data/hora. Validação de conflito de horário. Visualização em lista com filtros.",
+              "actor": "corretorActor",
+              "priority": "now"
+            },
+            {
+              "capabilityId": "trackDeals",
+              "title": "Rastreador de Negócios/Propostas por Etapas",
+              "description": "Gerenciar negócios/propostas com etapas do funil de fechamento (Proposta → Negociação → Contrato → Fechado/Perdido), valor e imóvel vinculado.",
+              "actor": "corretorActor",
+              "priority": "now"
+            },
+            {
+              "capabilityId": "dashboardOverview",
+              "title": "Dashboard Operacional",
+              "description": "Painel com métricas básicas: imóveis ativos, leads do mês, pipeline de fechamentos e indicadores de desempenho. Admin vê dados globais; Corretor vê apenas seus registros.",
+              "actor": "adminActor",
+              "priority": "now"
+            },
+            {
+              "capabilityId": "aiPropertyDescription",
+              "title": "IA: Geração de Descrição de Imóvel",
+              "description": "Agente LLM que recebe bullets/características do imóvel e gera uma descrição profissional e atrativa em pt-BR ou en.",
+              "actor": "corretorActor",
+              "priority": "now"
+            },
+            {
+              "capabilityId": "aiLeadClassification",
+              "title": "IA: Classificação de Lead (Quente/Morno/Frio)",
+              "description": "Agente LLM que analisa anotações e histórico do lead e classifica o nível de interesse, persistindo o resultado no registro.",
+              "actor": "corretorActor",
+              "priority": "now"
+            },
+            {
+              "capabilityId": "aiFollowUpSuggestion",
+              "title": "IA: Sugestão de Mensagem de Follow-up",
+              "description": "Agente LLM que, com base no perfil, classificação e histórico do lead, sugere a próxima mensagem personalizada de follow-up para o corretor.",
+              "actor": "corretorActor",
+              "priority": "now"
+            },
+            {
+              "capabilityId": "roleBasedAccess",
+              "title": "Controle de Acesso por Perfil (RBAC)",
+              "description": "Admin tem acesso total; Corretor e Assistente acessam apenas seus próprios registros. Isolamento de dados garantido por perfil.",
+              "actor": "adminActor",
+              "priority": "now"
+            },
+            {
+              "capabilityId": "manageCorretores",
+              "title": "Gestão de Corretores",
+              "description": "Cadastrar e gerenciar corretores vinculados à imobiliária, com perfil, dados de contato e atribuições.",
+              "actor": "adminActor",
+              "priority": "soon"
+            },
+            {
+              "capabilityId": "i18nSupport",
+              "title": "Suporte a Múltiplos Idiomas (pt-BR / en)",
+              "description": "Interface disponível em pt-BR (padrão) e inglês, com alternância de idioma em toda a aplicação.",
+              "actor": "adminActor",
+              "priority": "soon"
+            }
+          ],
+          "ontology": {
+            "entities": {
+              "Property": {
+                "title": "Imóvel",
+                "description": "Entidade mestre central do domínio imobiliário. Representa um imóvel disponível para venda ou locação, com todos os seus atributos, características e fotos mock.",
+                "kind": "masterEntity",
+                "ownership": "mdmOwned",
+                "statusEnum": [
+                  "disponivel",
+                  "reservado",
+                  "vendido",
+                  "alugado",
+                  "inativo"
+                ],
+                "lifecycleStates": [
+                  "disponivel",
+                  "reservado",
+                  "vendido",
+                  "alugado",
+                  "inativo"
+                ],
+                "rulesApplied": [
+                  "rule-property-status-transition",
+                  "rule-rbac-data-isolation"
+                ],
+                "fields": [
+                  {
+                    "fieldId": "propertyId",
+                    "type": "string",
+                    "required": true,
+                    "description": "Identificador único do imóvel (UUID)."
+                  },
+                  {
+                    "fieldId": "title",
+                    "type": "string",
+                    "required": true,
+                    "description": "Título ou nome de referência do imóvel."
+                  },
+                  {
+                    "fieldId": "description",
+                    "type": "string",
+                    "required": false,
+                    "description": "Descrição profissional do imóvel, podendo ser gerada pelo agente de IA."
+                  },
+                  {
+                    "fieldId": "propertyType",
+                    "type": "enum(apartamento,casa,comercial,terreno,rural,outro)",
+                    "required": true,
+                    "description": "Tipo do imóvel."
+                  },
+                  {
+                    "fieldId": "transactionType",
+                    "type": "enum(venda,locacao,ambos)",
+                    "required": true,
+                    "description": "Tipo de transação: venda, locação ou ambos."
+                  },
+                  {
+                    "fieldId": "price",
+                    "type": "number",
+                    "required": true,
+                    "description": "Preço de venda ou valor de locação mensal em reais."
+                  },
+                  {
+                    "fieldId": "status",
+                    "type": "enum(disponivel,reservado,vendido,alugado,inativo)",
+                    "required": true,
+                    "description": "Status atual do imóvel no ciclo de vida."
+                  },
+                  {
+                    "fieldId": "addressStreet",
+                    "type": "string",
+                    "required": true,
+                    "description": "Logradouro do endereço do imóvel."
+                  },
+                  {
+                    "fieldId": "addressNumber",
+                    "type": "string",
+                    "required": true,
+                    "description": "Número do endereço."
+                  },
+                  {
+                    "fieldId": "addressComplement",
+                    "type": "string",
+                    "required": false,
+                    "description": "Complemento do endereço (apto, bloco etc.)."
+                  },
+                  {
+                    "fieldId": "addressNeighborhood",
+                    "type": "string",
+                    "required": true,
+                    "description": "Bairro do imóvel."
+                  },
+                  {
+                    "fieldId": "addressCity",
+                    "type": "string",
+                    "required": true,
+                    "description": "Cidade do imóvel."
+                  },
+                  {
+                    "fieldId": "addressState",
+                    "type": "string",
+                    "required": true,
+                    "description": "Estado (UF) do imóvel."
+                  },
+                  {
+                    "fieldId": "addressZipCode",
+                    "type": "string",
+                    "required": false,
+                    "description": "CEP do imóvel."
+                  },
+                  {
+                    "fieldId": "areaM2",
+                    "type": "number",
+                    "required": false,
+                    "description": "Área total do imóvel em metros quadrados."
+                  },
+                  {
+                    "fieldId": "bedrooms",
+                    "type": "integer",
+                    "required": false,
+                    "description": "Número de quartos/dormitórios."
+                  },
+                  {
+                    "fieldId": "bathrooms",
+                    "type": "integer",
+                    "required": false,
+                    "description": "Número de banheiros."
+                  },
+                  {
+                    "fieldId": "parkingSpots",
+                    "type": "integer",
+                    "required": false,
+                    "description": "Número de vagas de garagem."
+                  },
+                  {
+                    "fieldId": "features",
+                    "type": "string[]",
+                    "required": false,
+                    "description": "Lista de características e diferenciais do imóvel (ex: piscina, churrasqueira, academia)."
+                  },
+                  {
+                    "fieldId": "photoUrls",
+                    "type": "string[]",
+                    "required": false,
+                    "description": "Lista de URLs de fotos mock do imóvel (picsum.photos)."
+                  },
+                  {
+                    "fieldId": "aiBullets",
+                    "type": "string",
+                    "required": false,
+                    "description": "Bullets/características em texto livre usados como input para o agente de geração de descrição IA."
+                  },
+                  {
+                    "fieldId": "assignedCorretorId",
+                    "type": "string",
+                    "required": false,
+                    "description": "ID do corretor responsável pelo imóvel."
+                  },
+                  {
+                    "fieldId": "createdAt",
+                    "type": "datetime",
+                    "required": true,
+                    "description": "Data e hora de criação do registro."
+                  },
+                  {
+                    "fieldId": "updatedAt",
+                    "type": "datetime",
+                    "required": true,
+                    "description": "Data e hora da última atualização."
+                  },
+                  {
+                    "fieldId": "createdBy",
+                    "type": "string",
+                    "required": true,
+                    "description": "ID do usuário que criou o registro."
+                  }
+                ]
+              },
+              "Lead": {
+                "title": "Lead / Cliente",
+                "description": "Entidade mestre de leads e clientes com dados de contato, anotações, classificação de temperatura gerada por IA, histórico de interações e corretor responsável.",
+                "kind": "masterEntity",
+                "ownership": "mdmOwned",
+                "statusEnum": [
+                  "novo",
+                  "contato",
+                  "visita",
+                  "proposta",
+                  "fechado",
+                  "perdido"
+                ],
+                "lifecycleStates": [
+                  "novo",
+                  "contato",
+                  "visita",
+                  "proposta",
+                  "fechado",
+                  "perdido"
+                ],
+                "rulesApplied": [
+                  "rule-lead-stage-transition",
+                  "rule-rbac-data-isolation"
+                ],
+                "fields": [
+                  {
+                    "fieldId": "leadId",
+                    "type": "string",
+                    "required": true,
+                    "description": "Identificador único do lead (UUID)."
+                  },
+                  {
+                    "fieldId": "fullName",
+                    "type": "string",
+                    "required": true,
+                    "description": "Nome completo do lead/cliente."
+                  },
+                  {
+                    "fieldId": "email",
+                    "type": "string",
+                    "required": false,
+                    "description": "E-mail de contato do lead."
+                  },
+                  {
+                    "fieldId": "phone",
+                    "type": "string",
+                    "required": false,
+                    "description": "Telefone/WhatsApp de contato do lead."
+                  },
+                  {
+                    "fieldId": "stage",
+                    "type": "enum(novo,contato,visita,proposta,fechado,perdido)",
+                    "required": true,
+                    "description": "Etapa atual do lead no funil de vendas."
+                  },
+                  {
+                    "fieldId": "temperature",
+                    "type": "enum(quente,morno,frio)",
+                    "required": false,
+                    "description": "Classificação de temperatura do lead gerada pelo agente de IA."
+                  },
+                  {
+                    "fieldId": "temperatureJustification",
+                    "type": "string",
+                    "required": false,
+                    "description": "Justificativa da classificação de temperatura gerada pela IA."
+                  },
+                  {
+                    "fieldId": "followUpSuggestion",
+                    "type": "string",
+                    "required": false,
+                    "description": "Sugestão de mensagem de follow-up gerada pelo agente de IA."
+                  },
+                  {
+                    "fieldId": "notes",
+                    "type": "string",
+                    "required": false,
+                    "description": "Anotações livres sobre o lead, usadas como input para os agentes de IA."
+                  },
+                  {
+                    "fieldId": "interactionHistory",
+                    "type": "object[]",
+                    "required": false,
+                    "description": "Histórico de interações com o lead (data, tipo, descrição)."
+                  },
+                  {
+                    "fieldId": "interestedPropertyIds",
+                    "type": "string[]",
+                    "required": false,
+                    "description": "IDs dos imóveis de interesse do lead."
+                  },
+                  {
+                    "fieldId": "assignedCorretorId",
+                    "type": "string",
+                    "required": true,
+                    "description": "ID do corretor responsável pelo lead."
+                  },
+                  {
+                    "fieldId": "source",
+                    "type": "string",
+                    "required": false,
+                    "description": "Origem do lead (ex: site, indicação, portal imobiliário)."
+                  },
+                  {
+                    "fieldId": "createdAt",
+                    "type": "datetime",
+                    "required": true,
+                    "description": "Data e hora de criação do registro."
+                  },
+                  {
+                    "fieldId": "updatedAt",
+                    "type": "datetime",
+                    "required": true,
+                    "description": "Data e hora da última atualização."
+                  },
+                  {
+                    "fieldId": "createdBy",
+                    "type": "string",
+                    "required": true,
+                    "description": "ID do usuário que criou o registro."
+                  }
+                ]
+              },
+              "Visit": {
+                "title": "Visita / Agendamento",
+                "description": "Entidade transacional que vincula Lead, Imóvel e Corretor com data/hora, status do ciclo de vida e observações.",
+                "kind": "transactionalEntity",
+                "ownership": "mdmOwned",
+                "statusEnum": [
+                  "agendada",
+                  "confirmada",
+                  "realizada",
+                  "cancelada",
+                  "reagendada"
+                ],
+                "lifecycleStates": [
+                  "agendada",
+                  "confirmada",
+                  "realizada",
+                  "cancelada",
+                  "reagendada"
+                ],
+                "rulesApplied": [
+                  "rule-visit-no-conflict",
+                  "rule-rbac-data-isolation"
+                ],
+                "fields": [
+                  {
+                    "fieldId": "visitId",
+                    "type": "string",
+                    "required": true,
+                    "description": "Identificador único da visita (UUID)."
+                  },
+                  {
+                    "fieldId": "propertyId",
+                    "type": "string",
+                    "required": true,
+                    "description": "ID do imóvel a ser visitado."
+                  },
+                  {
+                    "fieldId": "leadId",
+                    "type": "string",
+                    "required": true,
+                    "description": "ID do lead/cliente que realizará a visita."
+                  },
+                  {
+                    "fieldId": "corretorId",
+                    "type": "string",
+                    "required": true,
+                    "description": "ID do corretor responsável pela visita."
+                  },
+                  {
+                    "fieldId": "scheduledAt",
+                    "type": "datetime",
+                    "required": true,
+                    "description": "Data e hora agendada para a visita."
+                  },
+                  {
+                    "fieldId": "durationMinutes",
+                    "type": "integer",
+                    "required": false,
+                    "description": "Duração estimada da visita em minutos."
+                  },
+                  {
+                    "fieldId": "status",
+                    "type": "enum(agendada,confirmada,realizada,cancelada,reagendada)",
+                    "required": true,
+                    "description": "Status atual da visita no ciclo de vida."
+                  },
+                  {
+                    "fieldId": "notes",
+                    "type": "string",
+                    "required": false,
+                    "description": "Observações sobre a visita (feedback, impressões do cliente etc.)."
+                  },
+                  {
+                    "fieldId": "cancelReason",
+                    "type": "string",
+                    "required": false,
+                    "description": "Motivo do cancelamento, quando aplicável."
+                  },
+                  {
+                    "fieldId": "createdAt",
+                    "type": "datetime",
+                    "required": true,
+                    "description": "Data e hora de criação do agendamento."
+                  },
+                  {
+                    "fieldId": "updatedAt",
+                    "type": "datetime",
+                    "required": true,
+                    "description": "Data e hora da última atualização."
+                  },
+                  {
+                    "fieldId": "createdBy",
+                    "type": "string",
+                    "required": true,
+                    "description": "ID do usuário que criou o agendamento."
+                  }
+                ]
+              },
+              "Deal": {
+                "title": "Negócio / Proposta",
+                "description": "Entidade transacional que representa uma proposta ou negócio em andamento, com etapas do funil de fechamento, valor e vínculos a Imóvel e Lead.",
+                "kind": "transactionalEntity",
+                "ownership": "mdmOwned",
+                "statusEnum": [
+                  "proposta",
+                  "negociacao",
+                  "contrato",
+                  "fechado",
+                  "perdido"
+                ],
+                "lifecycleStates": [
+                  "proposta",
+                  "negociacao",
+                  "contrato",
+                  "fechado",
+                  "perdido"
+                ],
+                "rulesApplied": [
+                  "rule-deal-stage-transition",
+                  "rule-property-status-transition",
+                  "rule-rbac-data-isolation"
+                ],
+                "fields": [
+                  {
+                    "fieldId": "dealId",
+                    "type": "string",
+                    "required": true,
+                    "description": "Identificador único do negócio (UUID)."
+                  },
+                  {
+                    "fieldId": "title",
+                    "type": "string",
+                    "required": true,
+                    "description": "Título ou referência do negócio/proposta."
+                  },
+                  {
+                    "fieldId": "propertyId",
+                    "type": "string",
+                    "required": true,
+                    "description": "ID do imóvel vinculado ao negócio."
+                  },
+                  {
+                    "fieldId": "leadId",
+                    "type": "string",
+                    "required": true,
+                    "description": "ID do lead/cliente vinculado ao negócio."
+                  },
+                  {
+                    "fieldId": "corretorId",
+                    "type": "string",
+                    "required": true,
+                    "description": "ID do corretor responsável pelo negócio."
+                  },
+                  {
+                    "fieldId": "stage",
+                    "type": "enum(proposta,negociacao,contrato,fechado,perdido)",
+                    "required": true,
+                    "description": "Etapa atual do negócio no funil de fechamento."
+                  },
+                  {
+                    "fieldId": "dealValue",
+                    "type": "number",
+                    "required": true,
+                    "description": "Valor da proposta/negócio em reais."
+                  },
+                  {
+                    "fieldId": "dealType",
+                    "type": "enum(venda,locacao)",
+                    "required": true,
+                    "description": "Tipo do negócio: venda ou locação."
+                  },
+                  {
+                    "fieldId": "notes",
+                    "type": "string",
+                    "required": false,
+                    "description": "Observações e histórico de negociação."
+                  },
+                  {
+                    "fieldId": "lostReason",
+                    "type": "string",
+                    "required": false,
+                    "description": "Motivo da perda do negócio, quando aplicável."
+                  },
+                  {
+                    "fieldId": "expectedCloseDate",
+                    "type": "date",
+                    "required": false,
+                    "description": "Data prevista de fechamento do negócio."
+                  },
+                  {
+                    "fieldId": "closedAt",
+                    "type": "datetime",
+                    "required": false,
+                    "description": "Data e hora efetiva do fechamento."
+                  },
+                  {
+                    "fieldId": "createdAt",
+                    "type": "datetime",
+                    "required": true,
+                    "description": "Data e hora de criação do registro."
+                  },
+                  {
+                    "fieldId": "updatedAt",
+                    "type": "datetime",
+                    "required": true,
+                    "description": "Data e hora da última atualização."
+                  },
+                  {
+                    "fieldId": "createdBy",
+                    "type": "string",
+                    "required": true,
+                    "description": "ID do usuário que criou o registro."
+                  }
+                ]
+              },
+              "Corretor": {
+                "title": "Corretor",
+                "description": "Entidade mestre de corretores vinculados à imobiliária. Referenciada por Visitas, Leads e Negócios para controle de acesso e isolamento de registros por perfil.",
+                "kind": "masterEntity",
+                "ownership": "mdmOwned",
+                "statusEnum": [
+                  "ativo",
+                  "inativo"
+                ],
+                "lifecycleStates": [
+                  "ativo",
+                  "inativo"
+                ],
+                "rulesApplied": [
+                  "rule-rbac-data-isolation"
+                ],
+                "fields": [
+                  {
+                    "fieldId": "corretorId",
+                    "type": "string",
+                    "required": true,
+                    "description": "Identificador único do corretor (UUID), vinculado ao userId do sistema de autenticação."
+                  },
+                  {
+                    "fieldId": "userId",
+                    "type": "string",
+                    "required": true,
+                    "description": "ID do usuário no sistema de autenticação (RBAC)."
+                  },
+                  {
+                    "fieldId": "fullName",
+                    "type": "string",
+                    "required": true,
+                    "description": "Nome completo do corretor."
+                  },
+                  {
+                    "fieldId": "email",
+                    "type": "string",
+                    "required": true,
+                    "description": "E-mail profissional do corretor."
+                  },
+                  {
+                    "fieldId": "phone",
+                    "type": "string",
+                    "required": false,
+                    "description": "Telefone de contato do corretor."
+                  },
+                  {
+                    "fieldId": "role",
+                    "type": "enum(admin,corretor,assistente)",
+                    "required": true,
+                    "description": "Perfil de acesso do corretor no sistema."
+                  },
+                  {
+                    "fieldId": "creci",
+                    "type": "string",
+                    "required": false,
+                    "description": "Número do CRECI (Conselho Regional de Corretores de Imóveis)."
+                  },
+                  {
+                    "fieldId": "avatarUrl",
+                    "type": "string",
+                    "required": false,
+                    "description": "URL da foto de perfil do corretor."
+                  },
+                  {
+                    "fieldId": "status",
+                    "type": "enum(ativo,inativo)",
+                    "required": true,
+                    "description": "Status do corretor na imobiliária."
+                  },
+                  {
+                    "fieldId": "createdAt",
+                    "type": "datetime",
+                    "required": true,
+                    "description": "Data e hora de criação do registro."
+                  },
+                  {
+                    "fieldId": "updatedAt",
+                    "type": "datetime",
+                    "required": true,
+                    "description": "Data e hora da última atualização."
+                  }
+                ]
+              },
+              "PropertyDescriptionCommand": {
+                "title": "Comando: Gerar Descrição de Imóvel",
+                "description": "Entidade de caso de uso (layer_3) que representa o comando de acionamento do agente LLM para geração de descrição profissional de imóvel a partir de bullets.",
+                "kind": "usecaseEntity",
+                "ownership": "moduleOwned",
+                "rulesApplied": [
+                  "rule-llm-agent-invocation"
+                ],
+                "fields": [
+                  {
+                    "fieldId": "commandId",
+                    "type": "string",
+                    "required": true,
+                    "description": "Identificador único do comando (UUID)."
+                  },
+                  {
+                    "fieldId": "propertyId",
+                    "type": "string",
+                    "required": true,
+                    "description": "ID do imóvel para o qual a descrição será gerada."
+                  },
+                  {
+                    "fieldId": "inputBullets",
+                    "type": "string",
+                    "required": true,
+                    "description": "Bullets e características do imóvel fornecidos como input para o agente."
+                  },
+                  {
+                    "fieldId": "targetLanguage",
+                    "type": "enum(pt-BR,en)",
+                    "required": true,
+                    "description": "Idioma alvo da descrição gerada."
+                  },
+                  {
+                    "fieldId": "generatedDescription",
+                    "type": "string",
+                    "required": false,
+                    "description": "Descrição profissional gerada pelo agente LLM."
+                  },
+                  {
+                    "fieldId": "status",
+                    "type": "enum(pending,completed,failed)",
+                    "required": true,
+                    "description": "Status do processamento do comando."
+                  },
+                  {
+                    "fieldId": "requestedBy",
+                    "type": "string",
+                    "required": true,
+                    "description": "ID do usuário que acionou o comando."
+                  },
+                  {
+                    "fieldId": "createdAt",
+                    "type": "datetime",
+                    "required": true,
+                    "description": "Data e hora de criação do comando."
+                  }
+                ]
+              },
+              "LeadClassificationCommand": {
+                "title": "Comando: Classificar Lead com IA",
+                "description": "Entidade de caso de uso (layer_3) que representa o comando de acionamento do agente LLM para classificação de temperatura do lead.",
+                "kind": "usecaseEntity",
+                "ownership": "moduleOwned",
+                "rulesApplied": [
+                  "rule-llm-agent-invocation"
+                ],
+                "fields": [
+                  {
+                    "fieldId": "commandId",
+                    "type": "string",
+                    "required": true,
+                    "description": "Identificador único do comando (UUID)."
+                  },
+                  {
+                    "fieldId": "leadId",
+                    "type": "string",
+                    "required": true,
+                    "description": "ID do lead a ser classificado."
+                  },
+                  {
+                    "fieldId": "inputNotes",
+                    "type": "string",
+                    "required": true,
+                    "description": "Anotações e histórico do lead usados como input para o agente."
+                  },
+                  {
+                    "fieldId": "classificationResult",
+                    "type": "enum(quente,morno,frio)",
+                    "required": false,
+                    "description": "Resultado da classificação de temperatura gerado pelo agente."
+                  },
+                  {
+                    "fieldId": "classificationJustification",
+                    "type": "string",
+                    "required": false,
+                    "description": "Justificativa da classificação gerada pelo agente."
+                  },
+                  {
+                    "fieldId": "status",
+                    "type": "enum(pending,completed,failed)",
+                    "required": true,
+                    "description": "Status do processamento do comando."
+                  },
+                  {
+                    "fieldId": "requestedBy",
+                    "type": "string",
+                    "required": true,
+                    "description": "ID do usuário que acionou o comando."
+                  },
+                  {
+                    "fieldId": "createdAt",
+                    "type": "datetime",
+                    "required": true,
+                    "description": "Data e hora de criação do comando."
+                  }
+                ]
+              },
+              "FollowUpSuggestionCommand": {
+                "title": "Comando: Sugestão de Follow-up",
+                "description": "Entidade de caso de uso (layer_3) dedicada ao comando de acionamento do agente LLM para geração de sugestão de mensagem de follow-up personalizada para o lead. Separada de LeadClassificationCommand pois possui ciclo de vida e inputs/outputs independentes.",
+                "kind": "usecaseEntity",
+                "ownership": "moduleOwned",
+                "rulesApplied": [
+                  "rule-llm-agent-invocation"
+                ],
+                "fields": [
+                  {
+                    "fieldId": "commandId",
+                    "type": "string",
+                    "required": true,
+                    "description": "Identificador único do comando (UUID)."
+                  },
+                  {
+                    "fieldId": "leadId",
+                    "type": "string",
+                    "required": true,
+                    "description": "ID do lead para o qual a sugestão será gerada."
+                  },
+                  {
+                    "fieldId": "inputContext",
+                    "type": "string",
+                    "required": true,
+                    "description": "Contexto do lead (perfil, classificação de temperatura, histórico de interações) usado como input para o agente."
+                  },
+                  {
+                    "fieldId": "suggestionResult",
+                    "type": "string",
+                    "required": false,
+                    "description": "Mensagem de follow-up sugerida pelo agente LLM."
+                  },
+                  {
+                    "fieldId": "status",
+                    "type": "enum(pending,completed,failed)",
+                    "required": true,
+                    "description": "Status do processamento do comando."
+                  },
+                  {
+                    "fieldId": "requestedBy",
+                    "type": "string",
+                    "required": true,
+                    "description": "ID do usuário que acionou o comando."
+                  },
+                  {
+                    "fieldId": "createdAt",
+                    "type": "datetime",
+                    "required": true,
+                    "description": "Data e hora de criação do comando."
+                  }
+                ]
+              },
+              "LeadStageTransitionEvent": {
+                "title": "Evento: Transição de Etapa do Lead",
+                "description": "Entidade de caso de uso (layer_3) que registra cada transição de etapa do lead no funil, garantindo rastreabilidade do histórico de movimentações.",
+                "kind": "usecaseEntity",
+                "ownership": "moduleOwned",
+                "rulesApplied": [
+                  "rule-lead-stage-transition"
+                ],
+                "fields": [
+                  {
+                    "fieldId": "eventId",
+                    "type": "string",
+                    "required": true,
+                    "description": "Identificador único do evento (UUID)."
+                  },
+                  {
+                    "fieldId": "leadId",
+                    "type": "string",
+                    "required": true,
+                    "description": "ID do lead que sofreu a transição."
+                  },
+                  {
+                    "fieldId": "fromStage",
+                    "type": "string",
+                    "required": true,
+                    "description": "Etapa de origem da transição."
+                  },
+                  {
+                    "fieldId": "toStage",
+                    "type": "string",
+                    "required": true,
+                    "description": "Etapa de destino da transição."
+                  },
+                  {
+                    "fieldId": "transitionReason",
+                    "type": "string",
+                    "required": false,
+                    "description": "Motivo ou observação sobre a transição."
+                  },
+                  {
+                    "fieldId": "performedBy",
+                    "type": "string",
+                    "required": true,
+                    "description": "ID do usuário que realizou a transição."
+                  },
+                  {
+                    "fieldId": "occurredAt",
+                    "type": "datetime",
+                    "required": true,
+                    "description": "Data e hora da transição."
+                  }
+                ]
+              },
+              "DealStageTransitionEvent": {
+                "title": "Evento: Transição de Etapa do Negócio",
+                "description": "Entidade de caso de uso (layer_3) que registra cada transição de etapa do negócio no funil de fechamento, atualizando métricas do pipeline.",
+                "kind": "usecaseEntity",
+                "ownership": "moduleOwned",
+                "rulesApplied": [
+                  "rule-deal-stage-transition"
+                ],
+                "fields": [
+                  {
+                    "fieldId": "eventId",
+                    "type": "string",
+                    "required": true,
+                    "description": "Identificador único do evento (UUID)."
+                  },
+                  {
+                    "fieldId": "dealId",
+                    "type": "string",
+                    "required": true,
+                    "description": "ID do negócio que sofreu a transição."
+                  },
+                  {
+                    "fieldId": "fromStage",
+                    "type": "string",
+                    "required": true,
+                    "description": "Etapa de origem da transição."
+                  },
+                  {
+                    "fieldId": "toStage",
+                    "type": "string",
+                    "required": true,
+                    "description": "Etapa de destino da transição."
+                  },
+                  {
+                    "fieldId": "notes",
+                    "type": "string",
+                    "required": false,
+                    "description": "Observações sobre a transição de etapa."
+                  },
+                  {
+                    "fieldId": "performedBy",
+                    "type": "string",
+                    "required": true,
+                    "description": "ID do usuário que realizou a transição."
+                  },
+                  {
+                    "fieldId": "occurredAt",
+                    "type": "datetime",
+                    "required": true,
+                    "description": "Data e hora da transição."
+                  }
+                ]
+              },
+              "VisitStatusTransitionEvent": {
+                "title": "Evento: Transição de Status da Visita",
+                "description": "Entidade de caso de uso (layer_3) que registra cada transição de status da visita (agendada → confirmada → realizada / cancelada / reagendada), garantindo rastreabilidade do ciclo de vida e alimentando a VisitsPerMonthMetric.",
+                "kind": "usecaseEntity",
+                "ownership": "moduleOwned",
+                "rulesApplied": [
+                  "rule-visit-no-conflict",
+                  "rule-visit-requires-property-lead-corretor"
+                ],
+                "fields": [
+                  {
+                    "fieldId": "eventId",
+                    "type": "string",
+                    "required": true,
+                    "description": "Identificador único do evento (UUID)."
+                  },
+                  {
+                    "fieldId": "visitId",
+                    "type": "string",
+                    "required": true,
+                    "description": "ID da visita que sofreu a transição de status."
+                  },
+                  {
+                    "fieldId": "fromStatus",
+                    "type": "string",
+                    "required": true,
+                    "description": "Status de origem da transição."
+                  },
+                  {
+                    "fieldId": "toStatus",
+                    "type": "string",
+                    "required": true,
+                    "description": "Status de destino da transição."
+                  },
+                  {
+                    "fieldId": "transitionReason",
+                    "type": "string",
+                    "required": false,
+                    "description": "Motivo ou observação sobre a transição (ex: motivo de cancelamento)."
+                  },
+                  {
+                    "fieldId": "performedBy",
+                    "type": "string",
+                    "required": true,
+                    "description": "ID do usuário que realizou a transição."
+                  },
+                  {
+                    "fieldId": "occurredAt",
+                    "type": "datetime",
+                    "required": true,
+                    "description": "Data e hora da transição."
+                  }
+                ]
+              },
+              "PropertyStatusTransitionEvent": {
+                "title": "Evento: Transição de Status do Imóvel",
+                "description": "Entidade de caso de uso (layer_3) que registra cada transição de status do imóvel (Disponível → Reservado → Vendido/Alugado → Disponível), acionada manualmente pelo Admin ou automaticamente via dealStageWorkflow e propertyStatusWorkflow.",
+                "kind": "usecaseEntity",
+                "ownership": "moduleOwned",
+                "rulesApplied": [
+                  "rule-property-status-transition"
+                ],
+                "fields": [
+                  {
+                    "fieldId": "eventId",
+                    "type": "string",
+                    "required": true,
+                    "description": "Identificador único do evento (UUID)."
+                  },
+                  {
+                    "fieldId": "propertyId",
+                    "type": "string",
+                    "required": true,
+                    "description": "ID do imóvel que sofreu a transição de status."
+                  },
+                  {
+                    "fieldId": "fromStatus",
+                    "type": "string",
+                    "required": true,
+                    "description": "Status de origem da transição."
+                  },
+                  {
+                    "fieldId": "toStatus",
+                    "type": "string",
+                    "required": true,
+                    "description": "Status de destino da transição."
+                  },
+                  {
+                    "fieldId": "triggeredBy",
+                    "type": "enum(manual,dealClosed,dealLost,dealCreated)",
+                    "required": true,
+                    "description": "Origem da transição: manual (Admin) ou automática via workflow de negócio."
+                  },
+                  {
+                    "fieldId": "relatedDealId",
+                    "type": "string",
+                    "required": false,
+                    "description": "ID do negócio que originou a transição automática, quando aplicável."
+                  },
+                  {
+                    "fieldId": "performedBy",
+                    "type": "string",
+                    "required": true,
+                    "description": "ID do usuário ou sistema que realizou a transição."
+                  },
+                  {
+                    "fieldId": "occurredAt",
+                    "type": "datetime",
+                    "required": true,
+                    "description": "Data e hora da transição."
+                  }
+                ]
+              },
+              "ActivePropertiesMetric": {
+                "title": "Métrica: Imóveis Ativos",
+                "description": "Tabela de métrica com contagem de imóveis por status, destacando os disponíveis (ativos). Alimenta o card de imóveis ativos no Dashboard.",
+                "kind": "metricTable",
+                "ownership": "moduleOwned",
+                "fields": [
+                  {
+                    "fieldId": "metricId",
+                    "type": "string",
+                    "required": true,
+                    "description": "Identificador único do registro de métrica."
+                  },
+                  {
+                    "fieldId": "totalActive",
+                    "type": "integer",
+                    "required": true,
+                    "description": "Total de imóveis com status 'disponivel'."
+                  },
+                  {
+                    "fieldId": "totalReserved",
+                    "type": "integer",
+                    "required": true,
+                    "description": "Total de imóveis com status 'reservado'."
+                  },
+                  {
+                    "fieldId": "totalSold",
+                    "type": "integer",
+                    "required": true,
+                    "description": "Total de imóveis com status 'vendido'."
+                  },
+                  {
+                    "fieldId": "totalRented",
+                    "type": "integer",
+                    "required": true,
+                    "description": "Total de imóveis com status 'alugado'."
+                  },
+                  {
+                    "fieldId": "computedAt",
+                    "type": "datetime",
+                    "required": true,
+                    "description": "Data e hora do último cálculo da métrica."
+                  }
+                ]
+              },
+              "MonthlyLeadsMetric": {
+                "title": "Métrica: Leads do Mês",
+                "description": "Tabela de métrica com contagem de leads criados no mês corrente, segmentada por etapa do funil e corretor responsável.",
+                "kind": "metricTable",
+                "ownership": "moduleOwned",
+                "fields": [
+                  {
+                    "fieldId": "metricId",
+                    "type": "string",
+                    "required": true,
+                    "description": "Identificador único do registro de métrica."
+                  },
+                  {
+                    "fieldId": "referenceMonth",
+                    "type": "string",
+                    "required": true,
+                    "description": "Mês de referência no formato YYYY-MM."
+                  },
+                  {
+                    "fieldId": "corretorId",
+                    "type": "string",
+                    "required": false,
+                    "description": "ID do corretor (null para totais globais)."
+                  },
+                  {
+                    "fieldId": "totalLeads",
+                    "type": "integer",
+                    "required": true,
+                    "description": "Total de leads criados no mês."
+                  },
+                  {
+                    "fieldId": "leadsByStage",
+                    "type": "object",
+                    "required": true,
+                    "description": "Contagem de leads por etapa do funil (novo, contato, visita, proposta, fechado, perdido)."
+                  },
+                  {
+                    "fieldId": "computedAt",
+                    "type": "datetime",
+                    "required": true,
+                    "description": "Data e hora do último cálculo da métrica."
+                  }
+                ]
+              },
+              "DealPipelineMetric": {
+                "title": "Métrica: Pipeline de Fechamentos",
+                "description": "Tabela de métrica com volume e valor total de negócios por etapa do funil de fechamento, atualizada a cada transição de etapa.",
+                "kind": "metricTable",
+                "ownership": "moduleOwned",
+                "fields": [
+                  {
+                    "fieldId": "metricId",
+                    "type": "string",
+                    "required": true,
+                    "description": "Identificador único do registro de métrica."
+                  },
+                  {
+                    "fieldId": "referenceMonth",
+                    "type": "string",
+                    "required": true,
+                    "description": "Mês de referência no formato YYYY-MM."
+                  },
+                  {
+                    "fieldId": "corretorId",
+                    "type": "string",
+                    "required": false,
+                    "description": "ID do corretor (null para totais globais)."
+                  },
+                  {
+                    "fieldId": "stage",
+                    "type": "enum(proposta,negociacao,contrato,fechado,perdido)",
+                    "required": true,
+                    "description": "Etapa do funil de fechamento."
+                  },
+                  {
+                    "fieldId": "dealCount",
+                    "type": "integer",
+                    "required": true,
+                    "description": "Número de negócios na etapa."
+                  },
+                  {
+                    "fieldId": "totalValue",
+                    "type": "number",
+                    "required": true,
+                    "description": "Valor total dos negócios na etapa em reais."
+                  },
+                  {
+                    "fieldId": "computedAt",
+                    "type": "datetime",
+                    "required": true,
+                    "description": "Data e hora do último cálculo da métrica."
+                  }
+                ]
+              },
+              "LeadConversionMetric": {
+                "title": "Métrica: Taxa de Conversão de Leads",
+                "description": "Tabela de métrica com percentual de leads que avançaram para proposta ou fechamento, segmentada por corretor e período.",
+                "kind": "metricTable",
+                "ownership": "moduleOwned",
+                "fields": [
+                  {
+                    "fieldId": "metricId",
+                    "type": "string",
+                    "required": true,
+                    "description": "Identificador único do registro de métrica."
+                  },
+                  {
+                    "fieldId": "referenceMonth",
+                    "type": "string",
+                    "required": true,
+                    "description": "Mês de referência no formato YYYY-MM."
+                  },
+                  {
+                    "fieldId": "corretorId",
+                    "type": "string",
+                    "required": false,
+                    "description": "ID do corretor (null para totais globais)."
+                  },
+                  {
+                    "fieldId": "totalLeads",
+                    "type": "integer",
+                    "required": true,
+                    "description": "Total de leads no período."
+                  },
+                  {
+                    "fieldId": "convertedToProposal",
+                    "type": "integer",
+                    "required": true,
+                    "description": "Leads que avançaram para etapa de proposta."
+                  },
+                  {
+                    "fieldId": "convertedToClosed",
+                    "type": "integer",
+                    "required": true,
+                    "description": "Leads que chegaram ao fechamento."
+                  },
+                  {
+                    "fieldId": "conversionRateProposal",
+                    "type": "number",
+                    "required": true,
+                    "description": "Taxa de conversão para proposta (0-100%)."
+                  },
+                  {
+                    "fieldId": "conversionRateClosed",
+                    "type": "number",
+                    "required": true,
+                    "description": "Taxa de conversão para fechamento (0-100%)."
+                  },
+                  {
+                    "fieldId": "computedAt",
+                    "type": "datetime",
+                    "required": true,
+                    "description": "Data e hora do último cálculo da métrica."
+                  }
+                ]
+              },
+              "VisitsPerMonthMetric": {
+                "title": "Métrica: Visitas Realizadas no Mês",
+                "description": "Tabela de métrica com contagem de visitas realizadas no mês, segmentada por corretor e imóvel.",
+                "kind": "metricTable",
+                "ownership": "moduleOwned",
+                "fields": [
+                  {
+                    "fieldId": "metricId",
+                    "type": "string",
+                    "required": true,
+                    "description": "Identificador único do registro de métrica."
+                  },
+                  {
+                    "fieldId": "referenceMonth",
+                    "type": "string",
+                    "required": true,
+                    "description": "Mês de referência no formato YYYY-MM."
+                  },
+                  {
+                    "fieldId": "corretorId",
+                    "type": "string",
+                    "required": false,
+                    "description": "ID do corretor (null para totais globais)."
+                  },
+                  {
+                    "fieldId": "totalScheduled",
+                    "type": "integer",
+                    "required": true,
+                    "description": "Total de visitas agendadas no mês."
+                  },
+                  {
+                    "fieldId": "totalRealized",
+                    "type": "integer",
+                    "required": true,
+                    "description": "Total de visitas realizadas no mês."
+                  },
+                  {
+                    "fieldId": "totalCancelled",
+                    "type": "integer",
+                    "required": true,
+                    "description": "Total de visitas canceladas no mês."
+                  },
+                  {
+                    "fieldId": "realizationRate",
+                    "type": "number",
+                    "required": true,
+                    "description": "Taxa de realização de visitas (0-100%)."
+                  },
+                  {
+                    "fieldId": "computedAt",
+                    "type": "datetime",
+                    "required": true,
+                    "description": "Data e hora do último cálculo da métrica."
+                  }
+                ]
+              }
+            }
+          },
+          "rules": [
+            {
+              "ruleId": "rule-rbac-data-isolation",
+              "title": "Isolamento de Dados por Perfil (RBAC)",
+              "description": "Corretor e Assistente só podem visualizar e editar registros (leads, visitas, negócios) atribuídos ao seu próprio userId. Admin tem acesso irrestrito a todos os registros da imobiliária. O Assistente opera sob as mesmas capabilities do Corretor com restrições adicionais definidas pelo Admin.",
+              "layer": "layer_2",
+              "appliesTo": [
+                "Lead",
+                "Visit",
+                "Deal",
+                "Property",
+                "Corretor"
+              ]
+            },
+            {
+              "ruleId": "rule-lead-stage-transition",
+              "title": "Transições Válidas de Etapa do Lead",
+              "description": "O lead só pode avançar para etapas subsequentes no funil (Novo → Contato → Visita → Proposta → Fechado/Perdido). Retrocesso é permitido apenas para Admin. A etapa 'perdido' é terminal — requer criação de novo lead para reativação. Quando um Deal vinculado ao lead atingir estado terminal (fechado/perdido), o Lead.stage deve ser sincronizado automaticamente.",
+              "layer": "layer_3",
+              "appliesTo": [
+                "Lead",
+                "LeadStageTransitionEvent"
+              ]
+            },
+            {
+              "ruleId": "rule-deal-stage-transition",
+              "title": "Transições Válidas de Etapa do Negócio",
+              "description": "O negócio avança pelas etapas (Proposta → Negociação → Contrato → Fechado/Perdido). As etapas 'fechado' e 'perdido' são terminais. Ao fechar um negócio, o status do imóvel vinculado deve ser atualizado automaticamente para Vendido/Alugado e o Lead vinculado deve ter sua etapa sincronizada para 'fechado'. Ao marcar como perdido, o imóvel retorna a 'disponivel' e o Lead é sincronizado para 'perdido'.",
+              "layer": "layer_3",
+              "appliesTo": [
+                "Deal",
+                "DealStageTransitionEvent",
+                "Property",
+                "Lead"
+              ]
+            },
+            {
+              "ruleId": "rule-property-status-transition",
+              "title": "Transições Válidas de Status do Imóvel",
+              "description": "Imóvel pode transitar de Disponível → Reservado (ao criar negócio) → Vendido/Alugado (ao fechar negócio). Pode retornar a Disponível se o negócio for cancelado/perdido. Imóvel com negócio ativo não pode ser marcado como Disponível manualmente. Toda transição deve gerar um PropertyStatusTransitionEvent.",
+              "layer": "layer_3",
+              "appliesTo": [
+                "Property",
+                "Deal",
+                "PropertyStatusTransitionEvent"
+              ]
+            },
+            {
+              "ruleId": "rule-visit-no-conflict",
+              "title": "Sem Conflito de Horário em Visitas",
+              "description": "Não é permitido agendar duas visitas para o mesmo corretor no mesmo horário. O sistema deve validar conflitos de horário antes de confirmar o agendamento. Toda transição de status deve gerar um VisitStatusTransitionEvent.",
+              "layer": "layer_3",
+              "appliesTo": [
+                "Visit",
+                "VisitStatusTransitionEvent"
+              ]
+            },
+            {
+              "ruleId": "rule-llm-agent-invocation",
+              "title": "Invocação de Agentes LLM",
+              "description": "Agentes LLM só podem ser acionados por usuários autenticados com perfil Corretor, Assistente ou Admin. O resultado gerado pelo agente deve ser revisado pelo usuário antes de ser persistido no registro principal.",
+              "layer": "layer_2",
+              "appliesTo": [
+                "PropertyDescriptionCommand",
+                "LeadClassificationCommand",
+                "FollowUpSuggestionCommand"
+              ]
+            },
+            {
+              "ruleId": "rule-deal-requires-property-and-lead",
+              "title": "Negócio Requer Imóvel e Lead Vinculados",
+              "description": "Todo negócio/proposta deve obrigatoriamente estar vinculado a um imóvel e a um lead. Não é permitido criar negócio sem esses vínculos.",
+              "layer": "layer_3",
+              "appliesTo": [
+                "Deal"
+              ]
+            },
+            {
+              "ruleId": "rule-visit-requires-property-lead-corretor",
+              "title": "Visita Requer Imóvel, Lead e Corretor",
+              "description": "Toda visita deve obrigatoriamente estar vinculada a um imóvel, um lead e um corretor responsável.",
+              "layer": "layer_3",
+              "appliesTo": [
+                "Visit"
+              ]
+            }
+          ],
+          "relationships": [
+            {
+              "relationshipId": "rel-lead-corretor",
+              "fromEntity": "Lead",
+              "toEntity": "Corretor",
+              "type": "manyToOne",
+              "description": "Cada lead é atribuído a um corretor responsável. Um corretor pode ter múltiplos leads."
+            },
+            {
+              "relationshipId": "rel-visit-property",
+              "fromEntity": "Visit",
+              "toEntity": "Property",
+              "type": "manyToOne",
+              "description": "Cada visita é realizada em um imóvel específico. Um imóvel pode ter múltiplas visitas."
+            },
+            {
+              "relationshipId": "rel-visit-lead",
+              "fromEntity": "Visit",
+              "toEntity": "Lead",
+              "type": "manyToOne",
+              "description": "Cada visita é associada a um lead/cliente. Um lead pode ter múltiplas visitas."
+            },
+            {
+              "relationshipId": "rel-visit-corretor",
+              "fromEntity": "Visit",
+              "toEntity": "Corretor",
+              "type": "manyToOne",
+              "description": "Cada visita é conduzida por um corretor. Um corretor pode conduzir múltiplas visitas."
+            },
+            {
+              "relationshipId": "rel-deal-property",
+              "fromEntity": "Deal",
+              "toEntity": "Property",
+              "type": "manyToOne",
+              "description": "Cada negócio está vinculado a um imóvel específico. Um imóvel pode ter múltiplos negócios ao longo do tempo."
+            },
+            {
+              "relationshipId": "rel-deal-lead",
+              "fromEntity": "Deal",
+              "toEntity": "Lead",
+              "type": "manyToOne",
+              "description": "Cada negócio está vinculado a um lead/cliente. Um lead pode ter múltiplos negócios."
+            },
+            {
+              "relationshipId": "rel-deal-corretor",
+              "fromEntity": "Deal",
+              "toEntity": "Corretor",
+              "type": "manyToOne",
+              "description": "Cada negócio é gerenciado por um corretor responsável."
+            },
+            {
+              "relationshipId": "rel-property-corretor",
+              "fromEntity": "Property",
+              "toEntity": "Corretor",
+              "type": "manyToOne",
+              "description": "Um imóvel pode ser atribuído a um corretor responsável pela captação/venda."
+            },
+            {
+              "relationshipId": "rel-lead-stage-event-lead",
+              "fromEntity": "LeadStageTransitionEvent",
+              "toEntity": "Lead",
+              "type": "manyToOne",
+              "description": "Cada evento de transição de etapa pertence a um lead específico."
+            },
+            {
+              "relationshipId": "rel-deal-stage-event-deal",
+              "fromEntity": "DealStageTransitionEvent",
+              "toEntity": "Deal",
+              "type": "manyToOne",
+              "description": "Cada evento de transição de etapa pertence a um negócio específico."
+            },
+            {
+              "relationshipId": "rel-visit-status-event-visit",
+              "fromEntity": "VisitStatusTransitionEvent",
+              "toEntity": "Visit",
+              "type": "manyToOne",
+              "description": "Cada evento de transição de status pertence a uma visita específica."
+            },
+            {
+              "relationshipId": "rel-property-status-event-property",
+              "fromEntity": "PropertyStatusTransitionEvent",
+              "toEntity": "Property",
+              "type": "manyToOne",
+              "description": "Cada evento de transição de status pertence a um imóvel específico."
+            },
+            {
+              "relationshipId": "rel-property-desc-cmd-property",
+              "fromEntity": "PropertyDescriptionCommand",
+              "toEntity": "Property",
+              "type": "manyToOne",
+              "description": "Cada comando de geração de descrição está vinculado a um imóvel."
+            },
+            {
+              "relationshipId": "rel-lead-class-cmd-lead",
+              "fromEntity": "LeadClassificationCommand",
+              "toEntity": "Lead",
+              "type": "manyToOne",
+              "description": "Cada comando de classificação está vinculado a um lead."
+            },
+            {
+              "relationshipId": "rel-followup-cmd-lead",
+              "fromEntity": "FollowUpSuggestionCommand",
+              "toEntity": "Lead",
+              "type": "manyToOne",
+              "description": "Cada comando de sugestão de follow-up está vinculado a um lead."
+            }
+          ],
+          "userActions": [
+            {
+              "actionId": "action-create-property",
+              "title": "Cadastrar Imóvel",
+              "actor": "adminActor",
+              "capabilityId": "manageProperties",
+              "description": "Preenche o formulário de imóvel com endereço, tipo, preço, características e fotos mock. Pode acionar o agente de descrição IA a partir de bullets antes de salvar.",
+              "commandType": "create",
+              "affectedEntities": [
+                "Property",
+                "PropertyStatusTransitionEvent"
+              ],
+              "rulesApplied": [
+                "rule-rbac-data-isolation"
+              ]
+            },
+            {
+              "actionId": "action-edit-property",
+              "title": "Editar Imóvel",
+              "actor": "adminActor",
+              "capabilityId": "manageProperties",
+              "description": "Edita os campos de um imóvel existente, incluindo atualização de características, preço e fotos mock.",
+              "commandType": "update",
+              "affectedEntities": [
+                "Property"
+              ],
+              "rulesApplied": [
+                "rule-rbac-data-isolation",
+                "rule-property-status-transition"
+              ]
+            },
+            {
+              "actionId": "action-update-property-status",
+              "title": "Atualizar Status do Imóvel",
+              "actor": "adminActor",
+              "capabilityId": "manageProperties",
+              "description": "Altera o status do imóvel (Disponível → Reservado → Vendido/Alugado) com validação de consistência com negócios vinculados. Gera PropertyStatusTransitionEvent.",
+              "commandType": "update",
+              "affectedEntities": [
+                "Property",
+                "PropertyStatusTransitionEvent",
+                "ActivePropertiesMetric"
+              ],
+              "rulesApplied": [
+                "rule-property-status-transition",
+                "rule-rbac-data-isolation"
+              ]
+            },
+            {
+              "actionId": "action-generate-property-description",
+              "title": "Gerar Descrição de Imóvel com IA",
+              "actor": "corretorActor",
+              "capabilityId": "aiPropertyDescription",
+              "description": "Aciona o agente LLM com bullets do imóvel para gerar uma descrição profissional. O resultado é exibido para revisão antes de ser salvo no imóvel.",
+              "commandType": "command",
+              "affectedEntities": [
+                "PropertyDescriptionCommand",
+                "Property"
+              ],
+              "rulesApplied": [
+                "rule-llm-agent-invocation"
+              ]
+            },
+            {
+              "actionId": "action-create-lead",
+              "title": "Cadastrar Lead",
+              "actor": "corretorActor",
+              "capabilityId": "manageLeads",
+              "description": "Cria um novo lead com dados de contato, origem e atribuição ao corretor responsável. Lead inicia na etapa 'Novo'.",
+              "commandType": "create",
+              "affectedEntities": [
+                "Lead",
+                "MonthlyLeadsMetric"
+              ],
+              "rulesApplied": [
+                "rule-rbac-data-isolation"
+              ]
+            },
+            {
+              "actionId": "action-edit-lead",
+              "title": "Editar Lead",
+              "actor": "corretorActor",
+              "capabilityId": "manageLeads",
+              "description": "Edita dados de contato, anotações e imóveis de interesse do lead.",
+              "commandType": "update",
+              "affectedEntities": [
+                "Lead"
+              ],
+              "rulesApplied": [
+                "rule-rbac-data-isolation"
+              ]
+            },
+            {
+              "actionId": "action-move-lead-stage",
+              "title": "Mover Lead no Funil (Kanban)",
+              "actor": "corretorActor",
+              "capabilityId": "leadPipelineKanban",
+              "description": "Arrasta o card do lead para outra coluna no kanban ou seleciona nova etapa na lista, disparando o workflow de transição de etapa.",
+              "commandType": "update",
+              "affectedEntities": [
+                "Lead",
+                "LeadStageTransitionEvent",
+                "MonthlyLeadsMetric"
+              ],
+              "rulesApplied": [
+                "rule-lead-stage-transition",
+                "rule-rbac-data-isolation"
+              ]
+            },
+            {
+              "actionId": "action-classify-lead-ai",
+              "title": "Classificar Lead com IA",
+              "actor": "corretorActor",
+              "capabilityId": "aiLeadClassification",
+              "description": "Aciona o agente LLM para classificar o lead como quente/morno/frio com base nas anotações e histórico. Resultado é persistido no lead após confirmação.",
+              "commandType": "command",
+              "affectedEntities": [
+                "LeadClassificationCommand",
+                "Lead"
+              ],
+              "rulesApplied": [
+                "rule-llm-agent-invocation",
+                "rule-rbac-data-isolation"
+              ]
+            },
+            {
+              "actionId": "action-get-followup-suggestion",
+              "title": "Obter Sugestão de Follow-up",
+              "actor": "corretorActor",
+              "capabilityId": "aiFollowUpSuggestion",
+              "description": "Aciona o agente LLM para gerar uma sugestão de mensagem de follow-up personalizada com base no perfil e histórico do lead. Utiliza FollowUpSuggestionCommand como entidade de caso de uso dedicada.",
+              "commandType": "command",
+              "affectedEntities": [
+                "FollowUpSuggestionCommand",
+                "Lead"
+              ],
+              "rulesApplied": [
+                "rule-llm-agent-invocation",
+                "rule-rbac-data-isolation"
+              ]
+            },
+            {
+              "actionId": "action-schedule-visit",
+              "title": "Agendar Visita",
+              "actor": "corretorActor",
+              "capabilityId": "scheduleVisits",
+              "description": "Cria uma nova visita vinculando lead, imóvel e corretor com data/hora. O sistema valida conflitos de horário antes de confirmar. Gera VisitStatusTransitionEvent.",
+              "commandType": "create",
+              "affectedEntities": [
+                "Visit",
+                "VisitStatusTransitionEvent",
+                "VisitsPerMonthMetric"
+              ],
+              "rulesApplied": [
+                "rule-visit-no-conflict",
+                "rule-visit-requires-property-lead-corretor",
+                "rule-rbac-data-isolation"
+              ]
+            },
+            {
+              "actionId": "action-update-visit-status",
+              "title": "Atualizar Status da Visita",
+              "actor": "corretorActor",
+              "capabilityId": "scheduleVisits",
+              "description": "Confirma, registra como realizada ou cancela uma visita agendada, com campo de observações. Gera VisitStatusTransitionEvent para rastreabilidade.",
+              "commandType": "update",
+              "affectedEntities": [
+                "Visit",
+                "VisitStatusTransitionEvent",
+                "VisitsPerMonthMetric"
+              ],
+              "rulesApplied": [
+                "rule-rbac-data-isolation",
+                "rule-visit-no-conflict"
+              ]
+            },
+            {
+              "actionId": "action-create-deal",
+              "title": "Criar Negócio / Proposta",
+              "actor": "corretorActor",
+              "capabilityId": "trackDeals",
+              "description": "Cria um novo negócio vinculando lead e imóvel, com valor inicial e tipo (venda/locação). Negócio inicia na etapa 'Proposta' e imóvel é marcado como 'Reservado'. Gera PropertyStatusTransitionEvent.",
+              "commandType": "create",
+              "affectedEntities": [
+                "Deal",
+                "Property",
+                "PropertyStatusTransitionEvent",
+                "DealPipelineMetric"
+              ],
+              "rulesApplied": [
+                "rule-deal-requires-property-and-lead",
+                "rule-property-status-transition",
+                "rule-rbac-data-isolation"
+              ]
+            },
+            {
+              "actionId": "action-advance-deal-stage",
+              "title": "Avançar Etapa do Negócio",
+              "actor": "corretorActor",
+              "capabilityId": "trackDeals",
+              "description": "Avança o negócio para a próxima etapa do funil (Proposta → Negociação → Contrato → Fechado). Ao fechar, atualiza o status do imóvel para Vendido/Alugado e sincroniza o Lead vinculado para 'fechado'. Gera DealStageTransitionEvent e PropertyStatusTransitionEvent.",
+              "commandType": "update",
+              "affectedEntities": [
+                "Deal",
+                "DealStageTransitionEvent",
+                "Property",
+                "PropertyStatusTransitionEvent",
+                "Lead",
+                "DealPipelineMetric",
+                "LeadConversionMetric"
+              ],
+              "rulesApplied": [
+                "rule-deal-stage-transition",
+                "rule-property-status-transition",
+                "rule-rbac-data-isolation"
+              ]
+            },
+            {
+              "actionId": "action-mark-deal-lost",
+              "title": "Marcar Negócio como Perdido",
+              "actor": "corretorActor",
+              "capabilityId": "trackDeals",
+              "description": "Marca o negócio como perdido com motivo obrigatório. Imóvel vinculado retorna ao status 'Disponível' e Lead vinculado é sincronizado para 'perdido'. Gera DealStageTransitionEvent e PropertyStatusTransitionEvent.",
+              "commandType": "update",
+              "affectedEntities": [
+                "Deal",
+                "DealStageTransitionEvent",
+                "Property",
+                "PropertyStatusTransitionEvent",
+                "Lead",
+                "DealPipelineMetric"
+              ],
+              "rulesApplied": [
+                "rule-deal-stage-transition",
+                "rule-property-status-transition",
+                "rule-rbac-data-isolation"
+              ]
+            },
+            {
+              "actionId": "action-manage-corretores",
+              "title": "Gerenciar Corretores",
+              "actor": "adminActor",
+              "capabilityId": "manageCorretores",
+              "description": "Cadastra, edita e ativa/inativa corretores da imobiliária, definindo perfil de acesso (Admin, Corretor, Assistente).",
+              "commandType": "create",
+              "affectedEntities": [
+                "Corretor"
+              ],
+              "rulesApplied": [
+                "rule-rbac-data-isolation"
+              ]
+            }
+          ],
+          "approvedArtifacts": {
+            "pages": [
+              {
+                "signal": "dashboardPage",
+                "title": "Dashboard Operacional",
+                "artifactType": "page",
+                "actor": "adminActor",
+                "reason": "Tela principal do PropertyFlowCRM com cards de imóveis ativos, leads do mês e pipeline de fechamentos. Admin vê dados globais; Corretor vê apenas seus registros filtrados via rule-rbac-data-isolation. O mesmo artefato serve ambos os perfis com filtragem dinâmica. Quando visitsPerMonthMetricTable e leadConversionMetricTable forem promovidas para 'now', o dashboard será atualizado para incluí-las.",
+                "priority": "now",
+                "references": [
+                  "adminActorMetricDashboard",
+                  "authAndRbacModule",
+                  "activePropertiesMetricTable",
+                  "monthlyLeadsMetricTable",
+                  "dealPipelineMetricTable"
+                ],
+                "rulesApplied": [
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "signal": "propertiesListPage",
+                "title": "Lista de Imóveis (CRUD + Busca)",
+                "artifactType": "page",
+                "actor": "adminActor",
+                "reason": "Tela para listar, buscar e filtrar imóveis com acesso ao cadastro e edição. Exibe fotos mock, tipo, preço e status.",
+                "priority": "now",
+                "references": [
+                  "propertyMdm",
+                  "mockImagePlugin",
+                  "authAndRbacModule"
+                ],
+                "rulesApplied": [
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "signal": "propertyDetailPage",
+                "title": "Detalhe / Formulário de Imóvel",
+                "artifactType": "page",
+                "actor": "corretorActor",
+                "reason": "Tela de cadastro e edição de imóvel com todos os campos e botão para acionar o agente de geração de descrição IA a partir de bullets.",
+                "priority": "now",
+                "references": [
+                  "propertyMdm",
+                  "propertyDescriptionAgent",
+                  "mockImagePlugin",
+                  "propertyStatusWorkflow"
+                ],
+                "rulesApplied": [
+                  "rule-property-status-transition",
+                  "rule-llm-agent-invocation"
+                ]
+              },
+              {
+                "signal": "leadPipelinePage",
+                "title": "Pipeline de Leads (Kanban / Lista)",
+                "artifactType": "page",
+                "actor": "corretorActor",
+                "reason": "Tela principal de gestão de leads com kanban como padrão (drag-and-drop) e alternância para lista. Exibe temperatura (quente/morno/frio) em cada card.",
+                "priority": "now",
+                "references": [
+                  "leadMdm",
+                  "leadStageTransitionWorkflow",
+                  "leadClassificationAgent",
+                  "authAndRbacModule"
+                ],
+                "rulesApplied": [
+                  "rule-lead-stage-transition",
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "signal": "leadDetailPage",
+                "title": "Detalhe do Lead / Cliente",
+                "artifactType": "page",
+                "actor": "corretorActor",
+                "reason": "Tela com dados completos do lead, anotações, histórico, classificação IA e sugestão de follow-up. Permite acionar os agentes diretamente.",
+                "priority": "now",
+                "references": [
+                  "leadMdm",
+                  "leadClassificationAgent",
+                  "followUpSuggestionAgent"
+                ],
+                "rulesApplied": [
+                  "rule-rbac-data-isolation",
+                  "rule-llm-agent-invocation"
+                ]
+              },
+              {
+                "signal": "visitsSchedulerPage",
+                "title": "Agendador de Visitas",
+                "artifactType": "page",
+                "actor": "corretorActor",
+                "reason": "Tela para criar, visualizar e gerenciar visitas agendadas com filtros por data, corretor e imóvel. Valida conflito de horário.",
+                "priority": "now",
+                "references": [
+                  "visitMdm",
+                  "visitLifecycleWorkflow",
+                  "authAndRbacModule"
+                ],
+                "rulesApplied": [
+                  "rule-visit-no-conflict",
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "signal": "dealTrackerPage",
+                "title": "Rastreador de Negócios / Propostas",
+                "artifactType": "page",
+                "actor": "corretorActor",
+                "reason": "Tela com pipeline de negócios por etapas de fechamento, exibindo valor, imóvel vinculado e lead associado. Permite avançar etapas.",
+                "priority": "now",
+                "references": [
+                  "dealMdm",
+                  "dealStageWorkflow",
+                  "authAndRbacModule"
+                ],
+                "rulesApplied": [
+                  "rule-deal-stage-transition",
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "signal": "corretoresAdminPage",
+                "title": "Gestão de Corretores (Admin)",
+                "artifactType": "page",
+                "actor": "adminActor",
+                "reason": "Tela administrativa para cadastrar, editar e gerenciar corretores da imobiliária. Acessível apenas pelo Admin.",
+                "priority": "soon",
+                "references": [
+                  "corretorMdm",
+                  "authAndRbacModule"
+                ],
+                "rulesApplied": [
+                  "rule-rbac-data-isolation"
+                ]
+              }
+            ],
+            "workflows": [
+              {
+                "signal": "leadStageTransitionWorkflow",
+                "title": "Workflow: Transição de Etapa do Lead",
+                "artifactType": "workflow",
+                "actor": "corretorActor",
+                "reason": "Controla a movimentação do lead entre etapas do funil, valida regras de transição, registra LeadStageTransitionEvent e atualiza métricas.",
+                "priority": "now",
+                "references": [
+                  "leadMdm",
+                  "LeadStageTransitionEvent",
+                  "MonthlyLeadsMetric"
+                ],
+                "rulesApplied": [
+                  "rule-lead-stage-transition",
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "signal": "visitLifecycleWorkflow",
+                "title": "Workflow: Ciclo de Vida da Visita",
+                "artifactType": "workflow",
+                "actor": "corretorActor",
+                "reason": "Gerencia criação, confirmação, realização e cancelamento de visitas. Valida conflitos de horário, registra VisitStatusTransitionEvent e atualiza métricas.",
+                "priority": "now",
+                "references": [
+                  "visitMdm",
+                  "VisitStatusTransitionEvent",
+                  "VisitsPerMonthMetric"
+                ],
+                "rulesApplied": [
+                  "rule-visit-no-conflict",
+                  "rule-visit-requires-property-lead-corretor"
+                ]
+              },
+              {
+                "signal": "dealStageWorkflow",
+                "title": "Workflow: Progressão de Etapas do Negócio",
+                "artifactType": "workflow",
+                "actor": "corretorActor",
+                "reason": "Gerencia etapas do negócio, valida transições, registra DealStageTransitionEvent, sincroniza Lead.stage ao fechar/perder negócio, aciona atualização de status do imóvel e atualiza métricas do pipeline.",
+                "priority": "now",
+                "references": [
+                  "dealMdm",
+                  "DealStageTransitionEvent",
+                  "DealPipelineMetric",
+                  "LeadConversionMetric",
+                  "PropertyStatusTransitionEvent"
+                ],
+                "rulesApplied": [
+                  "rule-deal-stage-transition",
+                  "rule-property-status-transition"
+                ]
+              },
+              {
+                "signal": "propertyStatusWorkflow",
+                "title": "Workflow: Atualização de Status do Imóvel",
+                "artifactType": "workflow",
+                "actor": "adminActor",
+                "reason": "Controla transições de status do imóvel com validação de consistência com negócios vinculados, registra PropertyStatusTransitionEvent e atualiza a métrica de imóveis ativos.",
+                "priority": "now",
+                "references": [
+                  "propertyMdm",
+                  "dealMdm",
+                  "PropertyStatusTransitionEvent",
+                  "ActivePropertiesMetric"
+                ],
+                "rulesApplied": [
+                  "rule-property-status-transition"
+                ]
+              }
+            ],
+            "plugins": [
+              {
+                "signal": "llmProviderPlugin",
+                "title": "Plugin: Provedor LLM",
+                "artifactType": "plugin",
+                "reason": "Plugin de integração com provedor de IA (OpenAI, Anthropic, Google Gemini ou similar) para suportar os três agentes LLM. Provedor configurável pelo Admin.",
+                "priority": "now",
+                "references": [
+                  "propertyDescriptionAgent",
+                  "leadClassificationAgent",
+                  "followUpSuggestionAgent"
+                ]
+              },
+              {
+                "signal": "i18nPlugin",
+                "title": "Plugin: Internacionalização (pt-BR / en)",
+                "artifactType": "plugin",
+                "reason": "Plugin para gerenciar traduções e alternância de idioma entre pt-BR (padrão) e inglês em toda a interface.",
+                "priority": "now",
+                "references": []
+              },
+              {
+                "signal": "mockImagePlugin",
+                "title": "Plugin: Imagens Mock (picsum.photos)",
+                "artifactType": "plugin",
+                "reason": "Plugin utilitário para gerar e gerenciar URLs de imagens placeholder para fotos de imóveis. Encapsula a lógica para facilitar migração futura para upload real.",
+                "priority": "now",
+                "references": [
+                  "propertyMdm"
+                ]
+              },
+              {
+                "signal": "calendarIntegrationPlugin",
+                "title": "Plugin: Integração com Calendário Externo",
+                "artifactType": "plugin",
+                "reason": "Plugin para sincronização com Google Calendar / Outlook. Identificado como risco de negócio mas fora do MVP — avaliação para versão futura.",
+                "priority": "later",
+                "references": [
+                  "visitMdm",
+                  "visitLifecycleWorkflow"
+                ]
+              },
+              {
+                "signal": "photoUploadPlugin",
+                "title": "Plugin: Upload Real de Fotos de Imóveis",
+                "artifactType": "plugin",
+                "reason": "Plugin para upload e armazenamento de fotos reais, substituindo picsum.photos. Explicitamente adiado para versão futura na clarificação.",
+                "priority": "later",
+                "references": [
+                  "propertyMdm",
+                  "mockImagePlugin"
+                ]
+              }
+            ],
+            "agents": [
+              {
+                "signal": "propertyDescriptionAgent",
+                "title": "Agente: Geração de Descrição de Imóvel",
+                "artifactType": "agent",
+                "actor": "corretorActor",
+                "reason": "Agente LLM que recebe bullets/características do imóvel e retorna descrição profissional em pt-BR ou en para uso no cadastro.",
+                "priority": "now",
+                "references": [
+                  "llmProviderPlugin",
+                  "propertyMdm",
+                  "PropertyDescriptionCommand"
+                ],
+                "rulesApplied": [
+                  "rule-llm-agent-invocation"
+                ]
+              },
+              {
+                "signal": "leadClassificationAgent",
+                "title": "Agente: Classificação de Lead (Quente/Morno/Frio)",
+                "artifactType": "agent",
+                "actor": "corretorActor",
+                "reason": "Agente LLM que analisa anotações e histórico do lead para classificar temperatura e persistir resultado.",
+                "priority": "now",
+                "references": [
+                  "llmProviderPlugin",
+                  "leadMdm",
+                  "LeadClassificationCommand"
+                ],
+                "rulesApplied": [
+                  "rule-llm-agent-invocation"
+                ]
+              },
+              {
+                "signal": "followUpSuggestionAgent",
+                "title": "Agente: Sugestão de Mensagem de Follow-up",
+                "artifactType": "agent",
+                "actor": "corretorActor",
+                "reason": "Agente LLM que sugere próxima mensagem personalizada de follow-up com base no perfil, classificação e histórico do lead. Utiliza FollowUpSuggestionCommand como entidade dedicada.",
+                "priority": "now",
+                "references": [
+                  "llmProviderPlugin",
+                  "leadMdm",
+                  "FollowUpSuggestionCommand"
+                ],
+                "rulesApplied": [
+                  "rule-llm-agent-invocation"
+                ]
+              }
+            ],
+            "horizontalModules": [
+              {
+                "signal": "authAndRbacModule",
+                "title": "Módulo Horizontal: Autenticação e Controle de Acesso (RBAC)",
+                "artifactType": "horizontalModule",
+                "reason": "Módulo crítico para autenticação e isolamento de dados por perfil (Admin, Corretor, Assistente). Requisito de segurança explícito. O Assistente opera sob as mesmas capabilities do Corretor com restrições adicionais definidas pelo Admin.",
+                "priority": "now",
+                "references": [
+                  "corretorMdm"
+                ],
+                "rulesApplied": [
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "signal": "notificationsModule",
+                "title": "Módulo Horizontal: Notificações Internas (In-App)",
+                "artifactType": "horizontalModule",
+                "reason": "Notificações in-app sobre visitas agendadas, mudanças de etapa e lembretes de follow-up. Canal e detalhes a confirmar.",
+                "priority": "soon",
+                "references": [
+                  "leadStageTransitionWorkflow",
+                  "visitLifecycleWorkflow",
+                  "dealStageWorkflow"
+                ]
+              },
+              {
+                "signal": "auditLogModule",
+                "title": "Módulo Horizontal: Auditoria (Audit Log)",
+                "artifactType": "horizontalModule",
+                "reason": "Rastreabilidade de alterações em imóveis, leads e negócios para o Admin. Importante para conformidade mas não bloqueante para MVP.",
+                "priority": "later",
+                "references": [
+                  "propertyMdm",
+                  "leadMdm",
+                  "dealMdm",
+                  "authAndRbacModule"
+                ]
+              }
+            ],
+            "mdm": [
+              {
+                "signal": "propertyMdm",
+                "title": "MDM: Imóvel",
+                "artifactType": "mdm",
+                "reason": "Entidade mestre central do domínio. Todas as demais entidades e funcionalidades dependem do cadastro de imóveis.",
+                "priority": "now",
+                "references": [
+                  "Property"
+                ],
+                "rulesApplied": [
+                  "rule-property-status-transition",
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "signal": "leadMdm",
+                "title": "MDM: Lead / Cliente",
+                "artifactType": "mdm",
+                "reason": "Entidade central do CRM. Sem ela não é possível operar o pipeline de leads, agendamentos ou rastreamento de negócios.",
+                "priority": "now",
+                "references": [
+                  "Lead"
+                ],
+                "rulesApplied": [
+                  "rule-lead-stage-transition",
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "signal": "corretorMdm",
+                "title": "MDM: Corretor",
+                "artifactType": "mdm",
+                "reason": "Necessária para RBAC e isolamento de dados. Corretor e Assistente só acessam seus próprios registros.",
+                "priority": "now",
+                "references": [
+                  "Corretor"
+                ],
+                "rulesApplied": [
+                  "rule-rbac-data-isolation"
+                ]
+              },
+              {
+                "signal": "visitMdm",
+                "title": "MDM: Visita / Agendamento",
+                "artifactType": "mdm",
+                "reason": "Entidade transacional obrigatória para o agendador de visitas e workflow de ciclo de vida.",
+                "priority": "now",
+                "references": [
+                  "Visit"
+                ],
+                "rulesApplied": [
+                  "rule-visit-no-conflict",
+                  "rule-visit-requires-property-lead-corretor"
+                ]
+              },
+              {
+                "signal": "dealMdm",
+                "title": "MDM: Negócio / Proposta",
+                "artifactType": "mdm",
+                "reason": "Entidade obrigatória para o rastreador de negócios por etapas e métricas de pipeline de fechamentos.",
+                "priority": "now",
+                "references": [
+                  "Deal"
+                ],
+                "rulesApplied": [
+                  "rule-deal-stage-transition",
+                  "rule-deal-requires-property-and-lead"
+                ]
+              }
+            ],
+            "metricTables": [
+              {
+                "signal": "activePropertiesMetricTable",
+                "title": "Tabela de Métricas: Imóveis Ativos",
+                "artifactType": "metricTable",
+                "reason": "Contagem de imóveis por status. Alimenta o card de imóveis ativos no Dashboard — um dos três indicadores principais.",
+                "priority": "now",
+                "references": [
+                  "ActivePropertiesMetric",
+                  "propertyMdm"
+                ]
+              },
+              {
+                "signal": "monthlyLeadsMetricTable",
+                "title": "Tabela de Métricas: Leads do Mês",
+                "artifactType": "metricTable",
+                "reason": "Contagem de leads criados no mês corrente por etapa e corretor. Indicador principal do Dashboard.",
+                "priority": "now",
+                "references": [
+                  "MonthlyLeadsMetric",
+                  "leadMdm"
+                ]
+              },
+              {
+                "signal": "dealPipelineMetricTable",
+                "title": "Tabela de Métricas: Pipeline de Fechamentos",
+                "artifactType": "metricTable",
+                "reason": "Volume e valor de negócios por etapa do funil. Terceiro indicador principal do Dashboard.",
+                "priority": "now",
+                "references": [
+                  "DealPipelineMetric",
+                  "dealMdm"
+                ]
+              },
+              {
+                "signal": "leadConversionMetricTable",
+                "title": "Tabela de Métricas: Taxa de Conversão de Leads",
+                "artifactType": "metricTable",
+                "reason": "Percentual de leads convertidos para proposta ou fechamento. Métrica estratégica para segunda iteração.",
+                "priority": "soon",
+                "references": [
+                  "LeadConversionMetric",
+                  "leadMdm",
+                  "dealMdm"
+                ]
+              },
+              {
+                "signal": "visitsPerMonthMetricTable",
+                "title": "Tabela de Métricas: Visitas Realizadas no Mês",
+                "artifactType": "metricTable",
+                "reason": "Contagem de visitas realizadas por corretor e imóvel. Métrica de produtividade para segunda iteração.",
+                "priority": "soon",
+                "references": [
+                  "VisitsPerMonthMetric",
+                  "visitMdm"
+                ]
+              }
+            ],
+            "metricDashboards": [
+              {
+                "signal": "adminActorMetricDashboard",
+                "title": "Dashboard Operacional PropertyFlowCRM",
+                "artifactType": "metricDashboard",
+                "actor": "adminActor",
+                "reason": "Painel principal com cards de imóveis ativos, leads do mês e pipeline de fechamentos. Gráfico de funil de negócios por etapa. Admin vê dados globais; Corretor vê dados filtrados por corretorId via rule-rbac-data-isolation — o mesmo artefato serve ambos os perfis com filtragem dinâmica na camada de BFF. Quando visitsPerMonthMetricTable e leadConversionMetricTable forem promovidas para 'now', serão adicionadas ao dashboard.",
+                "priority": "now",
+                "references": [
+                  "activePropertiesMetricTable",
+                  "monthlyLeadsMetricTable",
+                  "dealPipelineMetricTable"
+                ],
+                "rulesApplied": [
+                  "rule-rbac-data-isolation"
+                ]
+              }
+            ],
+            "usecaseEntities": [
+              {
+                "signal": "propertyFlowUsecaseEntities",
+                "title": "Entidades de Caso de Uso: Ciclos de Vida, Comandos LLM e Eventos de Transição",
+                "artifactType": "usecaseEntity",
+                "reason": "Cobre todos os comandos de escrita, transições de ciclo de vida e acionamentos de agentes IA do PropertyFlowCRM. Inclui VisitStatusTransitionEvent e PropertyStatusTransitionEvent adicionados para rastreabilidade completa de todos os ciclos de vida, e FollowUpSuggestionCommand como entidade dedicada separada de LeadClassificationCommand.",
+                "priority": "now",
+                "references": [
+                  "PropertyDescriptionCommand",
+                  "LeadClassificationCommand",
+                  "FollowUpSuggestionCommand",
+                  "LeadStageTransitionEvent",
+                  "DealStageTransitionEvent",
+                  "VisitStatusTransitionEvent",
+                  "PropertyStatusTransitionEvent"
+                ],
+                "rulesApplied": [
+                  "rule-lead-stage-transition",
+                  "rule-deal-stage-transition",
+                  "rule-property-status-transition",
+                  "rule-visit-no-conflict",
+                  "rule-llm-agent-invocation"
+                ]
+              }
+            ]
+          },
+          "decisions": [
+            {
+              "decisionId": "dec-visit-status-transition-event",
+              "title": "Adição de VisitStatusTransitionEvent para rastreabilidade do ciclo de vida da visita",
+              "decision": "Adicionar entidade de caso de uso VisitStatusTransitionEvent (layer_3, moduleOwned) ao ontology.entities e ao usecaseEntities, registrando cada transição de status da visita.",
+              "reason": "A Visit possui 5 estados no ciclo de vida (agendada, confirmada, realizada, cancelada, reagendada) e a ação action-update-visit-status produz mudanças de ciclo de vida e atualiza VisitsPerMonthMetric. A ausência de um evento de rastreabilidade era inconsistente com o padrão estabelecido por LeadStageTransitionEvent e DealStageTransitionEvent. Corrige issue MISSING_LAYER3_USECASE_VISIT_STATUS_UPDATE.",
+              "affectedArtifacts": [
+                "visitLifecycleWorkflow",
+                "visitsSchedulerPage",
+                "propertyFlowUsecaseEntities",
+                "action-schedule-visit",
+                "action-update-visit-status"
+              ]
+            },
+            {
+              "decisionId": "dec-property-status-transition-event",
+              "title": "Adição de PropertyStatusTransitionEvent para rastreabilidade de transições de status do imóvel",
+              "decision": "Adicionar entidade de caso de uso PropertyStatusTransitionEvent (layer_3, moduleOwned) ao ontology.entities e ao usecaseEntities, registrando transições de status do imóvel tanto manuais quanto automáticas.",
+              "reason": "A rule-property-status-transition está em layer_3 e o propertyStatusWorkflow a implementa, mas não havia entidade de caso de uso registrando o evento — diferente de Deal e Lead que possuem seus TransitionEvents. Corrige issue MISSING_LAYER3_USECASE_PROPERTY_STATUS_TRANSITION.",
+              "affectedArtifacts": [
+                "propertyStatusWorkflow",
+                "dealStageWorkflow",
+                "propertyFlowUsecaseEntities",
+                "action-update-property-status",
+                "action-create-deal",
+                "action-advance-deal-stage",
+                "action-mark-deal-lost"
+              ]
+            },
+            {
+              "decisionId": "dec-followup-dedicated-command",
+              "title": "Criação de FollowUpSuggestionCommand como entidade dedicada",
+              "decision": "Criar entidade de caso de uso FollowUpSuggestionCommand separada de LeadClassificationCommand, com campos próprios (leadId, inputContext, suggestionResult, status, requestedBy, createdAt). Atualizar action-get-followup-suggestion e followUpSuggestionAgent para referenciar a nova entidade.",
+              "reason": "Follow-up e classificação são comandos com ciclos de vida e inputs/outputs distintos. Reutilizar LeadClassificationCommand gerava ambiguidade na persistência do campo followUpSuggestion e impedia o acionamento independente do agente de follow-up. Corrige issue FOLLOWUP_SUGGESTION_MISSING_DEDICATED_COMMAND_ENTITY.",
+              "affectedArtifacts": [
+                "followUpSuggestionAgent",
+                "action-get-followup-suggestion",
+                "propertyFlowUsecaseEntities",
+                "leadDetailPage"
+              ]
+            },
+            {
+              "decisionId": "dec-assistente-actor-coverage",
+              "title": "Documentação formal das permissões do assistenteActor via RBAC",
+              "decision": "O assistenteActor opera sob as mesmas capabilities do corretorActor com restrições adicionais aplicadas via rule-rbac-data-isolation, conforme configurado pelo Admin. Não são criadas capabilities exclusivas para o Assistente no MVP — o isolamento é garantido pelo módulo authAndRbacModule.",
+              "reason": "O assistenteActor não possui capabilities, userActions ou páginas exclusivas. As permissões exatas do Assistente dependem de configuração pelo Admin (questão aberta). Documentar formalmente evita ambiguidade sem bloquear o MVP. Corrige issue CAPABILITY_ASSISTENTE_ACTOR_NO_ARTIFACT_COVERAGE.",
+              "affectedArtifacts": [
+                "authAndRbacModule",
+                "corretorMdm",
+                "rule-rbac-data-isolation"
+              ]
+            },
+            {
+              "decisionId": "dec-dashboard-single-artifact-rbac-filter",
+              "title": "Dashboard único com filtragem dinâmica por perfil via RBAC",
+              "decision": "O adminActorMetricDashboard serve tanto Admin quanto Corretor com filtragem dinâmica por corretorId na camada de BFF, aplicando rule-rbac-data-isolation. Não é criado um metricDashboard separado para corretorActor no MVP.",
+              "reason": "Criar dois dashboards separados duplicaria artefatos sem ganho funcional no MVP. A filtragem dinâmica via RBAC é o padrão estabelecido no sistema e cobre o requisito de 'Admin vê dados globais; Corretor vê apenas seus registros'. Corrige issue DASHBOARD_MISSING_CORRETOR_ACTOR_DASHBOARD_ARTIFACT.",
+              "affectedArtifacts": [
+                "adminActorMetricDashboard",
+                "dashboardPage",
+                "authAndRbacModule"
+              ]
+            },
+            {
+              "decisionId": "dec-deal-lead-stage-sync",
+              "title": "Sincronização automática de Lead.stage ao fechar ou perder negócio",
+              "decision": "Atualizar rule-deal-stage-transition para incluir sincronização de Lead.stage para 'fechado' ou 'perdido' quando o Deal vinculado atingir esses estados terminais. Adicionar Lead como affectedEntity em action-advance-deal-stage e action-mark-deal-lost.",
+              "reason": "Lead.statusEnum inclui 'fechado' e 'perdido' mas não havia regra ou ação explícita sincronizando o Lead quando o Deal terminal era atingido. Isso criava inconsistência de estado entre as entidades. Corrige issue DEAL_CLOSED_LEAD_STAGE_SYNC_NOT_EXPLICIT.",
+              "affectedArtifacts": [
+                "rule-deal-stage-transition",
+                "action-advance-deal-stage",
+                "action-mark-deal-lost",
+                "dealStageWorkflow"
+              ]
+            },
+            {
+              "decisionId": "dec-metrics-soon-dashboard-future",
+              "title": "Métricas 'soon' serão adicionadas ao dashboard quando promovidas",
+              "decision": "visitsPerMonthMetricTable e leadConversionMetricTable permanecem com priority 'soon'. Quando promovidas para 'now', o adminActorMetricDashboard será atualizado para incluí-las. Documentado explicitamente no reason do dashboard.",
+              "reason": "Evita retrabalho no planejamento de layer_2/layer_3 e deixa claro o caminho de evolução do dashboard. Corrige issue informativo METRIC_VISITSPERMONTH_NOT_IN_DASHBOARD.",
+              "affectedArtifacts": [
+                "adminActorMetricDashboard",
+                "visitsPerMonthMetricTable",
+                "leadConversionMetricTable"
+              ]
+            }
+          ],
+          "deferredItems": [
+            {
+              "id": "deferred-calendar-integration",
+              "title": "Integração com Calendário Externo (Google Calendar / Outlook)",
+              "description": "Plugin para sincronização do agendador de visitas com calendários externos. Identificado como risco de negócio mas fora do MVP. Avaliação para versão futura — requer decisão do cliente sobre provedor preferido."
+            },
+            {
+              "id": "deferred-photo-upload",
+              "title": "Upload Real de Fotos de Imóveis",
+              "description": "Plugin para upload e armazenamento de fotos reais de imóveis, substituindo as URLs de placeholder do picsum.photos. Explicitamente adiado para versão futura na clarificação."
+            },
+            {
+              "id": "deferred-audit-log",
+              "title": "Módulo de Auditoria (Audit Log)",
+              "description": "Módulo horizontal para rastreabilidade completa de alterações em imóveis, leads e negócios. Importante para conformidade mas não bloqueante para MVP."
+            },
+            {
+              "id": "deferred-assistente-permissions",
+              "title": "Definição Detalhada das Permissões do Assistente",
+              "description": "As permissões exatas do perfil Assistente (criar imóveis, criar leads, apenas visualizar etc.) dependem de configuração pelo Admin e não foram definidas nas clarificações. Devem ser especificadas antes da implementação do módulo authAndRbacModule."
+            },
+            {
+              "id": "deferred-llm-provider-selection",
+              "title": "Seleção do Provedor e Modelo LLM",
+              "description": "O provedor e modelo de LLM (OpenAI GPT-4o, Anthropic Claude 3.5, Google Gemini 1.5 Pro etc.) não foram definidos nas clarificações. Necessário para configurar o llmProviderPlugin corretamente."
+            },
+            {
+              "id": "deferred-notifications-channel",
+              "title": "Canal de Notificações (In-App, E-mail ou Push)",
+              "description": "O canal preferido para o notificationsModule (in-app, e-mail ou push) não foi definido nas clarificações. Necessário antes da implementação do módulo de notificações (priority: soon)."
+            }
+          ]
+        },
+        "questions": [
+          "Qual provedor e modelo de LLM será utilizado para os agentes de IA? (ex: OpenAI GPT-4o, Anthropic Claude 3.5, Google Gemini 1.5 Pro) — necessário para configurar o llmProviderPlugin corretamente.",
+          "Quais são as permissões exatas do perfil Assistente? Ele pode criar imóveis e leads, ou apenas visualizar e editar registros existentes atribuídos ao seu corretor?",
+          "Há necessidade de notificações para lembretes de visitas e sugestões de follow-up? Se sim, qual canal prefere: in-app, e-mail ou push?",
+          "Existem regras de negócio específicas para transições de status do imóvel além das já mapeadas? Por exemplo: um imóvel pode voltar ao status 'Disponível' automaticamente quando um negócio é marcado como 'Perdido'? (Nota: esta regra já foi incluída no plano — confirme se está correta.)"
+        ],
+        "trace": [
+          "Finalizando plano de solução a partir do blueprint (06-solution-blueprint) e revisão (07-blueprint-review).",
+          "ERRO CORRIGIDO [MISSING_LAYER3_USECASE_VISIT_STATUS_UPDATE]: Adicionada entidade VisitStatusTransitionEvent (layer_3, moduleOwned) ao ontology.entities com 7 campos completos. Adicionada ao usecaseEntities[propertyFlowUsecaseEntities].references. Adicionada como affectedEntity em action-schedule-visit e action-update-visit-status. visitLifecycleWorkflow atualizado para referenciar VisitStatusTransitionEvent. Novo relacionamento rel-visit-status-event-visit adicionado.",
+          "ERRO CORRIGIDO [MISSING_LAYER3_USECASE_PROPERTY_STATUS_TRANSITION]: Adicionada entidade PropertyStatusTransitionEvent (layer_3, moduleOwned) ao ontology.entities com 8 campos completos incluindo campo triggeredBy (manual/dealClosed/dealLost/dealCreated). Adicionada ao usecaseEntities[propertyFlowUsecaseEntities].references. Adicionada como affectedEntity em action-update-property-status, action-create-deal, action-advance-deal-stage, action-mark-deal-lost. propertyStatusWorkflow e dealStageWorkflow atualizados. Novo relacionamento rel-property-status-event-property adicionado.",
+          "ERRO CORRIGIDO [FOLLOWUP_SUGGESTION_MISSING_DEDICATED_COMMAND_ENTITY]: Criada entidade FollowUpSuggestionCommand (layer_3, moduleOwned) com campos próprios: commandId, leadId, inputContext, suggestionResult, status, requestedBy, createdAt. action-get-followup-suggestion.affectedEntities atualizado para [FollowUpSuggestionCommand, Lead]. followUpSuggestionAgent.references atualizado para referenciar FollowUpSuggestionCommand em vez de LeadClassificationCommand. Novo relacionamento rel-followup-cmd-lead adicionado. rule-llm-agent-invocation.appliesTo atualizado para incluir FollowUpSuggestionCommand.",
+          "WARNING TRATADO [CAPABILITY_ASSISTENTE_ACTOR_NO_ARTIFACT_COVERAGE]: Documentado formalmente que assistenteActor opera sob as mesmas capabilities do corretorActor com restrições via rule-rbac-data-isolation. Descrição do ator atualizada. Decisão dec-assistente-actor-coverage registrada. Item deferido deferred-assistente-permissions criado para definição futura das permissões exatas.",
+          "WARNING TRATADO [DASHBOARD_MISSING_CORRETOR_ACTOR_DASHBOARD_ARTIFACT]: Documentado explicitamente no adminActorMetricDashboard que o mesmo artefato serve ambos os perfis com filtragem dinâmica por corretorId via rule-rbac-data-isolation na camada de BFF. Decisão dec-dashboard-single-artifact-rbac-filter registrada.",
+          "INFO TRATADO [DEAL_CLOSED_LEAD_STAGE_SYNC_NOT_EXPLICIT]: rule-deal-stage-transition atualizada para incluir sincronização de Lead.stage ao fechar/perder negócio. Lead adicionado como affectedEntity em action-advance-deal-stage e action-mark-deal-lost. dealStageWorkflow atualizado. Decisão dec-deal-lead-stage-sync registrada.",
+          "INFO TRATADO [METRIC_VISITSPERMONTH_NOT_IN_DASHBOARD]: Documentado no reason do adminActorMetricDashboard que visitsPerMonthMetricTable e leadConversionMetricTable serão adicionadas quando promovidas para 'now'. Decisão dec-metrics-soon-dashboard-future registrada.",
+          "MDM preservado: propertyMdm, leadMdm, corretorMdm, visitMdm, dealMdm — todos com priority 'now' e campos completos.",
+          "Métricas/dashboard iniciais preservados: activePropertiesMetricTable, monthlyLeadsMetricTable, dealPipelineMetricTable (now) + adminActorMetricDashboard (now).",
+          "Itens 'later' preservados em deferredItems: calendarIntegrationPlugin, photoUploadPlugin, auditLogModule.",
+          "Regras centralizadas com ruleIds estáveis: rule-rbac-data-isolation, rule-lead-stage-transition, rule-deal-stage-transition, rule-property-status-transition, rule-visit-no-conflict, rule-llm-agent-invocation, rule-deal-requires-property-and-lead, rule-visit-requires-property-lead-corretor.",
+          "Ontologia final: 5 entidades MDM + 7 entidades de caso de uso (PropertyDescriptionCommand, LeadClassificationCommand, FollowUpSuggestionCommand, LeadStageTransitionEvent, DealStageTransitionEvent, VisitStatusTransitionEvent, PropertyStatusTransitionEvent) + 5 tabelas de métricas = 17 entidades totais.",
+          "Relacionamentos: 15 relacionamentos cobrindo todas as entidades do domínio incluindo os 3 novos (VisitStatusTransitionEvent, PropertyStatusTransitionEvent, FollowUpSuggestionCommand).",
+          "usecaseEntities[propertyFlowUsecaseEntities].references atualizado para incluir todos os 7 comandos/eventos de caso de uso.",
+          "7 decisões de arquitetura registradas cobrindo todos os issues da revisão.",
+          "6 itens deferidos registrados: integração de calendário, upload de fotos, audit log, permissões do assistente, seleção de LLM, canal de notificações.",
+          "Status final: ok — todos os issues de severity 'warning' foram corrigidos. Issues de severity 'info' foram tratados com documentação e decisões. Nenhum bloqueio impede o avanço."
+        ]
+      }
+    },
+    "status": "completed",
+    "stepId": 35,
+    "interaction": null,
+    "nextSteps": null
+  }
+}

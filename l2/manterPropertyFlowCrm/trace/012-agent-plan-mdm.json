@@ -1,0 +1,131 @@
+{
+  "savedAt": "2026-06-11T01:18:33.790Z",
+  "agentName": "agentPlanMDM",
+  "stepId": 12,
+  "planning": {
+    "planId": "plan-mdm",
+    "dependsOn": [
+      "plan-finalize-solution-plan"
+    ],
+    "executionMode": "parallel_static",
+    "executionHost": "client"
+  },
+  "status": "waiting_after_prompt",
+  "payload": {
+    "type": "flexible",
+    "result": {
+      "toolName": "submitMdmPlan",
+      "arguments": {
+        "status": "ok",
+        "result": {
+          "mdmDomains": [
+            {
+              "domainId": "property",
+              "title": "Imóvel",
+              "masterEntities": [
+                "Property"
+              ],
+              "sourceOfTruth": "102034",
+              "consumers": [
+                "propertiesListPage",
+                "propertyDetailPage",
+                "dashboardPage",
+                "dealTrackerPage",
+                "visitsSchedulerPage",
+                "leadDetailPage",
+                "propertyStatusWorkflow",
+                "dealStageWorkflow",
+                "visitLifecycleWorkflow",
+                "propertyDescriptionAgent",
+                "mockImagePlugin",
+                "activePropertiesMetricTable",
+                "visitMdm",
+                "dealMdm",
+                "PropertyDescriptionCommand",
+                "PropertyStatusTransitionEvent"
+              ],
+              "governanceRules": [
+                "rule-property-status-transition",
+                "rule-rbac-data-isolation"
+              ]
+            },
+            {
+              "domainId": "lead",
+              "title": "Lead / Cliente",
+              "masterEntities": [
+                "Lead"
+              ],
+              "sourceOfTruth": "102034",
+              "consumers": [
+                "leadPipelinePage",
+                "leadDetailPage",
+                "dashboardPage",
+                "dealTrackerPage",
+                "visitsSchedulerPage",
+                "leadStageTransitionWorkflow",
+                "dealStageWorkflow",
+                "visitLifecycleWorkflow",
+                "leadClassificationAgent",
+                "followUpSuggestionAgent",
+                "monthlyLeadsMetricTable",
+                "dealPipelineMetricTable",
+                "leadConversionMetricTable",
+                "visitMdm",
+                "dealMdm",
+                "LeadClassificationCommand",
+                "FollowUpSuggestionCommand",
+                "LeadStageTransitionEvent"
+              ],
+              "governanceRules": [
+                "rule-lead-stage-transition",
+                "rule-rbac-data-isolation"
+              ]
+            },
+            {
+              "domainId": "broker",
+              "title": "Corretor",
+              "masterEntities": [
+                "Corretor"
+              ],
+              "sourceOfTruth": "102034",
+              "consumers": [
+                "corretoresAdminPage",
+                "dashboardPage",
+                "leadPipelinePage",
+                "visitsSchedulerPage",
+                "dealTrackerPage",
+                "authAndRbacModule",
+                "propertyMdm",
+                "leadMdm",
+                "visitMdm",
+                "dealMdm",
+                "monthlyLeadsMetricTable",
+                "dealPipelineMetricTable",
+                "leadConversionMetricTable",
+                "visitsPerMonthMetricTable"
+              ],
+              "governanceRules": [
+                "rule-rbac-data-isolation"
+              ]
+            }
+          ]
+        },
+        "questions": [
+          "No domínio MDM de Lead, um mesmo cliente (mesmo e-mail/telefone) deve existir como registro mestre único global ou pode haver múltiplos leads duplicados para diferentes imóveis/interesses?",
+          "O domínio MDM de Corretor requer sincronização automática bidirecional com o authAndRbacModule ou o vínculo userId é gerenciado manualmente pelo Admin?"
+        ],
+        "trace": [
+          "Analisada a ontologia do PropertyFlowCRM e identificadas 3 entidades mestre (masterEntity): Property, Lead e Corretor.",
+          "Visit e Deal foram excluídos do escopo MDM por possuírem kind=transactionalEntity, não se enquadrando como dados mestre estáveis.",
+          "Definido sourceOfTruth como a infraestrutura MDM compartilhada da plataforma (projeto 102034), conforme inventário disponível.",
+          "Mapeados todos os consumidores por domínio: páginas, workflows, agentes, plugins, tabelas de métrica, entidades transacionais e comandos/eventos de caso de uso que referenciam os dados mestre sem duplicação.",
+          "Associadas regras de governança específicas: rule-property-status-transition e rule-rbac-data-isolation para Property; rule-lead-stage-transition e rule-rbac-data-isolation para Lead; rule-rbac-data-isolation para Corretor."
+        ]
+      }
+    },
+    "status": "completed",
+    "stepId": 38,
+    "interaction": null,
+    "nextSteps": null
+  }
+}
